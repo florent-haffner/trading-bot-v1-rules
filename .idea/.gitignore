@@ -1,0 +1,9 @@
+# Default ignored files
+*.xml
+.iml
+
+/shelf/
+/dataSources/
+/httpRequests/
+
+__pycache__/
