@@ -17,9 +17,15 @@ load_dotenv()
 api_key = os.getenv('API_STOCK')
 df = None
 
+
 #
 # https://www.datacamp.com/community/tutorials/lstm-python-stock-market
 #
+
+
+def getTextFile(path):
+    global df
+    df = pd.read_csv(path, delimiter="\t")
 
 
 def queryDatasAndParseCSV(ticker):
@@ -48,7 +54,11 @@ def queryDatasAndParseCSV(ticker):
         df = pd.read_csv(file_to_save)
 
 
-stockName = "AAL"
+# pathToFile = "hpq.us.txt"
+# getTextFile(pathToFile)
+
+# stockName = "AAL"
+stockName = "IBM"
 queryDatasAndParseCSV(stockName)
 
 # Sort DataFrame by date
@@ -66,15 +76,24 @@ high_prices = df.loc[:, 'High'].to_numpy()
 low_prices = df.loc[:, 'Low'].to_numpy()
 mid_prices = (high_prices + low_prices) / 2.0
 
-# TODO : must check the lenght of the values
-# TODO : must check the lenght of the values
-# TODO : must check the lenght of the values
+dataset_size = len(mid_prices)
+train_size = int(dataset_size * 0.8)
+test_size = int(dataset_size * 0.2)
+
+print(dataset_size, train_size, test_size)
 
 # Split train and test sets
-train_data = mid_prices[:11000]
-print('or_train', len(train_data))
-test_data = mid_prices[11000:]
-print('or_test', len(test_data))
+train_data = mid_prices[:train_size]
+test_data = mid_prices[test_size:]
+
+# dataset_size = len(mid_prices)
+# train_size = int(dataset_size * 0.8)
+# test_size = int(dataset_size * 0.2)
+#
+# # Split train and test sets
+# train_data = mid_prices[:train_size]
+# test_data = mid_prices[test_size:]
+
 
 # Scale the data to be between 0 and 1
 # When scaling remember! You normalize both test and train data with respect to training data
@@ -83,42 +102,41 @@ scaler = MinMaxScaler()
 train_data = train_data.reshape(-1, 1)
 test_data = test_data.reshape(-1, 1)
 
-print('train_data')
-print(len(train_data))
-
-print('test_data')
-print(len(test_data))
+print('train_data', len(train_data))
+print('test_data', len(test_data))
 
 # Train the Scaler with training data and smooth data
-smoothing_window_size = 2500
-for di in range(0, 10000, smoothing_window_size):
-    scaler.fit(train_data[di:di + smoothing_window_size, :])
-    train_data[di:di + smoothing_window_size, :] = scaler.transform(train_data[di:di + smoothing_window_size, :])
+smoothing_window_size = 1000
+for di in range(0, dataset_size, smoothing_window_size):
+    try:
+        scaler.fit(train_data[di:di + smoothing_window_size])
+        train_data[di:di + smoothing_window_size] = scaler.transform(train_data[di:di + smoothing_window_size])
+    except ValueError:
+        pass
 
-    # You normalize the last bit of remaining data
-    scaler.fit(train_data[di + smoothing_window_size:, :])
-    train_data[di + smoothing_window_size:, :] = scaler.transform(train_data[di + smoothing_window_size:, :])
+    # # You normalize the last bit of remaining data
+    # scaler.fit(train_data[di + smoothing_window_size:])
+    # train_data[di + smoothing_window_size:] = scaler.transform(train_data[di + smoothing_window_size:])
 
     # Reshape both train and test data
-    train_data = train_data.reshape(-1)
-
-#
-# TODO - after this
-#
+    # train_data = train_data.reshape(-1)
+    # test_data = scaler.transform(test_data).reshape(-1)
 
 # Normalize test data
-test_data = scaler.transform(test_data).reshape(-1)
+plt.plot(test_data)
+plt.title('not scaled bro')
+plt.show()
 
 # Now perform exponential moving average smoothing
 # So the data will have a smoother curve than the original ragged data
 EMA = 0.0
 gamma = 0.1
-for ti in range(11000):
-  EMA = gamma*train_data[ti] + (1-gamma)*EMA
-  train_data[ti] = EMA
+for ti in range(dataset_size - 2000): # Used 11'000 at first but we use significantly less data so...
+    EMA = gamma * train_data[ti] + (1 - gamma) * EMA
+    train_data[ti] = EMA
 
 # Used for visualization and test purposes
-all_mid_data = np.concatenate([train_data,test_data],axis=0)
+all_mid_data = np.concatenate([train_data, test_data], axis=0)
 
 #
 # One-Step Ahead Prediction via Averaging
