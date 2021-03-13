@@ -71,7 +71,9 @@ plt.xlabel('Date', fontsize=18)
 plt.ylabel('Mid Price', fontsize=18)
 plt.show()
 
+#
 # First calculate the mid prices from the highest and lowest
+#
 high_prices = df.loc[:, 'High'].to_numpy()
 low_prices = df.loc[:, 'Low'].to_numpy()
 mid_prices = (high_prices + low_prices) / 2.0
@@ -105,7 +107,9 @@ test_data = test_data.reshape(-1, 1)
 print('train_data', len(train_data))
 print('test_data', len(test_data))
 
+#
 # Train the Scaler with training data and smooth data
+#
 smoothing_window_size = 1000
 for di in range(0, dataset_size, smoothing_window_size):
     try:
@@ -122,7 +126,9 @@ for di in range(0, dataset_size, smoothing_window_size):
     # train_data = train_data.reshape(-1)
     # test_data = scaler.transform(test_data).reshape(-1)
 
+#
 # Normalize test data
+#
 plt.plot(test_data)
 plt.title('not scaled bro')
 plt.show()
@@ -131,7 +137,7 @@ plt.show()
 # So the data will have a smoother curve than the original ragged data
 EMA = 0.0
 gamma = 0.1
-for ti in range(dataset_size - 2000): # Used 11'000 at first but we use significantly less data so...
+for ti in range(dataset_size - 2000):  # Used 11'000 at first but we use significantly less data so...
     EMA = gamma * train_data[ti] + (1 - gamma) * EMA
     train_data[ti] = EMA
 
@@ -141,3 +147,22 @@ all_mid_data = np.concatenate([train_data, test_data], axis=0)
 #
 # One-Step Ahead Prediction via Averaging
 #
+
+window_size = 100
+N = train_data.size
+std_avg_predictions = []
+std_avg_x = []
+mse_errors = []
+
+for pred_idx in range(window_size, N):
+
+    if pred_idx >= N:
+        date = dt.datetime.strptime(k, '%Y-%m-%d').date() + dt.timedelta(days=1)
+    else:
+        date = df.loc[pred_idx, 'Date']
+
+    std_avg_predictions.append(np.mean(train_data[pred_idx - window_size:pred_idx]))
+    mse_errors.append((std_avg_predictions[-1] - train_data[pred_idx]) ** 2)
+    std_avg_x.append(date)
+
+print('MSE error for standard averaging: %.5f' % (0.5 * np.mean(mse_errors)))
