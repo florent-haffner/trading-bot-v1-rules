@@ -78,10 +78,14 @@ def getXy(datas, X_key) -> [pd.DataFrame]:
 :param get X, y
 :return scaled dataset from 0 to 1
 """
-def process_data_to_scale(dataset) -> MinMaxScaler:
-    return scaler.fit_transform(
-        dataset.values.reshape(len(dataset.values), 1)
+def process_data_to_scale(scaler, X, y) -> [MinMaxScaler]:
+    X_scaled = scaler.fit_transform(
+        X.values.reshape(len(X.values), 1)
     )
+    y_scaled = scaler.fit_transform(
+        y.values.reshape(len(y.values), 1)
+    )
+    return X_scaled, y_scaled
 
 
 if __name__ == "__main__":
@@ -94,5 +98,7 @@ if __name__ == "__main__":
 
     # Pre-process data to scale to 0->1
     scaler = MinMaxScaler()
-    X_train = process_data_to_scale(X)
-    print(X_train)
+    X_train, y_train = process_data_to_scale(X, y)
+    print(X_train, y_train)
+    inverse = scaler.inverse_transform(y_train)
+    print(inverse)

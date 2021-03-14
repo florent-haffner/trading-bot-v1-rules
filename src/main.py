@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
-from data_acquisition import getFormattedData, splitDataset
+from data_acquisition import getFormattedData, splitDataset, getXy, process_data_to_scale
+
+from model import Model
 
 
 if __name__ == "__main__":
@@ -9,14 +11,23 @@ if __name__ == "__main__":
     # minute.plot('timestamp', 'volume')
     # plt.show()
     #
-    heure = getFormattedData('BTCEUR', '60')
+    # heure = getFormattedData('BTCEUR', '60')
     # print(len(heure))
     # heure.plot('timestamp', 'volume')
     # plt.show()
-    #
-    print(len(heure))
-    train, test = splitDataset(heure, 0.85)
-    print(len(train), len(test))
 
+    df = getFormattedData('BTCEUR', '60')
+    df.plot('timestamp', 'volume')
+    # plt.show()
 
-    min_max_scaler = MinMaxScaler()
+    train, test = splitDataset(df, .85)
+    X, y = getXy(train, 'volume')
+
+    # Pre-process data to scale to 0->1
+    scaler = MinMaxScaler()
+    X_train, y_train = process_data_to_scale(scaler, X, y)
+    print(X_train, y_train)
+    inverse = scaler.inverse_transform(y_train)
+    print(inverse)
+
+    model = Model()
