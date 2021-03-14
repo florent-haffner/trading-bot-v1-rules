@@ -1,8 +1,10 @@
+import json
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from data_acquisition import getFormattedData, splitDataset, getXy, process_data_to_scale
 
 from model import Model
+
 
 
 if __name__ == "__main__":
@@ -30,4 +32,7 @@ if __name__ == "__main__":
     inverse = scaler.inverse_transform(y_train)
     print(inverse)
 
-    model = Model()
+    with open("model-setup.json", 'r') as JSON_model_setup:
+        model_setup = json.load(JSON_model_setup)
+        model = Model(model_setup)
+        model.model.summary()
