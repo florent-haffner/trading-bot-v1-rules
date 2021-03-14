@@ -32,7 +32,7 @@ if __name__ == "__main__":
     inverse = scaler.inverse_transform(y_train)
     print(inverse)
 
-    with open("model-setup.json", 'r') as JSON_model_setup:
+    with open("setup.json", 'r') as JSON_model_setup:
         model_setup = json.load(JSON_model_setup)
         model = Model(model_setup)
         model.model.summary()
