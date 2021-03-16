@@ -7,13 +7,13 @@ from tensorflow.python.keras.callbacks import ModelCheckpoint
 
 
 class Model:
-    def __init__(self, config):
+    def __init__(self, properties):
         self.model = keras.Sequential()
-        self.buildModel(config)
+        self.buildModel(properties)
 
-    def buildModel(self, configs):
+    def buildModel(self, properties):
         print('[MODEL] Building model')
-        for layer in configs['model']['layers']:
+        for layer in properties['model']['layers']:
             neurons = layer['neurons'] if 'neurons' in layer else None
             dropout_rate = layer['rate'] if 'rate' in layer else None
             activation = layer['activation'] if 'activation' in layer else None
@@ -28,8 +28,8 @@ class Model:
             if layer['type'] == 'dropout':
                 self.model.add(Dropout(dropout_rate))
 
-        self.model.compile(loss=configs['model']['loss'],
-                           optimizer=configs['model']['optimizer'])
+        self.model.compile(loss=properties['model']['loss'],
+                           optimizer=properties['model']['optimizer'])
         print('[MODEL] Finish compilation')
         self.model.summary()  # TODO: remove this
 

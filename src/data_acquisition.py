@@ -79,7 +79,9 @@ def getXy(dataset, X_key, y_key) -> [pd.DataFrame]:
 :param get X, y
 :return scaled dataset from 0 to 1
 """
-def process_data_to_scale(scaler, X, y) -> [MinMaxScaler]:
+def process_data_to_scale(scaler, properties, X, y) -> [MinMaxScaler]:
+    print(properties['model']['layers'][0]['input_timesteps'])
+
     X_scaled = scaler.fit_transform(
         X.values.reshape(len(X.values), 1)
     )
