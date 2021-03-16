@@ -68,10 +68,11 @@ def splitDataset(full_dataset, split_ratio) -> [pd.DataFrame]:
     return train_set, test_set
 
 
-def getXy(datas, X_key) -> [pd.DataFrame]:
-    X = datas[X_key]
-    y = datas['timestamp']
-    return X, y
+def getXy(dataset, X_key, y_key) -> [pd.DataFrame]:
+    try:
+        return dataset[X_key], dataset[y_key]
+    except KeyError:
+        raise KeyError('Error with the keys', X_key, ' or ', y_key)
 
 
 """
@@ -94,11 +95,11 @@ if __name__ == "__main__":
     # plt.show()
 
     train, test = splitDataset(df, .85)
-    X, y = getXy(train, 'volume')
+    X, y = getXy(train, 'volume', 'timestamp')
 
     # Pre-process data to scale to 0->1
     scaler = MinMaxScaler()
-    X_train, y_train = process_data_to_scale(X, y)
+    X_train, y_train = process_data_to_scale(scaler, X, y)
     print(X_train, y_train)
     inverse = scaler.inverse_transform(y_train)
     print(inverse)
