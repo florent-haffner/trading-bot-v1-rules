@@ -12,7 +12,7 @@
       {
         "type": "lstm",
         "neurons": 100,
-        "input_timesteps": 10,
+        "input_timesteps": 6,
         "input_dim": 1,
         "return_seq": true
       },
