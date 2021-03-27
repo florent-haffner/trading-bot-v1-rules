@@ -1,9 +1,12 @@
 import os
 from datetime import datetime
 
+from matplotlib import pyplot as plt
 from tensorflow import keras
 from tensorflow.keras.layers import Dense, Dropout, LSTM
 from tensorflow.python.keras.callbacks import ModelCheckpoint
+
+from src.data_acquisition import getFormattedData
 
 
 class Model:
@@ -80,3 +83,44 @@ class Model:
     #         workers=config['model']['training']['workers']
     #     )
     #     print('[MODEL] finished training process')
+
+
+def run():
+    # #
+    # # TODO -> TF CONFIG : seems like it help my model to get over the training process
+    # #
+    # config = tf.compat.v1.ConfigProto()
+    # config.gpu_options.per_process_gpu_memory_fraction = 0.7
+    # tf.compat.v1.keras.backend.set_session(
+    #     tf.compat.v1.Session(config=config))
+    #
+    # model = None
+    # with open("ressources/applications.properties.json", 'r') as applications_properties:
+    #     properties = json.load(applications_properties)
+
+    asset = 'ETHEUR'
+    interval = '60'
+
+    df = getFormattedData(asset, interval)
+    df.plot('timestamp', 'volume')
+    plt.title('timestamp vs volume')
+    plt.show()
+    return df
+    # plt.show()
+
+        # train, test = splitDataset(df, .85)
+        # X, y = getXy(dataset=train, X_key='timestamp', y_key='volume')
+        #
+        # # Pre-process data to scale to 0->1
+        # scaler = MinMaxScaler()
+        # X_train, y_train = process_data_to_scale(scaler, X, y)
+        #
+        # # TODO : if needed to inverse "scaling"
+        # # inverse = scaler.inverse_transform(y_train)
+        #
+        # model = Model(properties)
+        #
+        # print('[MODEL] PROCESS INPUT TO ENABLE USAGE OF LSTM')
+        # X_train = model.process_input(properties['model']['layers'][0]['input_timesteps'], X_train)
+        # y_train = model.process_input(properties['model']['layers'][0]['input_timesteps'], y_train)
+        # # model.train(properties, X_train, y_train)
