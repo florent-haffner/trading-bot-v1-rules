@@ -1,7 +1,6 @@
 from datetime import datetime
 
 import matplotlib.pyplot as plt
-from tensorflow.python.ops.nn_ops import top_k
 
 from data_acquisition import getFormattedData
 from stocks_indicators import get_stocks_indicator
@@ -34,6 +33,8 @@ def detect_last_recent_top(df):
                 print('Found 5 concurrent value - Curve to detected')
                 print('Last recent top found at', datetime.fromtimestamp(df['timestamp'][top_index]))
             return first_index
+
+        print('TODO - Understand trend while curve is currently going up')
 
 
 def high_valatility_volume_analysis(df, short_df):
