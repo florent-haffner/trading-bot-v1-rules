@@ -30,7 +30,7 @@ def getDatasFromKraken(asset, interval) -> object:
 :param apiResponse -> datas from api
 :return pandas Dataframe object
 """
-def getDataframe(apiResponse) -> pd.DataFrame:
+def getDataframe(apiResponse):
     firstMapKey = list(apiResponse['result'].keys())[0]
     schema = ['timestamp', 'open', 'high', 'low', 'close', 'vwap', 'volume', 'count']
     df = pd.DataFrame(apiResponse['result'][firstMapKey], columns=schema)
@@ -50,9 +50,9 @@ def getDataframe(apiResponse) -> pd.DataFrame:
 Glue everything together
 """
 def getFormattedData(asset, interval) -> pd.DataFrame:
-    print('Quering ' + asset + '\'s on interval ' + interval + 'min from Kraken')
-    datas = getDatasFromKraken(asset, interval)
-    return getDataframe(datas)
+    print('Quering ' + asset + 'asset /w interval of ' + interval + 'min - Kraken')
+    results = getDatasFromKraken(asset, interval)
+    return getDataframe(results)
 
 
 """
