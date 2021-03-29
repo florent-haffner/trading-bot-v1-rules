@@ -20,19 +20,28 @@ def get_last_n_percentage(df, nbr_percentage):
           'to', datetime.fromtimestamp(tmp_df.tail(1)['timestamp'].iloc[-1]))
     return tmp_df
 
-
-if __name__ == "__main__":
-    asset = 'GRTEUR'
-    interval = '60'
+def run(asset, interval):
     df = getFormattedData(asset, interval)
     df_with_indicators = get_stocks_indicators(df)
+
     three_day_DF = get_last_n_percentage(df_with_indicators, 35)
+    trend_analysis(df_with_indicators, three_day_DF)
+
+
+if __name__ == "__main__":
+    # asset = 'GRTEUR'
+    asset = 'ETHEUR'
+    interval = '60'
+    run(asset, interval)
 
     # get_measure_viz(three_day_DF, 'close')
-    get_measure_viz(three_day_DF, 'close_12_ema')
+
+    # get_measure_viz(three_day_DF, 'close_12_ema')
+
     # get_measure_viz(three_day_DF, 'close_26_ema')
-    get_measure_viz(three_day_DF, 'macds')
+
+    # get_measure_viz(three_day_DF, 'macds')
+
     # get_measure_viz(tmp_df, 'macd')
     # get_measure_viz(tmp_df, 'macdh')
 
-    trend_analysis(df_with_indicators, three_day_DF)

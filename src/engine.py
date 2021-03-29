@@ -1,46 +1,35 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import find_peaks
+from peakdetect import peakdetect
 
 
 def trend_analysis(df, short_df):
     print('\n[TREND ANALYSIS]')
 
-    print(df['macds'].describe())
-    print(df['macds'].describe()['std'])
-    find_multiple_curve_min_max(short_df, 'macds', 0.002, None)
-
-    print(df['close_12_ema'].describe())
-    print(df['close_12_ema'].describe()['std'])
-    find_multiple_curve_min_max(short_df, 'close_12_ema', None, None)
+    find_multiple_curve_min_max(short_df, 'macds')
+    find_multiple_curve_min_max(short_df, 'close_26_ema')
 
 
-def find_multiple_curve_min_max(df, key, height, distance):
-    from peakdetect import peakdetect
-
+def find_multiple_curve_min_max(df, key):
     print('CURVE - Detecting tendancy')
 
     length_df = len(df)
     print('nbr of data', length_df)
     if df['macds'][length_df - 1] > 0:
-        print('VOLUME - UP')
+        # TODO # Check the last 5 points and detect a brutal up/down
+        print('VOLUME - POSITIVE')
     else:
-        print('VOLUME - down')
-
+        # TODO # Check the last 5 points and detect a brutal up/down
+        print('VOLUME - NEGATIVE')
 
     print(df.describe()[key])
-    peaks = peakdetect(df[key], lookahead=3)
+    peaks = peakdetect(df[key], lookahead=8)
     higher_peaks = np.array(peaks[0])
     lower_peaks = np.array(peaks[1])
-    print(len(higher_peaks), len(lower_peaks))
 
     plt.plot(df[key])
-    plt.plot(higher_peaks[:,0], higher_peaks[:,1], 'ro')
-    plt.plot(lower_peaks[:,0], lower_peaks[:,1], 'ko')
+    plt.plot(higher_peaks[:, 0], higher_peaks[:, 1], 'ro')
+    plt.plot(lower_peaks[:, 0], lower_peaks[:, 1], 'ko')
     plt.show()
 
-
-    peaks_maximum = find_peaks(df[key], height, distance)
-    peaks_minimum = find_peaks(-df[key], height, distance)
-    print('top', list(peaks_minimum[0]), 'bottom', list(peaks_maximum[0]))
-    return None
+    return higher_peaks, lower_peaks
