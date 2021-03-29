@@ -11,7 +11,7 @@ def trend_analysis(df, short_df):
 
 
 def find_multiple_curve_min_max(df, key):
-    print('CURVE - Detecting tendancy')
+    print('CURVE - Detecting peaks min/max')
 
     length_df = len(df)
     print('nbr of data', length_df)
