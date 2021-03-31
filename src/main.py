@@ -7,6 +7,18 @@ from engine import trend_analysis
 from stocks_indicators import get_stocks_indicators
 
 
+def get_asci_greeting(text):
+    return """
+         _____________ 
+        < """ + text + """">
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/
+                ||----w |
+                ||     ||
+    """
+
+
 def get_measure_viz(df, measure):
     df[measure].plot()
     plt.title(measure)
@@ -30,6 +42,8 @@ def run_bot(asset, interval):
 
 
 if __name__ == "__main__":
+    print(get_asci_greeting("Hello you ! :D"))
+
     # asset = 'GRTEUR'
     asset = 'ETHEUR'
     interval = '60'

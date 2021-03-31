@@ -8,6 +8,18 @@ __EMAIL_USER = os.getenv('email_sender')
 __EMAIL_PASSWORD = os.getenv('email_password')
 
 
+def cowsay_asci(text):
+    return """
+         _____________ 
+        < """ + text + """">
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     ||
+    """
+
+
 def send_email(destination, subject, text):
     SMTPServer = smtplib.SMTP("smtp.gmail.com", 587)
     SMTPServer.ehlo()
@@ -19,7 +31,7 @@ def send_email(destination, subject, text):
              'From: ' + __EMAIL_USER + '\n' +\
              'Subject:' + subject + '\n'
 
-    msg = header + '\n' + text
+    msg = header + '\n' + cowsay_asci(text)
     print(header)
 
     SMTPServer.sendmail(__EMAIL_USER, destination, msg)
