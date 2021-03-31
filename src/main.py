@@ -3,7 +3,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 
 from kraken_data_service import getFormattedData
-from email_sender_helper import  get_cowsay_asci
+from email_sender_helper import get_cowsay_asci
 from engine import trend_analysis
 from stocks_indicators_helper import get_stocks_indicators
 
