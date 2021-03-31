@@ -1,19 +1,41 @@
 import krakenex
+from datetime import datetime
 
 
 class TradeToKrakenError(Exception): pass
 
 
+API = krakenex.API()
+API.load_key('../kraken_api_key.txt')
+
 """
-:param asset -> the pair of currency, ex : BTCEUR, ETHEUR, ALGOUSD
-:param interval -> data interval in minutes (1, 5, 10, 60, 120, 360, 1440)
+:param asset -> the currency, ex : BTC, ETH, GRT
 """
+
+
 def getCurrentBalance(asset):
     try:
-        k = krakenex.API()
-        k.load_key('../kraken_api_key.txt')
-        return k.query_private('TradeBalance', {'asset': asset})
+        return API.query_private('TradeBalance', {'asset': asset})
+    except Exception as err:
+        raise err
 
+
+"""
+:param asset -> the currency, ex : BTC, ETH, GRT
+"""
+
+
+def createNewOrder(asset, type, quantity):
+    try:
+        return API.query_private(
+            'AddOrder', {
+                'pair': asset,
+                'type': type,
+                'ordertype': 'market',
+                'oflags': 'fciq',
+                'volume': str(quantity),
+                'starttm': str(datetime.timestamp(datetime.utcnow()))
+            })
     except Exception as err:
         raise err
 
@@ -21,3 +43,8 @@ def getCurrentBalance(asset):
 if __name__ == "__main__":
     balance = getCurrentBalance('ETH')
     print(balance)
+
+    orderBuy = createNewOrder('ETHEUR', 'buy', 0.01)
+    print(orderBuy)
+    orderSell = createNewOrder('ETHEUR', 'sell', 0.01)
+    print(orderSell)
