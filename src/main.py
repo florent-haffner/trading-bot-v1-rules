@@ -32,8 +32,7 @@ def run_bot(asset, interval):
 
 if __name__ == "__main__":
     print(get_cowsay_asci("Hello you ! :D"))
-
-    # asset = 'GRTEUR'
-    asset = 'ETHEUR'
+    # while True:
+    asset = 'GRTEUR'
     interval = '60'
     run_bot(asset, interval)
