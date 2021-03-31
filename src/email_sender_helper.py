@@ -8,13 +8,13 @@ __EMAIL_USER = os.getenv('email_sender')
 __EMAIL_PASSWORD = os.getenv('email_password')
 
 
-def cowsay_asci(text):
+def get_cowsay_asci(text):
     return """
          _____________ 
         < """ + text + """">
         \   ^__^
          \  (oo)\_______
-            (__)\       )\/\
+            (__)\       )\/
                 ||----w |
                 ||     ||
     """
@@ -31,7 +31,7 @@ def send_email(destination, subject, text):
              'From: ' + __EMAIL_USER + '\n' +\
              'Subject:' + subject + '\n'
 
-    msg = header + '\n' + cowsay_asci(text)
+    msg = header + '\n' + get_cowsay_asci(text)
     print(header)
 
     SMTPServer.sendmail(__EMAIL_USER, destination, msg)

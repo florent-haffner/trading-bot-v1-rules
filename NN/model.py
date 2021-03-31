@@ -6,7 +6,7 @@ from tensorflow import keras
 from tensorflow.keras.layers import Dense, Dropout, LSTM
 from tensorflow.python.keras.callbacks import ModelCheckpoint
 
-from src.data_acquisition import getFormattedData
+from src.kraken_data_service import getFormattedData
 
 
 class Model:

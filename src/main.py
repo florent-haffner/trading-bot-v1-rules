@@ -2,21 +2,10 @@ from datetime import datetime
 
 import matplotlib.pyplot as plt
 
-from data_acquisition import getFormattedData
+from kraken_data_service import getFormattedData
+from email_sender_helper import  get_cowsay_asci
 from engine import trend_analysis
-from stocks_indicators import get_stocks_indicators
-
-
-def get_asci_greeting(text):
-    return """
-         _____________ 
-        < """ + text + """">
-        \   ^__^
-         \  (oo)\_______
-            (__)\       )\/
-                ||----w |
-                ||     ||
-    """
+from stocks_indicators_helper import get_stocks_indicators
 
 
 def get_measure_viz(df, measure):
@@ -42,7 +31,7 @@ def run_bot(asset, interval):
 
 
 if __name__ == "__main__":
-    print(get_asci_greeting("Hello you ! :D"))
+    print(get_cowsay_asci("Hello you ! :D"))
 
     # asset = 'GRTEUR'
     asset = 'ETHEUR'
