@@ -36,7 +36,8 @@ if __name__ == "__main__":
     missions = list(getAllMissions())
 
     # asset = 'GRT'
-    asset = missions[0]['context'][0]['asset']
+    mission = missions[0]
+    asset = mission['context']['assets'][0]['asset']
     currency = 'EUR'
-    interval = '60'
+    interval = mission['context']['interval']
     run_bot(asset, currency, interval)

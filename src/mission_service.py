@@ -22,22 +22,40 @@ def getAllMissions():
 def updateMission(id, updatedMission):
     print('[UPDATE MISSION] ->', updatedMission)
     query = dict(_id=id)
-    values = {"$set": dict(context=updatedMission)}
+    values = {"$set": {"context.assets": updatedMission}}
 
     collection.update_one(query, values)
     print('Updated', updatedMission)
 
 
+def cleanMission():
+    print('[REMOVING ALL MISSIONS]')
+    collection.delete_many({})
+    print('Done. Current list of missions:', list(collection.find({})))
+
+
 if __name__ == '__main__':
-    missionData = {"context": [{"asset": "GRT"}]}
+    missionData = {"context": {
+        "interval": 60,
+        "assets": [
+            {"asset": "GRT"}
+        ]
+    }}
     createMission(missionData)
 
     missions = list(getAllMissions())
     print(missions)
 
     missionId = missions[0]['_id']
-    missionData = [{"asset": "GRT"}, {"asset": "LINK"}, {"asset": "ALGO"}]
+    missionData = {"context": {
+        "interval": 60,
+        "assets": [
+            {"asset": "GRT"},
+            {"asset": "LINK"},
+            {"asset": "ALGO"}
+        ]
+    }}
     updateMission(missionId, missionData)
 
-    missions = list(getAllMissions())
-    print(missions)
+    print(list(getAllMissions()))
+    cleanMission()
