@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 from kraken_data_service import getFormattedData
 from email_sender_helper import get_cowsay_asci
+from mission_service import getAllMissions
 from engine import trend_analysis
 from stocks_indicators_helper import get_stocks_indicators
 
@@ -31,10 +32,11 @@ def run_bot(asset, currency, interval):
 
 
 if __name__ == "__main__":
-    print(get_cowsay_asci("Hello you ! :D"))
-    # while True:
+    print(get_cowsay_asci("Hello money ! :D"))
+    missions = list(getAllMissions())
 
-    asset = 'GRT'
+    # asset = 'GRT'
+    asset = missions[0]['context'][0]['asset']
     currency = 'EUR'
     interval = '60'
     run_bot(asset, currency, interval)

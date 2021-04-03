@@ -1,20 +1,6 @@
 from pymongo import MongoClient
-from CONSTANT import __MONGO_HOST, __MONGO_PORT, __MONGO_USER, __MONGO_PASSWORD
 
-# __MONGO_URI = 'mongodb://' + \
-#     __MONGO_USER + ":" + \
-#     "\"" +__MONGO_PASSWORD + "\"@" + \
-#     __MONGO_HOST + ':' + \
-#     str(__MONGO_PORT)
-# print(__MONGO_URI)
-
-# __MONGO_CLIENT = MongoClient(__MONGO_URI)
-
-# __MONGO_CLIENT = MongoClient(__MONGO_HOST,
-#                              username=__MONGO_USER,
-#                              password=__MONGO_PASSWORD,
-#                              authSource="the_database",
-#                              authMecanism="SCRAM-SHA-1")
+from CONSTANT import __MONGO_HOST, __MONGO_USER, __MONGO_PASSWORD
 
 __MONGO_CLIENT = MongoClient(__MONGO_HOST,
                              username=__MONGO_USER,
@@ -43,7 +29,6 @@ def updateMission(id, updatedMission):
 
 
 if __name__ == '__main__':
-
     missionData = {"context": [{"asset": "GRT"}]}
     createMission(missionData)
 
