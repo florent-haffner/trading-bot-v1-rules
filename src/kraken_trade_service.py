@@ -41,10 +41,21 @@ def createNewOrder(asset, type, quantity):
 
 
 if __name__ == "__main__":
-    balance = getCurrentBalance('ETH')
+    asset = 'GRT'
+    curreny = 'EUR'
+    volumeToBuy = 20
+
+    balance = getCurrentBalance(asset)
     print(balance)
 
-    orderBuy = createNewOrder('ETHEUR', 'buy', 0.01)
+    orderBuy = createNewOrder(asset + curreny, 'buy', volumeToBuy)
     print(orderBuy)
-    orderSell = createNewOrder('ETHEUR', 'sell', 0.01)
+
+    balance = getCurrentBalance(asset)
+    print(balance)
+
+    orderSell = createNewOrder(asset + curreny, 'sell', volumeToBuy)
     print(orderSell)
+
+    balance = getCurrentBalance(asset)
+    print(balance)
