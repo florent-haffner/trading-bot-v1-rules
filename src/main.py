@@ -22,12 +22,12 @@ def get_last_n_percentage(df, nbr_percentage):
     return tmp_df
 
 
-def run_bot(asset, interval):
-    df = getFormattedData(asset, interval)
+def run_bot(asset, currency, interval):
+    df = getFormattedData(asset + currency, interval)
     df_with_indicators = get_stocks_indicators(df)
 
     three_day_DF = get_last_n_percentage(df_with_indicators, 35)
-    trend_analysis(df_with_indicators, three_day_DF)
+    trend_analysis(df_with_indicators, three_day_DF, asset, currency)
 
 
 if __name__ == "__main__":
@@ -35,6 +35,6 @@ if __name__ == "__main__":
     # while True:
 
     asset = 'GRT'
-    curreny = 'EUR'
+    currency = 'EUR'
     interval = '60'
-    run_bot(asset + curreny, interval)
+    run_bot(asset, currency, interval)

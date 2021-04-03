@@ -1,17 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from peakdetect import peakdetect
+from kraken_trade_service import getCurrentBalance
 
 
-def trend_analysis(df, short_df):
+def trend_analysis(df, short_df, asset, currency):
     print('\n[TREND ANALYSIS]')
 
     macd_high, macd_low = find_multiple_curve_min_max(short_df, 'macds')
     close_high, close_low = find_multiple_curve_min_max(short_df, 'close_12_ema')
-    # plot_close_ema(df)
 
     index_size = len(short_df)
-
     last_macd_high, last_macd_low = get_last_index(macd_high, macd_low)
     last_close_high, last_close_low = get_last_index(close_high, close_low)
 
@@ -20,11 +19,22 @@ def trend_analysis(df, short_df):
     print('macd last index', last_macd_high, last_macd_low)
     print('close last index', last_close_high, last_close_low)
 
-    print('\n[DECISION]')
+    print('\n[DECISION MAKING]')
+    volume_to_buy = None
     if last_close_low <= index_size - 5 or last_macd_low <= index_size - 5:
         print('BUY')
+        volume_to_buy = define_quantity_volume(short_df, asset, currency)
     elif last_close_high <= index_size - 5 or last_macd_high <= index_size - 5:
         print('SELL')
+        volume_to_buy = define_quantity_volume(short_df, asset, currency)
+
+    print('volume to buy', volume_to_buy)
+
+
+def define_quantity_volume(df, asset, currency):
+    # TODO -> check on InfluxDB if already possess currency
+    balance = getCurrentBalance(asset)
+    print(balance)
 
 
 def plot_peaks_close_ema(df, key, higher_peaks, lower_peaks):
