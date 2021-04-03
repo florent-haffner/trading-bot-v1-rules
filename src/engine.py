@@ -10,21 +10,21 @@ def trend_analysis(df, short_df):
     close_high, close_low = find_multiple_curve_min_max(short_df, 'close_12_ema')
     # plot_close_ema(df)
 
-    size_data = len(short_df)
+    index_size = len(short_df)
 
     last_macd_high, last_macd_low = get_last_index(macd_high, macd_low)
     last_close_high, last_close_low = get_last_index(close_high, close_low)
 
-    print('\n[DETECTED LAST INDEX]', size_data)
+    print('\n[DETECTED LAST INDEX]', index_size)
 
     print('macd last index', last_macd_high, last_macd_low)
     print('close last index', last_close_high, last_close_low)
 
     print('\n[DECISION]')
-    if last_macd_high <= size_data <= last_macd_high or last_close_high <= size_data:
-        print('SELL')
-    elif last_macd_low <= size_data or last_close_low <= size_data:
+    if last_close_low <= index_size - 5 or last_macd_low <= index_size - 5:
         print('BUY')
+    elif last_close_high <= index_size - 5 or last_macd_high <= index_size - 5:
+        print('SELL')
 
 
 def plot_peaks_close_ema(df, key, higher_peaks, lower_peaks):
