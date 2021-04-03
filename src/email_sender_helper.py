@@ -1,11 +1,6 @@
 import os
 import smtplib
-from dotenv import load_dotenv
-
-load_dotenv()
-
-__EMAIL_USER = os.getenv('email_sender')
-__EMAIL_PASSWORD = os.getenv('email_password')
+from CONSTANT import __EMAIL_USER, __EMAIL_PASSWORD
 
 
 def get_cowsay_asci(text):
