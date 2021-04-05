@@ -3,7 +3,6 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 
 from kraken_data_service import getFormattedData
-from email_sender_helper import get_cowsay_asci
 from mission_service import getAllMissions
 from engine import trend_analysis
 from stocks_indicators_helper import get_stocks_indicators
@@ -32,7 +31,7 @@ def run_bot(asset, currency, interval):
 
 
 if __name__ == "__main__":
-    print(get_cowsay_asci("Hello money ! :D"))
+    print("[Hello money]\n")
     missions = list(getAllMissions())
 
     for mission in missions:

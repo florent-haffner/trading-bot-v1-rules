@@ -1,6 +1,6 @@
 
-__EMAIL_USER = "florent.haffner@gmail.com"
-__EMAIL_PASSWORD = "tZSSCpNrzB7xq6ViDwcT3KFU2H4Y"
+__EMAIL_USER = "moneymakr.bot@gmail.com"
+__EMAIL_PASSWORD = "z5bDm#!gs^8$2Z"
 
 __MONGO_HOST = "192.168.1.58"
 __MONGO_PORT = 27017

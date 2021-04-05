@@ -28,9 +28,11 @@ def trend_analysis(df, short_df, asset, currency):
 
     DTO = {}
     # build_DTO(short_df, ['close'], index_size-1)
-    send_email('Hello world!', 'Incoming news :D')
-    print(pathFigMACD)
-    print(pathFigCLOSE)
+
+    attachments = [pathFigCLOSE, pathFigMACD]
+    send_email('[BOT-ANALYSIS]', 'Incoming analysis :D', attachments)
+    for file in attachments:
+        removeTmpPics(file)
 
     measure_to_store = ['close']
     # print(short_df.loc(last_close_high))
@@ -76,7 +78,6 @@ def plot_close_ema(df):
 
 def find_multiple_curve_min_max(df, key):
     print('CURVE - ', key, '- Detecting peaks min/max')
-
     length_df = len(df)
     if df[key][length_df - 1] > 0:
         print('POSITIVE')
@@ -97,6 +98,10 @@ def build_DTO(df, measures, index):
         lol = df[measure][index]
         print(lol)
     return DTO
+
+def removeTmpPics(path):
+    os.remove(path)
+    print('Removed tmp plot figure from', path)
 
 
 def get_last_index(peaks_high, peaks_low):
