@@ -1,15 +1,18 @@
+import os
+from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 from peakdetect import peakdetect
 
 from kraken_trade_service import getCurrentBalance
+from src.email_sender_helper import send_email
 
 
 def trend_analysis(df, short_df, asset, currency):
     print('\n[TREND ANALYSIS]')
 
-    macd_high, macd_low = find_multiple_curve_min_max(short_df, 'macds')
-    close_high, close_low = find_multiple_curve_min_max(short_df, 'close_12_ema')
+    macd_high, macd_low, pathFigMACD = find_multiple_curve_min_max(short_df, 'macds')
+    close_high, close_low, pathFigCLOSE = find_multiple_curve_min_max(short_df, 'close_12_ema')
 
     index_size = len(short_df)
     last_macd_high, last_macd_low = get_last_index(macd_high, macd_low)
@@ -23,9 +26,11 @@ def trend_analysis(df, short_df, asset, currency):
     print('\n[DECISION MAKING]')
     volume_to_buy = None
 
-    print('\nlast index object')
-    print(short_df.info())
-    print(short_df.describe())
+    DTO = {}
+    # build_DTO(short_df, ['close'], index_size-1)
+    send_email('Hello world!', 'Incoming news :D')
+    print(pathFigMACD)
+    print(pathFigCLOSE)
 
     measure_to_store = ['close']
     # print(short_df.loc(last_close_high))
@@ -52,9 +57,14 @@ def define_quantity_volume(df, asset, currency):
 def plot_peaks_close_ema(df, key, higher_peaks, lower_peaks):
     plt.title(key)
     plt.plot(df[key])
+    plt.plot(df['close'])
     plt.plot(higher_peaks[:, 0], higher_peaks[:, 1], 'ro')
     plt.plot(lower_peaks[:, 0], lower_peaks[:, 1], 'go')
+    pathToSaveFigure = '/tmp/' + str(datetime.now()) + '-' + key + '.png'
+    # print(pathToSave)
+    plt.savefig(pathToSaveFigure)
     plt.show()
+    return pathToSaveFigure
 
 
 def plot_close_ema(df):
@@ -77,14 +87,14 @@ def find_multiple_curve_min_max(df, key):
     higher_peaks = np.array(peaks[0])
     lower_peaks = np.array(peaks[1])
 
-    plot_peaks_close_ema(df, key, higher_peaks, lower_peaks)
-    return higher_peaks, lower_peaks
+    pathFig = plot_peaks_close_ema(df, key, higher_peaks, lower_peaks)
+    return higher_peaks, lower_peaks, pathFig
 
 
-def build_DTO(df, measures):
+def build_DTO(df, measures, index):
     DTO = {}
     for measure in measures:
-        lol = df[measure]
+        lol = df[measure][index]
         print(lol)
     return DTO
 
