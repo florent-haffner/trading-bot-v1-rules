@@ -9,10 +9,10 @@ __INFLUX_CLIENT = InfluxDBClient(
 )
 
 
-def insertStockAction(event):
+def addStockActions(event):
+    print('saving', event)
     __INFLUX_CLIENT.switch_database(__INFLUX_DB_ACTIONS)
-    print(event)
-    __INFLUX_CLIENT.write_points(JSON)
+    __INFLUX_CLIENT.write_points(event)
 
 
 def getAllStockActions():

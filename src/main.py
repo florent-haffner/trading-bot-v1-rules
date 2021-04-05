@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     for mission in missions:
         assets = mission['context']['assets']
-        print(assets)
+        print('[ASSETS TO QUERY] :', assets)
         for asset in assets:
             currency = 'EUR'
             interval = mission['context']['interval']

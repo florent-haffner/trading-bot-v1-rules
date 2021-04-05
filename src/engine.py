@@ -1,8 +1,11 @@
 import numpy as np
+from datetime import datetime
 from peakdetect import peakdetect
 
-from src.enginer_helper import plot_peaks_close_ema, define_quantity_volume, remove_tmp_pics, get_last_index, \
+from src.enginer_helper import plot_peaks_close_ema, define_quantity_volume,\
+    remove_tmp_pics, get_last_index, \
     NothingToTrade
+from src.timeseries_repository import addStockActions
 
 
 class TrendAnalyzer:
@@ -11,6 +14,7 @@ class TrendAnalyzer:
         self.asset = asset
         self.currency = currency
         self.length_assets = length_assets
+        self.__SERVER_HOST = '192.168.1.58'
 
         self.analyse_trends()
         self.make_decision()
@@ -42,29 +46,44 @@ class TrendAnalyzer:
         for file in attachments:
             remove_tmp_pics(file)
 
-        measure_to_store = ['close']
-        stockAnalysis = {
-            'close': self.df['close'][self.index_size - 1],
-            'quantity': 1.
-        }
-        print(stockAnalysis)
-        # stockAnalysis = build_DTO(short_df, measure_to_store, index_size-1)
-
         try:
             if self.last_close_low <= self.index_size - 5 or self.last_macd_low <= self.index_size - 5:
                 typeOfTrade = 'BUY'
                 volume_to_buy = define_quantity_volume(self.df, typeOfTrade,
                                                        self.asset, self.currency,
                                                        self.length_assets, self.index_size - 1)
+                if volume_to_buy:
+                    DTO = generateDTO(self.__SERVER_HOST, typeOfTrade, volume_to_buy,
+                                      self.df, self.index_size - 1)
+                    addStockActions([DTO])
+                    print('BUY this', volume_to_buy)
+
             elif self.last_close_high <= self.index_size - 5 or self.last_macd_high <= self.index_size - 5:
                 typeOfTrade = 'SELL'
                 volume_to_buy = define_quantity_volume(self.df, typeOfTrade,
                                                        self.asset, self.currency,
                                                        self.length_assets, self.index_size - 1)
+                print('TODO')  # TODO
         except NothingToTrade:
             print('There is nothing to trade')
 
         print('volume to buy', volume_to_buy)
+
+
+def generateDTO(host, type_of_trade, volume_to_buy, df, maximum_index):
+    return {
+        'measurement': 'tradeEvent',
+        'time': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        'tags': {
+            # 'host': host
+        },
+        'fields': {
+            'typeOfTrade': type_of_trade,
+            'quantity': volume_to_buy,
+            'price': df['close'][maximum_index],
+            'acknowledge': False
+        }
+    }
 
 
 def find_multiple_curve_min_max(df, key):

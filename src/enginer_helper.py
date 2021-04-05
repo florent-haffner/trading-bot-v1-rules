@@ -3,6 +3,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 
 from src.kraken_trade_service import getAccountBalance, getTradeBalance
+from src.timeseries_repository import addStockActions
 
 
 class NothingToTrade(Exception): pass
@@ -22,21 +23,11 @@ def define_quantity_volume(df, type_of_trade, asset, currency, nbr_asset_on_trad
             maximumPercentage = .9
             volume_to_buy = (balanceEuro / float(nbr_asset_on_trade)) * maximumPercentage
 
-            tradeEvent = {
-                'typeOfTrade': type_of_trade,
-                'qantity': volume_to_buy,
-                'price': df['close'][index_max]
-            }
-            print(tradeEvent)
-
         else:
             raise NothingToTrade('Something is already being trade')
     except Exception as err:
         raise err
 
-
-
-    print('volume to buy', volume_to_buy)
     return volume_to_buy
 
 
