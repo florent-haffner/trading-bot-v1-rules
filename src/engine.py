@@ -1,56 +1,68 @@
 import os
 from datetime import datetime
-import numpy as np
+
 import matplotlib.pyplot as plt
+import numpy as np
 from peakdetect import peakdetect
 
 from kraken_trade_service import getCurrentBalance
-from src.email_sender_helper import send_email
 
 
-def trend_analysis(df, short_df, asset, currency):
-    print('\n[TREND ANALYSIS]')
+class TrendAnalyzer:
+    def __init__(self, df, asset, currency):
+        self.df = df
+        self.asset = asset
+        self.currency = currency
+        self.analyse_trends()
+        self.make_decision()
 
-    macd_high, macd_low, pathFigMACD = find_multiple_curve_min_max(short_df, 'macds')
-    close_high, close_low, pathFigCLOSE = find_multiple_curve_min_max(short_df, 'close_12_ema')
+    def analyse_trends(self):
+        print('\n[TREND ANALYSIS]')
 
-    index_size = len(short_df)
-    last_macd_high, last_macd_low = get_last_index(macd_high, macd_low)
-    last_close_high, last_close_low = get_last_index(close_high, close_low)
+        macd_high, macd_low, self.pathFigMACD = find_multiple_curve_min_max(self.df, 'macds')
+        close_high, close_low, self.pathFigCLOSE = find_multiple_curve_min_max(self.df, 'close_12_ema')
 
-    print('\n[DETECTED LAST INDEX]', index_size)
+        self.index_size = len(self.df)
+        self.last_macd_high, self.last_macd_low = get_last_index(macd_high, macd_low)
+        self.last_close_high, self.last_close_low = get_last_index(close_high, close_low)
 
-    print('macd last index', last_macd_high, last_macd_low)
-    print('close last index', last_close_high, last_close_low)
+        print('\n[DETECTED LAST INDEX]', self.index_size)
 
-    print('\n[DECISION MAKING]')
-    volume_to_buy = None
+        print('macd last index', self.last_macd_high, self.last_macd_low)
+        print('close last index', self.last_close_high, self.last_close_low)
 
-    DTO = {}
-    # build_DTO(short_df, ['close'], index_size-1)
+    def make_decision(self):
+        print('\n[DECISION MAKING]')
+        volume_to_buy = None
 
-    attachments = [pathFigCLOSE, pathFigMACD]
-    send_email('[BOT-ANALYSIS]', 'Incoming analysis :D', attachments)
-    for file in attachments:
-        removeTmpPics(file)
+        DTO = {}
+        # build_DTO(short_df, ['close'], index_size-1)
 
-    measure_to_store = ['close']
-    # print(short_df.loc(last_close_high))
-    # print(short_df.loc(last_close_low))
-    # print(short_df.loc(last_macd_high))
-    # print(short_df.loc(last_macd_low))
+        attachments = [self.pathFigCLOSE, self.pathFigMACD]
+        # send_email('[BOT-ANALYSIS]', 'Incoming analysis :D', attachments) # TODO - send emails
+        for file in attachments:
+            removeTmpPics(file)
 
-    if last_close_low <= index_size - 5 or last_macd_low <= index_size - 5:
-        print('BUY')
-        volume_to_buy = define_quantity_volume(short_df, asset, currency)
-    elif last_close_high <= index_size - 5 or last_macd_high <= index_size - 5:
-        print('SELL')
-        volume_to_buy = define_quantity_volume(short_df, asset, currency)
+        measure_to_store = ['close']
+        stockAnalysis = {
+            'close': self.df['close'][self.index_size - 1],
+            'quantity': 1.
+        }
+        print(stockAnalysis)
+        # stockAnalysis = build_DTO(short_df, measure_to_store, index_size-1)
 
-    print('volume to buy', volume_to_buy)
+        if self.last_close_low <= self.index_size - 5 or self.last_macd_low <= self.index_size - 5:
+            print('BUY')
+            volume_to_buy = define_quantity_volume(self.df, self.asset, self.currency)
+        elif self.last_close_high <= self.index_size - 5 or self.last_macd_high <= self.index_size - 5:
+            print('SELL')
+            volume_to_buy = define_quantity_volume(self.df, self.asset, self.currency)
+
+        print('volume to buy', volume_to_buy)
 
 
 def define_quantity_volume(df, asset, currency):
+    print('[VOLUME TRADING QUANTITY]')
     # TODO -> check on InfluxDB if already possess currency
     balance = getCurrentBalance(asset)
     print(balance)
@@ -95,9 +107,9 @@ def find_multiple_curve_min_max(df, key):
 def build_DTO(df, measures, index):
     DTO = {}
     for measure in measures:
-        lol = df[measure][index]
-        print(lol)
+        DTO[measure] = df[measure][index]
     return DTO
+
 
 def removeTmpPics(path):
     os.remove(path)

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 from kraken_data_service import getFormattedData
 from mission_service import getAllMissions
-from engine import trend_analysis
+from engine import TrendAnalyzer
 from stocks_indicators_helper import get_stocks_indicators
 
 
@@ -27,7 +27,7 @@ def run_bot(asset, currency, interval):
     df_with_indicators = get_stocks_indicators(df)
 
     three_day_DF = get_last_n_percentage(df_with_indicators, 35)
-    trend_analysis(df_with_indicators, three_day_DF, asset, currency)
+    TrendAnalyzer(three_day_DF, asset, currency)
 
 
 if __name__ == "__main__":
