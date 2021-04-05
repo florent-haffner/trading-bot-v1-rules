@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from peakdetect import peakdetect
+
 from kraken_trade_service import getCurrentBalance
 
 
@@ -21,6 +22,17 @@ def trend_analysis(df, short_df, asset, currency):
 
     print('\n[DECISION MAKING]')
     volume_to_buy = None
+
+    print('\nlast index object')
+    print(short_df.info())
+    print(short_df.describe())
+
+    measure_to_store = ['close']
+    # print(short_df.loc(last_close_high))
+    # print(short_df.loc(last_close_low))
+    # print(short_df.loc(last_macd_high))
+    # print(short_df.loc(last_macd_low))
+
     if last_close_low <= index_size - 5 or last_macd_low <= index_size - 5:
         print('BUY')
         volume_to_buy = define_quantity_volume(short_df, asset, currency)
@@ -41,7 +53,7 @@ def plot_peaks_close_ema(df, key, higher_peaks, lower_peaks):
     plt.title(key)
     plt.plot(df[key])
     plt.plot(higher_peaks[:, 0], higher_peaks[:, 1], 'ro')
-    plt.plot(lower_peaks[:, 0], lower_peaks[:, 1], 'ko')
+    plt.plot(lower_peaks[:, 0], lower_peaks[:, 1], 'go')
     plt.show()
 
 
@@ -67,6 +79,14 @@ def find_multiple_curve_min_max(df, key):
 
     plot_peaks_close_ema(df, key, higher_peaks, lower_peaks)
     return higher_peaks, lower_peaks
+
+
+def build_DTO(df, measures):
+    DTO = {}
+    for measure in measures:
+        lol = df[measure]
+        print(lol)
+    return DTO
 
 
 def get_last_index(peaks_high, peaks_low):

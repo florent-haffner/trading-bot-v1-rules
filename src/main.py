@@ -24,7 +24,7 @@ def get_last_n_percentage(df, nbr_percentage):
 
 
 def run_bot(asset, currency, interval):
-    df = getFormattedData(asset + currency, interval)
+    df = getFormattedData(asset + currency, str(interval))
     df_with_indicators = get_stocks_indicators(df)
 
     three_day_DF = get_last_n_percentage(df_with_indicators, 35)
@@ -35,9 +35,9 @@ if __name__ == "__main__":
     print(get_cowsay_asci("Hello money ! :D"))
     missions = list(getAllMissions())
 
-    # asset = 'GRT'
-    mission = missions[0]
-    asset = mission['context']['assets'][0]['asset']
-    currency = 'EUR'
-    interval = mission['context']['interval']
-    run_bot(asset, currency, interval)
+    for mission in missions:
+        asset = mission['context']['assets'][0]['asset']  # Check multiple assets
+        currency = 'EUR'
+        interval = mission['context']['interval']
+        run_bot(asset, currency, interval)
+        # TODO - wait 15s

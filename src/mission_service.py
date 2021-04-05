@@ -6,7 +6,7 @@ __MONGO_CLIENT = MongoClient(__MONGO_HOST,
                              username=__MONGO_USER,
                              password=__MONGO_PASSWORD)
 
-db = __MONGO_CLIENT.test_database
+db = __MONGO_CLIENT.tradingBot
 collection = db.mission
 
 
@@ -22,7 +22,7 @@ def getAllMissions():
 def updateMission(id, updatedMission):
     print('[UPDATE MISSION] ->', updatedMission)
     query = dict(_id=id)
-    values = {"$set": {"context.assets": updatedMission}}
+    values = {"$set": {"context": updatedMission}}
 
     collection.update_one(query, values)
     print('Updated', updatedMission)
@@ -47,14 +47,14 @@ if __name__ == '__main__':
     print(missions)
 
     missionId = missions[0]['_id']
-    missionData = {"context": {
+    missionData = {
         "interval": 60,
         "assets": [
             {"asset": "GRT"},
             {"asset": "LINK"},
             {"asset": "ALGO"}
         ]
-    }}
+    }
     updateMission(missionId, missionData)
 
     print(list(getAllMissions()))
