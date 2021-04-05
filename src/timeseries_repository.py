@@ -15,6 +15,12 @@ def addStockActions(event):
     __INFLUX_CLIENT.write_points(event)
 
 
+def getLastTradeEventByType(typeOfTrade):
+    query = 'SELECT "quantity, price" FROM ' + __INFLUX_DB_ACTIONS + '."autogen"."tradeEvent" WHERE time > now() - 3d GROUP BY "typeOfTrade"'
+    res = __INFLUX_CLIENT.query(query)
+    print(res)
+
+
 def getAllStockActions():
     query = 'SELECT "volume" FROM ' + __INFLUX_DB_ACTIONS + '."autogen"."brushEvents" WHERE time > now() - 5d GROUP BY "user"'
     res = __INFLUX_CLIENT.query(query)
@@ -72,9 +78,17 @@ def tmp_last_points_query(tmp_DB):
     print(res)
 
 
+
+def resetDatabase(databaseToReset):
+    __INFLUX_CLIENT.drop_database(databaseToReset)
+    __INFLUX_CLIENT.create_database(databaseToReset)
+
+
 if __name__ == "__main__":
     initial_config()
 
     tmp_DB = 'timeseries'
     __INFLUX_CLIENT.switch_database(tmp_DB)
     tmp_last_points_query(tmp_DB)
+
+    resetDatabase(__INFLUX_DB_ACTIONS)

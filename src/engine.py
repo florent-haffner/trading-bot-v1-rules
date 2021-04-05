@@ -66,8 +66,10 @@ class TrendAnalyzer:
                 print('TODO')  # TODO
         except NothingToTrade:
             print('There is nothing to trade')
+            pass
 
-        print('volume to buy', volume_to_buy)
+        print('[END OF ANALYSIS] ->', self.asset)
+        print('\nResume to next asset')
 
 
 def generateDTO(host, type_of_trade, volume_to_buy, df, maximum_index):
@@ -75,10 +77,9 @@ def generateDTO(host, type_of_trade, volume_to_buy, df, maximum_index):
         'measurement': 'tradeEvent',
         'time': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
         'tags': {
-            # 'host': host
+            'typeOfTrade': type_of_trade,
         },
         'fields': {
-            'typeOfTrade': type_of_trade,
             'quantity': volume_to_buy,
             'price': df['close'][maximum_index],
             'acknowledge': False

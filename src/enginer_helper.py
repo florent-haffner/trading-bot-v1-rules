@@ -3,7 +3,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 
 from src.kraken_trade_service import getAccountBalance, getTradeBalance
-from src.timeseries_repository import addStockActions
+from src.timeseries_repository import addStockActions, getLastTradeEventByType
 
 
 class NothingToTrade(Exception): pass
@@ -14,7 +14,8 @@ def define_quantity_volume(df, type_of_trade, asset, currency, nbr_asset_on_trad
     print('Type of trade:', type_of_trade)
 
     # TODO -> check on InfluxDB if already possess currency
-    previous_currency_trade = None
+    previous_currency_trade = getLastTradeEventByType(type_of_trade)
+    print(previous_currency_trade)
     volume_to_buy = None
 
     try:
