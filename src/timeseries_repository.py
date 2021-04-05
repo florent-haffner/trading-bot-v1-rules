@@ -9,8 +9,16 @@ __INFLUX_CLIENT = InfluxDBClient(
 )
 
 
+def insertStockAction(event):
+    __INFLUX_CLIENT.switch_database(__INFLUX_DB_ACTIONS)
+    print(event)
+    __INFLUX_CLIENT.write_points(JSON)
+
+
 def getAllStockActions():
-    print('none')
+    query = 'SELECT "volume" FROM ' + __INFLUX_DB_ACTIONS + '."autogen"."brushEvents" WHERE time > now() - 5d GROUP BY "user"'
+    res = __INFLUX_CLIENT.query(query)
+    print(res)
 
 
 JSON = [

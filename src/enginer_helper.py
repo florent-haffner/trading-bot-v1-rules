@@ -2,14 +2,42 @@ import os
 from datetime import datetime
 import matplotlib.pyplot as plt
 
-from src.kraken_trade_service import getCurrentBalance
+from src.kraken_trade_service import getAccountBalance, getTradeBalance
 
 
-def define_quantity_volume(df, asset, currency):
+class NothingToTrade(Exception): pass
+
+
+def define_quantity_volume(df, type_of_trade, asset, currency, nbr_asset_on_trade, index_max):
     print('[VOLUME TRADING QUANTITY]')
+    print('Type of trade:', type_of_trade)
+
     # TODO -> check on InfluxDB if already possess currency
-    balance = getCurrentBalance(asset)
-    print(balance)
+    previous_currency_trade = None
+    volume_to_buy = None
+
+    try:
+        if not previous_currency_trade:
+            balanceEuro = float(getAccountBalance()['result']['ZEUR'])
+            maximumPercentage = .9
+            volume_to_buy = (balanceEuro / float(nbr_asset_on_trade)) * maximumPercentage
+
+            tradeEvent = {
+                'typeOfTrade': type_of_trade,
+                'qantity': volume_to_buy,
+                'price': df['close'][index_max]
+            }
+            print(tradeEvent)
+
+        else:
+            raise NothingToTrade('Something is already being trade')
+    except Exception as err:
+        raise err
+
+
+
+    print('volume to buy', volume_to_buy)
+    return volume_to_buy
 
 
 def plot_peaks_close_ema(df, key, higher_peaks, lower_peaks):
@@ -18,10 +46,9 @@ def plot_peaks_close_ema(df, key, higher_peaks, lower_peaks):
     plt.plot(df['close'])
     plt.plot(higher_peaks[:, 0], higher_peaks[:, 1], 'ro')
     plt.plot(lower_peaks[:, 0], lower_peaks[:, 1], 'go')
+
     pathToSaveFigure = '/tmp/' + str(datetime.now()) + '-' + key + '.png'
-    # print(pathToSave)
     plt.savefig(pathToSaveFigure)
-    plt.show()
     return pathToSaveFigure
 
 
@@ -39,9 +66,11 @@ def build_DTO(df, measures, index):
     return DTO
 
 
-def removeTmpPics(path):
-    os.remove(path)
-    print('Removed tmp plot figure from', path)
+def remove_tmp_pics(path):
+    try:
+        os.remove(path)
+        print('Removed tmp plot figure from', path)
+    except Exception: pass
 
 
 def get_last_index(peaks_high, peaks_low):

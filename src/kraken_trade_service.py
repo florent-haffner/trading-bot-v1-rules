@@ -11,11 +11,19 @@ API.load_key('../kraken.key')
 """
 :param asset -> the currency, ex : BTC, ETH, GRT
 """
-
-
-def getCurrentBalance(asset):
+def getTradeBalance(asset):
     try:
         return API.query_private('TradeBalance', {'asset': asset})
+    except Exception as err:
+        raise err
+
+"""
+:param asset -> the currency, ex : BTC, ETH, GRT
+"""
+
+def getAccountBalance():
+    try:
+        return API.query_private('Balance')
     except Exception as err:
         raise err
 
@@ -23,8 +31,6 @@ def getCurrentBalance(asset):
 """
 :param asset -> the currency, ex : BTC, ETH, GRT
 """
-
-
 def createNewOrder(asset, type, quantity):
     try:
         return API.query_private(
@@ -41,21 +47,24 @@ def createNewOrder(asset, type, quantity):
 
 
 if __name__ == "__main__":
-    asset = 'GRT'
-    curreny = 'EUR'
-    volumeToBuy = 20
+    # asset = 'GRT'
+    # curreny = 'EUR'
+    # volumeToBuy = 20
+    #
+    # tradeBalance = getTradeBalance(asset)
+    # print(tradeBalance)
+    #
+    # orderBuy = createNewOrder(asset + curreny, 'buy', volumeToBuy)
+    # print(orderBuy)
+    #
+    # tradeBalance = getTradeBalance(asset)
+    # print(tradeBalance)
+    #
+    # orderSell = createNewOrder(asset + curreny, 'sell', volumeToBuy)
+    # print(orderSell)
+    #
+    # tradeBalance = getTradeBalance(asset)
+    # print(tradeBalance)
 
-    balance = getCurrentBalance(asset)
-    print(balance)
-
-    orderBuy = createNewOrder(asset + curreny, 'buy', volumeToBuy)
-    print(orderBuy)
-
-    balance = getCurrentBalance(asset)
-    print(balance)
-
-    orderSell = createNewOrder(asset + curreny, 'sell', volumeToBuy)
-    print(orderSell)
-
-    balance = getCurrentBalance(asset)
-    print(balance)
+    accountBalance = getAccountBalance()
+    print(accountBalance)

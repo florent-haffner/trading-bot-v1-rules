@@ -22,21 +22,23 @@ def get_last_n_percentage(df, nbr_percentage):
     return tmp_df
 
 
-def run_bot(asset, currency, interval):
+def run_bot(asset, currency, interval, length_assets):
     df = getFormattedData(asset + currency, str(interval))
     df_with_indicators = get_stocks_indicators(df)
 
     three_day_DF = get_last_n_percentage(df_with_indicators, 35)
-    TrendAnalyzer(three_day_DF, asset, currency)
+    TrendAnalyzer(three_day_DF, asset, currency, length_assets)
 
 
 if __name__ == "__main__":
-    print("[Hello money]\n")
+    print("[TRADING BOT]\n")
     missions = list(getAllMissions())
 
     for mission in missions:
-        asset = mission['context']['assets'][0]['asset']  # Check multiple assets
-        currency = 'EUR'
-        interval = mission['context']['interval']
-        run_bot(asset, currency, interval)
-        # TODO - wait 15s
+        assets = mission['context']['assets']
+        print(assets)
+        for asset in assets:
+            currency = 'EUR'
+            interval = mission['context']['interval']
+            run_bot(asset, currency, interval, len(assets))
+            # TODO - wait 15s

@@ -1,14 +1,17 @@
 import numpy as np
 from peakdetect import peakdetect
 
-from src.enginer_helper import plot_peaks_close_ema, define_quantity_volume, removeTmpPics, get_last_index
+from src.enginer_helper import plot_peaks_close_ema, define_quantity_volume, remove_tmp_pics, get_last_index, \
+    NothingToTrade
 
 
 class TrendAnalyzer:
-    def __init__(self, df, asset, currency):
+    def __init__(self, df, asset, currency, length_assets):
         self.df = df
         self.asset = asset
         self.currency = currency
+        self.length_assets = length_assets
+
         self.analyse_trends()
         self.make_decision()
 
@@ -37,7 +40,7 @@ class TrendAnalyzer:
         attachments = [self.pathFigCLOSE, self.pathFigMACD]
         # send_email('[BOT-ANALYSIS]', 'Incoming analysis :D', attachments) # TODO - send emails
         for file in attachments:
-            removeTmpPics(file)
+            remove_tmp_pics(file)
 
         measure_to_store = ['close']
         stockAnalysis = {
@@ -47,12 +50,19 @@ class TrendAnalyzer:
         print(stockAnalysis)
         # stockAnalysis = build_DTO(short_df, measure_to_store, index_size-1)
 
-        if self.last_close_low <= self.index_size - 5 or self.last_macd_low <= self.index_size - 5:
-            print('BUY')
-            volume_to_buy = define_quantity_volume(self.df, self.asset, self.currency)
-        elif self.last_close_high <= self.index_size - 5 or self.last_macd_high <= self.index_size - 5:
-            print('SELL')
-            volume_to_buy = define_quantity_volume(self.df, self.asset, self.currency)
+        try:
+            if self.last_close_low <= self.index_size - 5 or self.last_macd_low <= self.index_size - 5:
+                typeOfTrade = 'BUY'
+                volume_to_buy = define_quantity_volume(self.df, typeOfTrade,
+                                                       self.asset, self.currency,
+                                                       self.length_assets, self.index_size - 1)
+            elif self.last_close_high <= self.index_size - 5 or self.last_macd_high <= self.index_size - 5:
+                typeOfTrade = 'SELL'
+                volume_to_buy = define_quantity_volume(self.df, typeOfTrade,
+                                                       self.asset, self.currency,
+                                                       self.length_assets, self.index_size - 1)
+        except NothingToTrade:
+            print('There is nothing to trade')
 
         print('volume to buy', volume_to_buy)
 

@@ -38,7 +38,7 @@ if __name__ == '__main__':
     missionData = {"context": {
         "interval": 60,
         "assets": [
-            {"asset": "GRT"}
+            "GRT", "LINK", "ALGO"
         ]
     }}
     createMission(missionData)
@@ -50,12 +50,10 @@ if __name__ == '__main__':
     missionData = {
         "interval": 60,
         "assets": [
-            {"asset": "GRT"},
-            {"asset": "LINK"},
-            {"asset": "ALGO"}
+            "GRT"
         ]
     }
     updateMission(missionId, missionData)
 
-    print(list(getAllMissions()))
-    cleanMission()
+    print(listst(getAllMissions()))
+    # cleanMission()
