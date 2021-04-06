@@ -5,7 +5,7 @@ from peakdetect import peakdetect
 from src.enginer_helper import plot_peaks_close_ema, define_quantity_volume,\
     remove_tmp_pics, get_last_index, \
     NothingToTrade
-from src.timeseries_repository import getRecentEventByType, getLastTradeEventByType
+from src.timeseries_repository import getRecentEventByTypeAndAsset, getLastTradeEventByType
 
 
 class TrendAnalyzer:
@@ -55,7 +55,7 @@ class TrendAnalyzer:
                 if volume_to_buy:
                     DTO = generateDTO(self.__SERVER_HOST, typeOfTrade, volume_to_buy,
                                       self.df, self.index_size - 1)
-                    getRecentEventByType([DTO])
+                    getRecentEventByTypeAndAsset([DTO])
                     print('BUY this', volume_to_buy)
 
             elif self.last_close_high <= self.index_size - 5 or self.last_macd_high <= self.index_size - 5:

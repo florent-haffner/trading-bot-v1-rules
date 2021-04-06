@@ -11,9 +11,12 @@ __INFLUX_CLIENT = InfluxDBClient(
 )
 
 
-def getRecentEventByType():
+def getRecentEventByTypeAndAsset(asset):
     query = __INFLUX_CLIENT.query(
-        'SELECT * FROM ' + __INFLUX_DB_TRADE_EVENT + '"autogen"."tradeEvent" WHERE time > now() - 2d GROUP BY "typeOfTrade"')
+        'SELECT * FROM ' + __INFLUX_DB_TRADE_EVENT + '"autogen"."tradeEvent" '
+        'WHERE time > now() - 2d AND asset = ' + "'" + asset + "'" +
+        'GROUP BY "typeOfTrade"'
+    )
     print('[INFLUXDB], querying the last recent tradeEvents\n', query)
 
 
@@ -34,19 +37,22 @@ if __name__ == "__main__":
     print('Current DBs', __INFLUX_CLIENT.get_list_database(), '\n')
     __INFLUX_CLIENT.drop_database(__INFLUX_DB_TRADE_EVENT)
     __INFLUX_CLIENT.create_database(__INFLUX_DB_TRADE_EVENT)
-    DTO = [
+
+    point = [
         {
             'measurement': 'tradeEvent',
             'time': (datetime.now() + timedelta(hours=2)).strftime("%Y-%m-%dT%H:%M:%SZ"),
             'tags': {
-                'typeOfTrade': 'buy',
+                'typeOfTrade': 'buy'
             },
             'fields': {
+                'asset': 'GRT',
                 'quantity': 32.,
                 'price': 32.,
                 'acknowledge': False
             }
         }
     ]
-    addTradeEvent(DTO)
-    getRecentEventByType()
+
+    addTradeEvent(point)
+    getRecentEventByTypeAndAsset('GRT')
