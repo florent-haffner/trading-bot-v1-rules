@@ -12,4 +12,4 @@ __INFLUX_HOST = "192.168.1.58"
 __INFLUX_PORT = 8086
 __INFLUX_USER = "influxroot"
 __INFLUX_PASSWORD = "4s&6Q@6zxNE2Yn"
-__INFLUX_DB_ACTIONS = "ts_actions"
+__INFLUX_DB_TRADE_EVENT = "ts_trade_event"

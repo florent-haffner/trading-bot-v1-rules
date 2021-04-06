@@ -5,7 +5,7 @@ from peakdetect import peakdetect
 from src.enginer_helper import plot_peaks_close_ema, define_quantity_volume,\
     remove_tmp_pics, get_last_index, \
     NothingToTrade
-from src.timeseries_repository import addStockActions
+from src.timeseries_repository import addStockActions, getLastTradeEventByType
 
 
 class TrendAnalyzer:
@@ -38,9 +38,6 @@ class TrendAnalyzer:
         print('\n[DECISION MAKING]')
         volume_to_buy = None
 
-        DTO = {}
-        # build_DTO(short_df, ['close'], index_size-1)
-
         attachments = [self.pathFigCLOSE, self.pathFigMACD]
         # send_email('[BOT-ANALYSIS]', 'Incoming analysis :D', attachments) # TODO - send emails
         for file in attachments:
@@ -49,9 +46,12 @@ class TrendAnalyzer:
         try:
             if self.last_close_low <= self.index_size - 5 or self.last_macd_low <= self.index_size - 5:
                 typeOfTrade = 'BUY'
-                volume_to_buy = define_quantity_volume(self.df, typeOfTrade,
-                                                       self.asset, self.currency,
-                                                       self.length_assets, self.index_size - 1)
+                previous_currency_trade = getLastTradeEventByType(typeOfTrade)
+                print(previous_currency_trade)
+
+                # volume_to_buy = define_quantity_volume(self.df, typeOfTrade,
+                #                                        self.asset, self.currency,
+                #                                        self.length_assets, self.index_size - 1)
                 if volume_to_buy:
                     DTO = generateDTO(self.__SERVER_HOST, typeOfTrade, volume_to_buy,
                                       self.df, self.index_size - 1)
