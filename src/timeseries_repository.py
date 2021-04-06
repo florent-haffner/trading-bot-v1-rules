@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from CONSTANT import __INFLUX_HOST, __INFLUX_PORT, __INFLUX_USER, __INFLUX_PASSWORD, __INFLUX_DB_TRADE_EVENT
 from influxdb import InfluxDBClient
@@ -28,12 +28,13 @@ def getLastTradeEventByType(typeOfTrade):
 
 def test_trade_event_DB(database):
     print('Querying the real ts database')
+    __INFLUX_CLIENT.drop_database(database)
     __INFLUX_CLIENT.create_database(database)
 
     points = [
         {
             'measurement': 'tradeEvent',
-            'time': "2021-04-05T8:01:00Z",
+            'time': (datetime.now() + timedelta(hours=12)).strftime("%Y-%m-%dT%H:%M:%SZ"),
             'tags': {
                 'typeOfTrade': 'buy',
             },
@@ -45,7 +46,7 @@ def test_trade_event_DB(database):
         },
         {
             'measurement': 'tradeEvent',
-            'time': "2021-04-05T8:01:00Z",
+            'time': (datetime.now() + timedelta(hours=4)).strftime("%Y-%m-%dT%H:%M:%SZ"),
             'tags': {
                 'typeOfTrade': 'buy',
             },
@@ -56,21 +57,14 @@ def test_trade_event_DB(database):
             }
         }
     ]
-    # __INFLUX_CLIENT.switch_database(tmp_DB)
-    # __INFLUX_CLIENT.write_points(json_body)
-    #
-    # query = __INFLUX_CLIENT.query('SELECT "duration" '
-    #                               'FROM "timeseries"."autogen"."brushEvents" '
-    #                               'WHERE time > now() - 4d GROUP BY "user"')
-    # print('querying brushEvent ->', query)
 
     print('\nsaving real db events', points)
     __INFLUX_CLIENT.switch_database(__INFLUX_DB_TRADE_EVENT)
     __INFLUX_CLIENT.write_points(points)
 
-    query = __INFLUX_CLIENT.query('SELECT "quantity" '
-                                  'FROM "ts_trade_event"."autogen"."tradeEvent" '
-                                  'WHERE time > now() - 4d GROUP BY "typeOfTrade"')
+    query = __INFLUX_CLIENT.query('SELECT "quantity, price, acknowledge" '
+                                  'FROM "' + __INFLUX_DB_TRADE_EVENT + '"."autogen"."tradeEvent" '
+                                  'WHERE time > now() - 2d GROUP BY "typeOfTrade"')
     print('query real ts', query)
 
     # addStockActions(points)
