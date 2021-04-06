@@ -3,7 +3,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 
 from src.kraken_trade_service import getAccountBalance, getTradeBalance
-from src.timeseries_repository import addStockActions, getLastTradeEventByType
+from src.timeseries_repository import getRecentEventByType, getLastTradeEventByType
 
 
 class NothingToTrade(Exception): pass
