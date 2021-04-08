@@ -1,8 +1,6 @@
+import pandas as pd
 from requests import get
 
-import pandas as pd
-import matplotlib.pyplot as plt
-# from sklearn.preprocessing import MinMaxScaler
 from stockstats import StockDataFrame
 
 __KRAKEN_API = "https://api.kraken.com/0/public/OHLC"

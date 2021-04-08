@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from peakdetect import peakdetect
 
-from src.kraken_trade_service import getAccountBalance
-from src.timeseries_service import getLastEventByTypeAndAsset
+from kraken_trade_service import getAccountBalance
+from timeseries_service import getLastEventByTypeAndAsset
 
 
 class NothingToTrade(Exception): pass

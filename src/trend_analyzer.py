@@ -1,6 +1,6 @@
-from src.email_sender_helper import send_email
-from src.timeseries_service import addEvent
-from src.trend_analyzer_helper import get_last_index, calculate_volume_to_buy, find_multiple_curve_min_max
+from email_sender_helper import send_email
+from timeseries_service import addEvent
+from trend_analyzer_helper import get_last_index, calculate_volume_to_buy, find_multiple_curve_min_max
 
 
 class TrendAnalyzer:
