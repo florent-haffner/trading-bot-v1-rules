@@ -15,7 +15,7 @@ Check this out later, boy.
 
 Python and general dependancies
 
-    conda create -n moneyMakr-bot python=3.8 && conda activate moneyMakr-bot
+    conda create -n trading-bot python=3.8 && conda activate trading-bot
     pip3 install -r requirements.txt
 
 GPU acceleration /w CUDA and cuDNN, here version used on Arch linux.

@@ -46,6 +46,8 @@ class TrendAnalyzer:
                         '[BOT-ANALYSIS]', 'Incoming trade : [' + self.asset + '] ' + typeOfTrade,
                         attachments)
                     print(typeOfTrade, 'this', volume_to_buy)
+                else:
+                    print('Nothing to', typeOfTrade)
 
             elif self.last_close_high <= self.index_size - 5 or self.last_macd_high <= self.index_size - 5:
                 typeOfTrade = 'sell'
@@ -57,6 +59,8 @@ class TrendAnalyzer:
                         '[BOT-ANALYSIS]', 'Incoming trade : [' + self.asset + '] ' + typeOfTrade,
                         attachments)
                     print(typeOfTrade, 'this', volume_to_buy)
+                else:
+                    print('Nothing to', typeOfTrade)
 
         except Exception as err:
             send_email('Exception', str(err), {})

@@ -19,7 +19,7 @@ def getRecentEventByTypeAndAsset(asset, typeOfTrade):
         'AND typeOfTrade = ' + "'" + typeOfTrade + "'" +
         'GROUP BY "typeOfTrade"'
     )
-    print('[INFLUXDB], querying the last recent tradeEvents ->', asset, typeOfTrade,'\n', result)
+    print('[INFLUXDB], querying the last recent tradeEvents ->', asset, typeOfTrade, '\n', result)
     return result
 
 

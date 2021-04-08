@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from timeseries_repository import getRecentEventByTypeAndAsset
+from timeseries_repository import getRecentEventByTypeAndAsset, addTradeEvent
 
 
 def getLastEventByTypeAndAsset(asset, typeOfTrade):
@@ -28,5 +28,8 @@ def generateDTO(type_of_trade, volume_to_buy, df, maximum_index):
     ]
 
 def addEvent(type_of_trade, volume_to_buy, df, maximum_index):
-    DTO = generateDTO(type_of_trade, volume_to_buy, df, maximum_index)
-    print('save this')
+    point = generateDTO(type_of_trade, volume_to_buy, df, maximum_index)
+    addTradeEvent(point)
+    # TODO -> solve the issue while something is wrote but not
+    # TODO -> solve the issue while something is wrote but not
+    # TODO -> solve the issue while something is wrote but not

@@ -76,9 +76,11 @@ def calculate_volume_to_buy(self, typeOfTrade, attachments):
     previous_currency_trade = getLastEventByTypeAndAsset(self.asset, typeOfTrade)
     print('previous trade', previous_currency_trade)
 
-    volume_to_buy = define_quantity_volume(self.df, typeOfTrade,
-                                           self.asset, self.currency,
-                                           self.length_assets, self.index_size - 1)
+    volume_to_buy = None
+    if not previous_currency_trade:
+        volume_to_buy = define_quantity_volume(self.df, typeOfTrade,
+                                               self.asset, self.currency,
+                                               self.length_assets, self.index_size - 1)
     return volume_to_buy
 
 
