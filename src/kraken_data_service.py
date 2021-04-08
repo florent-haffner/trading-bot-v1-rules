@@ -2,7 +2,7 @@ from requests import get
 
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import MinMaxScaler
+# from sklearn.preprocessing import MinMaxScaler
 from stockstats import StockDataFrame
 
 __KRAKEN_API = "https://api.kraken.com/0/public/OHLC"
@@ -77,20 +77,20 @@ def getXy(dataset, X_key, y_key) -> [pd.DataFrame]:
         raise KeyError('Error with the keys', X_key, ' or ', y_key)
 
 
-"""
-:param get X, y
-:return scaled dataset from 0 to 1
-"""
-def process_data_to_scale(scaler, X, y) -> [MinMaxScaler]:
-    X_scaled = scaler.fit_transform(
-        X.values.reshape(len(X.values),
-                         1)
-    )
-    y_scaled = scaler.fit_transform(
-        y.values.reshape(len(y.values),
-                         1)
-    )
-    return X_scaled, y_scaled
+# """
+# :param get X, y
+# :return scaled dataset from 0 to 1
+# """
+# def process_data_to_scale(scaler, X, y) -> [MinMaxScaler]:
+#     X_scaled = scaler.fit_transform(
+#         X.values.reshape(len(X.values),
+#                          1)
+#     )
+#     y_scaled = scaler.fit_transform(
+#         y.values.reshape(len(y.values),
+#                          1)
+#     )
+#     return X_scaled, y_scaled
 
 
 def get_stocks_indicators(df):
@@ -108,6 +108,7 @@ if __name__ == "__main__":
     df.plot('timestamp', 'volume')
     # plt.show()
 
+    """
     train, test = splitDataset(df, .85)
     X, y = getXy(train, 'volume', 'timestamp')
 
@@ -118,3 +119,4 @@ if __name__ == "__main__":
 
     inverse = scaler.inverse_transform(y_train)
     print(inverse)
+    """
