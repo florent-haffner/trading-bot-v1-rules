@@ -35,8 +35,8 @@ class TrendAnalyzer:
 
     def make_decision(self):
         print('\n[DECISION MAKING]')
-        volume_to_buy = None
 
+        volume_to_buy = None
         attachments = [self.pathFigCLOSE, self.pathFigMACD]
 
         try:

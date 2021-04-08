@@ -29,9 +29,9 @@ def plot_peaks_close_ema(df, key, higher_peaks, lower_peaks):
     plt.title(key)
     plt.plot(df[key])
     if key == 'close_12_ema':
-        plt.plot(df['close'])
-    plt.plot(higher_peaks[:, 0], higher_peaks[:, 1], 'ro')
-    plt.plot(lower_peaks[:, 0], lower_peaks[:, 1], 'go')
+        # plt.plot(df['close'])
+        plt.plot(higher_peaks[:, 0], higher_peaks[:, 1], 'ro')
+        plt.plot(lower_peaks[:, 0], lower_peaks[:, 1], 'go')
 
     pathToSaveFigure = '/tmp/' + str(datetime.now()) + '-' + key + '.png'
     plt.savefig(pathToSaveFigure)

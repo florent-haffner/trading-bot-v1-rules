@@ -35,25 +35,27 @@ def cleanMission():
 
 
 if __name__ == '__main__':
-    missionData = {"context": {
-        "interval": 60,
-        "assets": [
-            "GRT", "LINK", "ALGO"
-        ]
-    }}
+    missionData = {
+        "context": {
+            "interval": 60,
+            "assets": [
+                "GRT", "LINK", "ALGO"
+            ]
+        }
+    }
     createMission(missionData)
 
     missions = list(getAllMissions())
     print(missions)
 
-    missionId = missions[0]['_id']
-    missionData = {
-        "interval": 60,
-        "assets": [
-            "GRT"
-        ]
-    }
-    updateMission(missionId, missionData)
+    # missionId = missions[0]['_id']
+    # missionData = {
+    #     "interval": 60,
+    #     "assets": [
+    #         "ETH"
+    #     ]
+    # }
+    # updateMission(missionId, missionData)
 
-    print(list(getAllMissions()))
+    # print(list(getAllMissions()))
     # cleanMission()

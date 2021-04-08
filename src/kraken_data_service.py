@@ -51,7 +51,7 @@ Glue everything together
 """
 def getFormattedData(asset, interval) -> pd.DataFrame:
     print('[QUERY]')
-    print('Kraken -', asset + 'asset /w interval of ' + interval + 'min')
+    print('Kraken - ', asset + ' on ' + interval + 'min')
     results = getDatasFromKraken(asset, interval)
     return getDataframe(results)
 

@@ -1,4 +1,5 @@
 from datetime import datetime
+from time import sleep
 
 import matplotlib.pyplot as plt
 
@@ -29,16 +30,23 @@ def run_bot(asset, currency, interval, length_assets):
     three_day_DF = get_last_n_percentage(df_with_indicators, 35)
     TrendAnalyzer(three_day_DF, asset, currency, length_assets)
 
+    time_to_sleep = 10
+    print('Sleeping for about', time_to_sleep, 'seconds.')
+    sleep(time_to_sleep)
+
 
 if __name__ == "__main__":
     print("[TRADING BOT]\n")
-    missions = list(getAllMissions())
+    while True:
+        missions = list(getAllMissions())
+        for mission in missions:
+            assets = mission['context']['assets']
+            print('[ASSETS TO QUERY] :', assets)
+            for asset in assets:
+                currency = 'EUR'
+                interval = mission['context']['interval']
+                run_bot(asset, currency, interval, len(assets))
 
-    for mission in missions:
-        assets = mission['context']['assets']
-        print('[ASSETS TO QUERY] :', assets)
-        for asset in assets:
-            currency = 'EUR'
-            interval = mission['context']['interval']
-            run_bot(asset, currency, interval, len(assets))
-            # TODO - wait 15s
+        time_to_sleep = 60 * 5
+        print('Sleeping for about', time_to_sleep, 'minutes.')
+        sleep(time_to_sleep)
