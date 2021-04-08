@@ -1,9 +1,11 @@
 import smtplib
+from datetime import datetime
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from CONSTANT import __EMAIL_USER, __EMAIL_PASSWORD
+from src.enginer_helper import remove_tmp_pics
 
 __DESTINATION = 'neltharak@gmail.com'
 
@@ -14,7 +16,7 @@ def send_email(subject, body, attachments):
     msg = MIMEMultipart()
     msg['From'] = __EMAIL_USER
     msg['To'] = __DESTINATION
-    msg['Subject'] = subject
+    msg['Subject'] = '[' + datetime.now().strftime("%Y-%m-%dT%H:%M") + '] ' + subject
 
     msgText = MIMEText('<b>%s</b>' % (body), 'html')
     msg.attach(msgText)
@@ -31,6 +33,10 @@ def send_email(subject, body, attachments):
             smtpObj.starttls()
             smtpObj.login(__EMAIL_USER, __EMAIL_PASSWORD)
             smtpObj.sendmail(__SENDER, __DESTINATION, msg.as_string())
+
+        if attachments:
+            for file in attachments:
+                remove_tmp_pics(file)
     except Exception as e:
         print(e)
     print('Sended email to', __DESTINATION, 'from', __EMAIL_USER, ', length msg', len(msg), 'and', len(attachments), 'attachments')

@@ -28,7 +28,8 @@ def define_quantity_volume(df, type_of_trade, asset, currency, nbr_asset_on_trad
 def plot_peaks_close_ema(df, key, higher_peaks, lower_peaks):
     plt.title(key)
     plt.plot(df[key])
-    plt.plot(df['close'])
+    if key == 'close_12_ema':
+        plt.plot(df['close'])
     plt.plot(higher_peaks[:, 0], higher_peaks[:, 1], 'ro')
     plt.plot(lower_peaks[:, 0], lower_peaks[:, 1], 'go')
 
