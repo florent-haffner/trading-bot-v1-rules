@@ -3,6 +3,7 @@ from requests import get
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
+from stockstats import StockDataFrame
 
 __KRAKEN_API = "https://api.kraken.com/0/public/OHLC"
 
@@ -90,6 +91,16 @@ def process_data_to_scale(scaler, X, y) -> [MinMaxScaler]:
                          1)
     )
     return X_scaled, y_scaled
+
+
+def get_stocks_indicators(df):
+    df = StockDataFrame.retype(df)
+    df['macd'] = df.get('macd')
+    df['ema'] = df.get('dx_6_ema')
+    df['close_12_ema'] = df.get('close_12_ema')
+    df['close_26_ema'] = df.get('close_26_ema')
+    return df
+
 
 
 if __name__ == "__main__":
