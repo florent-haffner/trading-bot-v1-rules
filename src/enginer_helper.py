@@ -10,28 +10,15 @@ class NothingToTrade(Exception): pass
 
 
 def define_quantity_volume(df, type_of_trade, asset, currency, nbr_asset_on_trade, index_max):
-    print('[VOLUME TRADING QUANTITY]')
+    print('\n[VOLUME TRADING QUANTITY]')
     print('Type of trade:', type_of_trade)
 
-    # TODO -> check on InfluxDB if already possess currency
-    # TODO
-    # TODO
-    previous_currency_trade = (type_of_trade)
-    print(previous_currency_trade)
-    # TODO
-    # TODO
-    # TODO
-
     volume_to_buy = None
-
     try:
-        if not previous_currency_trade:
-            balanceEuro = float(getAccountBalance()['result']['ZEUR'])
-            maximumPercentage = .9
-            volume_to_buy = (balanceEuro / float(nbr_asset_on_trade)) * maximumPercentage
+        balanceEuro = float(getAccountBalance()['result']['ZEUR'])
+        maximumPercentage = .9
+        volume_to_buy = (balanceEuro / float(nbr_asset_on_trade)) * maximumPercentage
 
-        else:
-            raise NothingToTrade('Something is already being trade')
     except Exception as err:
         raise err
 

@@ -6,6 +6,7 @@ from src.enginer_helper import plot_peaks_close_ema, define_quantity_volume,\
     remove_tmp_pics, get_last_index, \
     NothingToTrade
 from src.timeseries_repository import getRecentEventByTypeAndAsset
+from src.timeseries_service import getLastEventByTypeAndAsset
 
 
 class TrendAnalyzer:
@@ -45,28 +46,22 @@ class TrendAnalyzer:
 
         try:
             if self.last_close_low <= self.index_size - 5 or self.last_macd_low <= self.index_size - 5:
-                typeOfTrade = 'BUY'
+                typeOfTrade = 'buy'
 
-                # TODO
-                # TODO
-                # TODO
-                # previous_currency_trade = getLastTradeEventByType(typeOfTrade)
-                # print(previous_currency_trade)
-                # TODO
-                # TODO
-                # TODO
+                previous_currency_trade = getLastEventByTypeAndAsset(self.asset, typeOfTrade)
+                print('previous trade', previous_currency_trade)
 
-                # volume_to_buy = define_quantity_volume(self.df, typeOfTrade,
-                #                                        self.asset, self.currency,
-                #                                        self.length_assets, self.index_size - 1)
-                if volume_to_buy:
-                    DTO = generateDTO(self.__SERVER_HOST, typeOfTrade, volume_to_buy,
-                                      self.df, self.index_size - 1)
-                    getRecentEventByTypeAndAsset([DTO])
-                    print('BUY this', volume_to_buy)
+                if not previous_currency_trade:
+                    volume_to_buy = define_quantity_volume(self.df, typeOfTrade,
+                                                           self.asset, self.currency,
+                                                           self.length_assets, self.index_size - 1)
+                    if volume_to_buy:
+                        DTO = generateDTO(typeOfTrade, volume_to_buy,
+                                          self.df, self.index_size - 1)
+                        print('BUY this', volume_to_buy)
 
             elif self.last_close_high <= self.index_size - 5 or self.last_macd_high <= self.index_size - 5:
-                typeOfTrade = 'SELL'
+                typeOfTrade = 'sell'
                 volume_to_buy = define_quantity_volume(self.df, typeOfTrade,
                                                        self.asset, self.currency,
                                                        self.length_assets, self.index_size - 1)
@@ -79,19 +74,21 @@ class TrendAnalyzer:
         print('\nResume to next asset')
 
 
-def generateDTO(host, type_of_trade, volume_to_buy, df, maximum_index):
-    return {
-        'measurement': 'tradeEvent',
-        'time': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
-        'tags': {
-            'typeOfTrade': type_of_trade,
-        },
-        'fields': {
-            'quantity': volume_to_buy,
-            'price': df['close'][maximum_index],
-            'acknowledge': False
+def generateDTO(type_of_trade, volume_to_buy, df, maximum_index):
+    return [
+        {
+            'measurement': 'tradeEvent',
+            'time': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+            'tags': {
+                'typeOfTrade': type_of_trade,
+            },
+            'fields': {
+                'quantity': volume_to_buy,
+                'price': df['close'][maximum_index],
+                'acknowledge': False
+            }
         }
-    }
+    ]
 
 
 def find_multiple_curve_min_max(df, key):
