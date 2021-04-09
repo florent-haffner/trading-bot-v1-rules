@@ -6,7 +6,7 @@ class TradeToKrakenError(Exception): pass
 
 
 API = krakenex.API()
-API.load_key('../kraken.key')
+API.load_key('./secret/kraken.key')
 
 """
 :param asset -> the currency, ex : BTC, ETH, GRT

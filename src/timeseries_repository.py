@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from CONSTANT import __INFLUX_HOST, __INFLUX_PORT, __INFLUX_USER, __INFLUX_PASSWORD, __INFLUX_DB_TRADE_EVENT
+from src.secret.CONSTANT import __INFLUX_HOST, __INFLUX_PORT, __INFLUX_USER, __INFLUX_PASSWORD, __INFLUX_DB_TRADE_EVENT
 from influxdb import InfluxDBClient
 
 __INFLUX_CLIENT = InfluxDBClient(

@@ -4,8 +4,8 @@ from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from CONSTANT import __EMAIL_USER, __EMAIL_PASSWORD
-from trend_analyzer_helper import remove_tmp_pics
+from src.helpers.trend_analyzer_helper import remove_tmp_pics
+from src.secret.CONSTANT import __EMAIL_USER, __EMAIL_PASSWORD
 
 __DESTINATION = 'neltharak@gmail.com'
 

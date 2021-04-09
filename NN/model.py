@@ -1,12 +1,8 @@
-import os
-from datetime import datetime
-
 from matplotlib import pyplot as plt
 from tensorflow import keras
 from tensorflow.keras.layers import Dense, Dropout, LSTM
-from tensorflow.python.keras.callbacks import ModelCheckpoint
 
-from src.kraken_data_service import getFormattedData
+from src.services.kraken_data_service import getFormattedData
 
 
 class Model:

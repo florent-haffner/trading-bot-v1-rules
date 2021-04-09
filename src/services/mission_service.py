@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 
-from CONSTANT import __MONGO_HOST, __MONGO_USER, __MONGO_PASSWORD
+from src.secret.CONSTANT import __MONGO_HOST, __MONGO_USER, __MONGO_PASSWORD
 
 __MONGO_CLIENT = MongoClient(__MONGO_HOST,
                              username=__MONGO_USER,

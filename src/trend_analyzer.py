@@ -1,6 +1,6 @@
-from email_sender_helper import send_email
-from timeseries_service import addEvent
-from trend_analyzer_helper import get_last_index, calculate_volume_to_buy, find_multiple_curve_min_max
+from src.helpers.email_sender_helper import send_email
+from src.services.timeseries_service import addEvent
+from src.helpers.trend_analyzer_helper import get_last_index, calculate_volume_to_buy, find_multiple_curve_min_max
 
 
 class TrendAnalyzer:
@@ -9,7 +9,6 @@ class TrendAnalyzer:
         self.asset = asset
         self.currency = currency
         self.length_assets = length_assets
-        self.__SERVER_HOST = '192.168.1.58'
 
         self.analyse_trends()
         self.make_decision()

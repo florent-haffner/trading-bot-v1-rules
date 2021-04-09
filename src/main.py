@@ -3,8 +3,8 @@ from time import sleep
 
 import matplotlib.pyplot as plt
 
-from kraken_data_service import getFormattedData, get_stocks_indicators
-from mission_service import getAllMissions
+from src.services.kraken_data_service import getFormattedData, get_stocks_indicators
+from src.services.mission_service import getAllMissions
 from trend_analyzer import TrendAnalyzer
 
 
