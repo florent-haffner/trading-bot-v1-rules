@@ -31,45 +31,33 @@ class TrendAnalyzer:
     def make_decision(self):
         print('\n[DECISION MAKING]')
 
-        volume_to_buy = None
         attachments = [self.pathFigCLOSE, self.pathFigMACD]
-
         try:
             if self.last_close_low <= self.index_size - 5 or self.last_macd_low <= self.index_size - 5:
                 typeOfTrade = 'buy'
-                volume_to_buy = calculate_volume_to_buy(self, typeOfTrade, attachments)
-                if volume_to_buy:
-                    addEvent(type_of_trade=typeOfTrade,
-                             volume_to_buy=volume_to_buy,
-                             asset=self.asset,
-                             df=self.df,
-                             maximum_index=self.index_size - 1)
-                    send_email(
-                        '[BOT-ANALYSIS]', 'Incoming trade : [' + self.asset + '] ' + typeOfTrade,
-                        attachments)
-                    print(typeOfTrade, 'this', volume_to_buy, 'of', self.asset)
-
-                else:
-                    print('Nothing to', typeOfTrade)
+                self.create_trade_event(typeOfTrade, attachments)
 
             elif self.last_close_high <= self.index_size - 5 or self.last_macd_high <= self.index_size - 5:
                 typeOfTrade = 'sell'
-                volume_to_buy = calculate_volume_to_buy(self, typeOfTrade, attachments)
-                if volume_to_buy:
-                    addEvent(type_of_trade=typeOfTrade,
-                             volume_to_buy=volume_to_buy,
-                             asset=self.asset,
-                             df=self.df,
-                             maximum_index=self.index_size - 1)
-                    send_email(
-                        '[BOT-ANALYSIS]', 'Incoming trade : [' + self.asset + '] ' + typeOfTrade,
-                        attachments)
-                    print(typeOfTrade, 'this', volume_to_buy, 'of', self.asset)
-                else:
-                    print('Nothing to', typeOfTrade)
+                self.create_trade_event(typeOfTrade, attachments)
 
         except Exception as err:
             send_email('Exception', str(err), {})
 
         print('[END OF ANALYSIS] ->', self.asset)
         print('\nResume to next asset')
+
+    def create_trade_event(self, type_of_trade, attachments):
+        volume_to_buy = calculate_volume_to_buy(self, type_of_trade, attachments)
+        if volume_to_buy:
+            addEvent(type_of_trade=type_of_trade,
+                     volume_to_buy=volume_to_buy,
+                     asset=self.asset,
+                     df=self.df,
+                     maximum_index=self.index_size - 1)
+            send_email(
+                '[BOT-ANALYSIS]', 'Incoming trade : [' + self.asset + '] ' + type_of_trade,
+                attachments)
+            print(type_of_trade, 'this', volume_to_buy, 'of', self.asset)
+        else:
+            print('Nothing to', type_of_trade)
