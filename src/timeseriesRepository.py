@@ -39,6 +39,13 @@ def addTradeEvent(event):
     __INFLUX_CLIENT.write_points(event)
 
 
+def resetProductionDatabase(bool):
+    if bool:
+        print('\nReseting production databse, ciao datas')
+        __INFLUX_CLIENT.drop_database(__INFLUX_DB_TRADE_EVENT)
+        __INFLUX_CLIENT.create_database(__INFLUX_DB_TRADE_EVENT)
+
+
 if __name__ == "__main__":
     tmp_db = 'tmp'
     print('Current DBs', __INFLUX_CLIENT.get_list_database())
