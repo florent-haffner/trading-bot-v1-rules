@@ -11,15 +11,16 @@ def getLastEventByTypeAndAsset(asset, typeOfTrade):
                 return n
 
 
-def generateDTO(type_of_trade, volume_to_buy, df, maximum_index):
+def generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset):
     return [
         {
             'measurement': 'tradeEvent',
             'time': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
             'tags': {
-                'typeOfTrade': type_of_trade,
+                'typeOfTrade': type_of_trade
             },
             'fields': {
+                'asset': asset,
                 'quantity': volume_to_buy,
                 'price': df['close'][maximum_index],
                 'acknowledge': False
@@ -27,9 +28,6 @@ def generateDTO(type_of_trade, volume_to_buy, df, maximum_index):
         }
     ]
 
-def addEvent(type_of_trade, volume_to_buy, df, maximum_index):
-    point = generateDTO(type_of_trade, volume_to_buy, df, maximum_index)
+def addEvent(type_of_trade, volume_to_buy, df, maximum_index, asset):
+    point = generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset)
     addTradeEvent(point)
-    # TODO -> solve the issue while something is wrote but not
-    # TODO -> solve the issue while something is wrote but not
-    # TODO -> solve the issue while something is wrote but not

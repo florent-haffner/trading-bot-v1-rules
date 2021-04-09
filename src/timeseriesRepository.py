@@ -76,3 +76,5 @@ if __name__ == "__main__":
 
     __INFLUX_CLIENT.drop_database(tmp_db)
     print('\nRemoving :', tmp_db, ', temporary DB')
+
+    getRecentEventByTypeAndAsset('GRT', 'buy')

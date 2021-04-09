@@ -39,12 +39,16 @@ class TrendAnalyzer:
                 typeOfTrade = 'buy'
                 volume_to_buy = calculate_volume_to_buy(self, typeOfTrade, attachments)
                 if volume_to_buy:
-                    addEvent(typeOfTrade, volume_to_buy,
-                             self.df, self.index_size - 1)
+                    addEvent(type_of_trade=typeOfTrade,
+                             volume_to_buy=volume_to_buy,
+                             asset=self.asset,
+                             df=self.df,
+                             maximum_index=self.index_size - 1)
                     send_email(
                         '[BOT-ANALYSIS]', 'Incoming trade : [' + self.asset + '] ' + typeOfTrade,
                         attachments)
-                    print(typeOfTrade, 'this', volume_to_buy)
+                    print(typeOfTrade, 'this', volume_to_buy, 'of', self.asset)
+
                 else:
                     print('Nothing to', typeOfTrade)
 
@@ -52,12 +56,15 @@ class TrendAnalyzer:
                 typeOfTrade = 'sell'
                 volume_to_buy = calculate_volume_to_buy(self, typeOfTrade, attachments)
                 if volume_to_buy:
-                    addEvent(typeOfTrade, volume_to_buy,
-                             self.df, self.index_size - 1)
+                    addEvent(type_of_trade=typeOfTrade,
+                             volume_to_buy=volume_to_buy,
+                             asset=self.asset,
+                             df=self.df,
+                             maximum_index=self.index_size - 1)
                     send_email(
                         '[BOT-ANALYSIS]', 'Incoming trade : [' + self.asset + '] ' + typeOfTrade,
                         attachments)
-                    print(typeOfTrade, 'this', volume_to_buy)
+                    print(typeOfTrade, 'this', volume_to_buy, 'of', self.asset)
                 else:
                     print('Nothing to', typeOfTrade)
 
