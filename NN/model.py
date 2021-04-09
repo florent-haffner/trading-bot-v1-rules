@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 from tensorflow import keras
 from tensorflow.keras.layers import Dense, Dropout, LSTM
 
-from src.services.kraken_data_service import getFormattedData
+from src.services.krakenDataService import getFormattedData
 
 
 class Model:

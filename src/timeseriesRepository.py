@@ -40,9 +40,10 @@ def addTradeEvent(event):
 
 
 if __name__ == "__main__":
-    print('Current DBs', __INFLUX_CLIENT.get_list_database(), '\n')
-    __INFLUX_CLIENT.drop_database(__INFLUX_DB_TRADE_EVENT)
-    __INFLUX_CLIENT.create_database(__INFLUX_DB_TRADE_EVENT)
+    tmp_db = 'tmp'
+    print('Current DBs', __INFLUX_CLIENT.get_list_database())
+    print('Creating :', tmp_db, ', temporary DB', '\n')
+    __INFLUX_CLIENT.create_database(tmp_db)
 
     point = [
         {
@@ -66,5 +67,5 @@ if __name__ == "__main__":
     getRecentEventByTypeAndAsset('GRT', 'buy')
     getRecentEventByTypeAndAsset('GRT', 'sell')
 
-    __INFLUX_CLIENT.drop_database(__INFLUX_DB_TRADE_EVENT)
-    __INFLUX_CLIENT.create_database(__INFLUX_DB_TRADE_EVENT)
+    __INFLUX_CLIENT.drop_database(tmp_db)
+    print('\nRemoving :', tmp_db, ', temporary DB')

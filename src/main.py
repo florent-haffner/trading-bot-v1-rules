@@ -3,9 +3,9 @@ from time import sleep
 
 import matplotlib.pyplot as plt
 
-from src.services.kraken_data_service import getFormattedData, get_stocks_indicators
-from src.services.mission_service import getAllMissions
-from trend_analyzer import TrendAnalyzer
+from src.services.krakenDataService import getFormattedData, get_stocks_indicators
+from src.services.missionService import getAllMissions
+from trendAnalyzer import TrendAnalyzer
 
 
 def get_measure_viz(df, measure):

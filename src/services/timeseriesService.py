@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.timeseries_repository import getRecentEventByTypeAndAsset, addTradeEvent
+from src.timeseriesRepository import getRecentEventByTypeAndAsset, addTradeEvent
 
 
 def getLastEventByTypeAndAsset(asset, typeOfTrade):
