@@ -1,11 +1,12 @@
+from src.engine.trendAnalyzerHelper import remove_tmp_pics
+from src.secret.CONSTANT import __EMAIL_USER, __EMAIL_PASSWORD
+
 import smtplib
 from datetime import datetime
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from src.helpers.trendAnalyzerHelper import remove_tmp_pics
-from src.secret.CONSTANT import __EMAIL_USER, __EMAIL_PASSWORD
 
 __DESTINATION = 'neltharak@gmail.com'
 
@@ -39,7 +40,8 @@ def send_email(subject, body, attachments):
                 remove_tmp_pics(file)
     except Exception as e:
         print(e)
-    print('Sended email to', __DESTINATION, 'from', __EMAIL_USER, ', length msg', len(msg), 'and', len(attachments), 'attachments')
+    print('Sended email to', __DESTINATION, 'from', __EMAIL_USER, ', length msg', len(msg), 'and', len(attachments),
+          'attachments')
 
 
 if __name__ == '__main__':

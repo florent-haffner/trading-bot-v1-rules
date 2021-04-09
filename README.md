@@ -10,7 +10,7 @@ Config influxDB `influx CREATE USER admin WITH PASSWORD '<password>' WITH ALL PR
 
 Check this out later, boy.
 
-`$HOME/anaconda3/envs/trading-bot/bin/python $HOME/MoneyMakr-bot/src/main.py`
+`$HOME/anaconda3/envs/trading-bot/bin/python -m src.main
 
 
 ## Env - OBSOLETE CURRENTLY

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 from src.services.krakenDataService import getFormattedData, get_stocks_indicators
 from src.services.missionService import getAllMissions
-from trendAnalyzer import TrendAnalyzer
+from src.engine.trendAnalyzer import TrendAnalyzer
 
 
 def get_measure_viz(df, measure):
