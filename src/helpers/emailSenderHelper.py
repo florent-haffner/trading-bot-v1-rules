@@ -16,7 +16,7 @@ def send_email(subject, body, attachments):
     msg = MIMEMultipart()
     msg['From'] = __EMAIL_USER
     msg['To'] = __DESTINATION
-    msg['Subject'] = '[' + datetime.now().strftime("%Y-%m-%dT%H:%M") + '] ' + subject
+    msg['Subject'] = '[' + datetime.now().strftime("%Y-%m-%d %H:%M") + '] ' + subject
 
     msgText = MIMEText('<b>%s</b>' % (body), 'html')
     msg.attach(msgText)

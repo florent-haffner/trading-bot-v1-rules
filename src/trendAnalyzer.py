@@ -56,7 +56,7 @@ class TrendAnalyzer:
                      df=self.df,
                      maximum_index=self.index_size - 1)
             send_email(
-                '[BOT-ANALYSIS]', 'Incoming trade : [' + self.asset + '] ' + type_of_trade,
+                '[BOT-ANALYSIS]', 'Incoming trade : [' + self.asset + '] - type: ' + type_of_trade,
                 attachments)
             print(type_of_trade, 'this', volume_to_buy, 'of', self.asset)
         else:
