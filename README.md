@@ -12,7 +12,7 @@ Check this out later, boy.
 
 `$HOME/anaconda3/envs/trading-bot/bin/python -m src.main`
 
-`mv tradingBot.service /lib/systemd/system/tradingBot.service`
+`cp tradingBot.service /lib/systemd/system/tradingBot.service`
 
 
 ## Env - OBSOLETE CURRENTLY

@@ -23,9 +23,19 @@ def getRecentEventByTypeAndAsset(asset, typeOfTrade):
     return result
 
 
-def countLastResentEvents():
+def countAllEvents():
     result = __INFLUX_CLIENT.query(
         'SELECT "count(*)" ' +
+        'FROM "' + __INFLUX_DB_TRADE_EVENT + '"."autogen"."tradeEvent" ' +
+        'WHERE time > now() - 7d GROUP BY "typeOfTrade"'
+    )
+    print('[INFLUXDB], counting the number of this weeks events\n', result)
+    return result
+
+
+def getAllEvents():
+    result = __INFLUX_CLIENT.query(
+        'SELECT * ' +
         'FROM "' + __INFLUX_DB_TRADE_EVENT + '"."autogen"."tradeEvent" ' +
         'WHERE time > now() - 7d GROUP BY "typeOfTrade"'
     )
@@ -47,34 +57,39 @@ def resetProductionDatabase(bool):
 
 
 if __name__ == "__main__":
-    tmp_db = 'tmp'
-    print('Current DBs', __INFLUX_CLIENT.get_list_database())
-    print('Creating :', tmp_db, ', temporary DB', '\n')
-    __INFLUX_CLIENT.create_database(tmp_db)
+    # tmp_db = 'tmp'
+    # print('Current DBs', __INFLUX_CLIENT.get_list_database())
+    # print('Creating :', tmp_db, ', temporary DB', '\n')
+    # __INFLUX_CLIENT.create_database(tmp_db)
+    #
+    # point = [
+    #     {
+    #         'measurement': 'tradeEvent',
+    #         'time': (datetime.now() + timedelta(hours=2)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    #         'tags': {
+    #             'typeOfTrade': 'buy'
+    #         },
+    #         'fields': {
+    #             'asset': 'GRT',
+    #             'quantity': 32.,
+    #             'price': 32.,
+    #             'acknowledge': False
+    #         }
+    #     }
+    # ]
+    #
+    # addTradeEvent(point)
+    # point[0]['time'] = (datetime.now() + timedelta(hours=4)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    # addTradeEvent(point)
+    # getRecentEventByTypeAndAsset('GRT', 'buy')
+    # getRecentEventByTypeAndAsset('GRT', 'sell')
+    #
+    # __INFLUX_CLIENT.drop_database(tmp_db)
+    # print('\nRemoving :', tmp_db, ', temporary DB')
+    #
+    # getRecentEventByTypeAndAsset('GRT', 'buy')
 
-    point = [
-        {
-            'measurement': 'tradeEvent',
-            'time': (datetime.now() + timedelta(hours=2)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            'tags': {
-                'typeOfTrade': 'buy'
-            },
-            'fields': {
-                'asset': 'GRT',
-                'quantity': 32.,
-                'price': 32.,
-                'acknowledge': False
-            }
-        }
-    ]
-
-    addTradeEvent(point)
-    point[0]['time'] = (datetime.now() + timedelta(hours=4)).strftime("%Y-%m-%dT%H:%M:%SZ")
-    addTradeEvent(point)
-    getRecentEventByTypeAndAsset('GRT', 'buy')
-    getRecentEventByTypeAndAsset('GRT', 'sell')
-
-    __INFLUX_CLIENT.drop_database(tmp_db)
-    print('\nRemoving :', tmp_db, ', temporary DB')
-
-    getRecentEventByTypeAndAsset('GRT', 'buy')
+    events = getAllEvents()
+    import json
+    for event in events:
+        print(json.dumps(event, indent=2))
