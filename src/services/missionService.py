@@ -39,23 +39,25 @@ if __name__ == '__main__':
         "context": {
             "interval": 60,
             "assets": [
-                "GRT", "LINK", "ALGO"
+                "ETH"
             ]
         }
     }
-    createMission(missionData)
 
     missions = list(getAllMissions())
+    if not missions:
+        createMission(missionData)
+        missions = list(getAllMissions())
     print(missions)
 
-    # missionId = missions[0]['_id']
-    # missionData = {
-    #     "interval": 60,
-    #     "assets": [
-    #         "ETH"
-    #     ]
-    # }
-    # updateMission(missionId, missionData)
+    missionId = missions[0]['_id']
+    missionData = {
+        "interval": 60,
+        "assets": [
+            "GRT", "LINK", "ALGO"
+        ]
+    }
+    updateMission(missionId, missionData)
 
-    # print(list(getAllMissions()))
+    print(list(getAllMissions()))
     # cleanMission()

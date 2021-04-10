@@ -1,3 +1,6 @@
+#ENV
+nohup.out
+
 #IDE
 .idea/
 .vscode/
