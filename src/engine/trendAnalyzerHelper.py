@@ -1,4 +1,5 @@
 import os
+import time
 from datetime import datetime
 
 import matplotlib.pyplot as plt
@@ -40,8 +41,9 @@ def plot_peaks_close_ema(df, key, higher_peaks, lower_peaks):
     plt.plot(lower_peaks[:, 0], lower_peaks[:, 1], 'go')
 
     pathToSaveFigure = '/tmp/' + str(datetime.now()) + '-' + key + '.png'
+
     plt.savefig(pathToSaveFigure)
-    plt.close(fig)
+    plt.close('all')
     return pathToSaveFigure
 
 
