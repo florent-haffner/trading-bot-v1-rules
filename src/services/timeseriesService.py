@@ -29,6 +29,7 @@ def generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset, interval
         }
     ]
 
+
 def addEvent(type_of_trade, volume_to_buy, df, maximum_index, asset, interval):
     point = generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset, interval)
     addTradeEvent(point)

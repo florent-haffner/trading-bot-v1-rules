@@ -25,24 +25,27 @@ class TrendAnalyzer:
         self.last_close_high, self.last_close_low = get_last_index(close_high, close_low)
 
         print('\n[DETECTED LAST INDEX]', self.index_size)
-
-        print('macd last index', self.last_macd_high, self.last_macd_low)
-        print('close last index', self.last_close_high, self.last_close_low)
+        print('close index { high:', self.last_close_high, ' low:', self.last_close_low, '}')
 
     def make_decision(self):
         print('\n[DECISION MAKING]')
-
         attachments = [self.pathFigCLOSE, self.pathFigMACD]
         try:
-            if self.last_close_low <= self.index_size - 5 or self.last_macd_low <= self.index_size - 5:
+            margin = 10
+            if self.last_close_low >= self.index_size - margin or \
+                    self.last_macd_low >= self.index_size - margin:
                 typeOfTrade = 'buy'
                 self.create_trade_event(typeOfTrade, attachments)
 
-            elif self.last_close_high <= self.index_size - 5 or self.last_macd_high <= self.index_size - 5:
+            elif self.last_close_high >= self.index_size - margin or \
+                    self.last_macd_high >= self.index_size - margin:
                 typeOfTrade = 'sell'
                 self.create_trade_event(typeOfTrade, attachments)
+            else:
+                print('Trends are currently evolving, waiting...')
 
         except Exception as err:
+            print('[EXCEPTION] - sending email', err)
             send_email('Exception', str(err), {})
 
         print('[END OF ANALYSIS] ->', self.asset)

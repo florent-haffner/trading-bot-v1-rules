@@ -29,9 +29,9 @@ def run_bot(asset, currency, interval, length_assets):
     three_day_DF = get_last_n_percentage(df_with_indicators, 35)
     TrendAnalyzer(three_day_DF, asset, currency, length_assets, interval)
 
-    time_to_sleep = 10
-    print('Sleeping for about', time_to_sleep, 'seconds.')
-    sleep(time_to_sleep)
+    sleep_between_analysis = interval / 10
+    print('Sleeping for about', sleep_between_analysis, 'seconds.')
+    sleep(sleep_between_analysis)
 
 
 if __name__ == "__main__":
@@ -40,12 +40,12 @@ if __name__ == "__main__":
         missions = list(getAllMissions())
         for mission in missions:
             assets = mission['context']['assets']
+            interval = mission['context']['interval']
             print('[ASSETS TO QUERY] :', assets)
             for asset in assets:
                 currency = 'EUR'
-                interval = mission['context']['interval']
                 run_bot(asset, currency, interval, len(assets))
 
-        time_to_sleep = 60 * 5
-        print('Sleeping for about', time_to_sleep, 'minutes.')
-        sleep(time_to_sleep)
+            time_to_sleep = (interval * 60) / 4
+            print('Sleeping for about', time_to_sleep/60, 'minutes.')
+            sleep(time_to_sleep)
