@@ -42,6 +42,7 @@ class TrendAnalyzer:
                 typeOfTrade = 'sell'
                 self.create_trade_event(typeOfTrade, attachments)
             else:
+                # TODO -> what about checking if I didn't already have stuff
                 print('Trends are currently evolving, waiting...')
 
         except Exception as err:

@@ -1,6 +1,6 @@
 from influxdb import InfluxDBClient
 
-from src.secret.CONSTANT import __INFLUX_HOST, __INFLUX_PORT, __INFLUX_USER, __INFLUX_PASSWORD,\
+from src.secret.CONSTANT import __INFLUX_HOST, __INFLUX_PORT, __INFLUX_USER, __INFLUX_PASSWORD, \
     __INFLUX_DB_TRADE_EVENT, __INFLUX_URI, __INFLUX_TOKEN
 
 __INFLUX_CLIENT = None
@@ -66,6 +66,19 @@ def resetProductionDatabase(bool):
         __INFLUX_CLIENT.create_database(__CURRENT_DB)
 
 
+def analysingRecentTrades():
+    events = getAllEvents()
+    print(events.keys(), '\n')
+    types = list(events.keys())
+    for n in range(len(types)):
+        eventType = types[n][1]['typeOfTrade']
+        import json
+        # print(eventType, list(events[list(events.keys())[n]]))
+        print('\n[', eventType.upper(), ']')
+        for event in list(events[list(events.keys())[n]]):
+            print(json.dumps(event, indent=2))
+
+
 if __name__ == "__main__":
     # tmp_db = 'tmp'
     # print('Current DBs', __INFLUX_CLIENT.get_list_database())
@@ -99,7 +112,4 @@ if __name__ == "__main__":
     #
     # getRecentEventByTypeAndAsset('GRT', 'buy')
 
-    events = getAllEvents()
-    import json
-    for event in events:
-        print(json.dumps(event, indent=2))
+    analysingRecentTrades()
