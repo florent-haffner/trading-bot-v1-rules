@@ -21,7 +21,7 @@ def define_quantity_volume(df, type_of_trade, asset, currency, nbr_asset_on_trad
         balanceEuro = float(getAccountBalance()['result']['ZEUR'])
         maximumPercentage = .9
         money_available = (balanceEuro / float(nbr_asset_on_trade)) * maximumPercentage
-        volume_to_buy = money_available * df['close'][index_max]
+        volume_to_buy = money_available / df['close'][index_max]
 
     except Exception as err:
         raise err
