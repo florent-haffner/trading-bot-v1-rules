@@ -49,11 +49,11 @@ class TrendAnalyzer:
             print('[EXCEPTION] - sending email', err)
             send_email('Exception', str(err), {})
 
-        print('[END OF ANALYSIS] ->', self.asset)
-        print('\nResume to next asset')
+        print('\n[END OF ANALYSIS] ->', self.asset)
+        print('\nResume to follow next action', '\n------------------\n')
 
     def create_trade_event(self, type_of_trade, attachments):
-        volume_to_buy = calculate_volume_to_buy(self, type_of_trade, attachments)
+        volume_to_buy = calculate_volume_to_buy(self, type_of_trade)
         if volume_to_buy:
             addEvent(type_of_trade=type_of_trade,
                      volume_to_buy=volume_to_buy,

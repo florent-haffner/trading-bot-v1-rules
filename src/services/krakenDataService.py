@@ -49,7 +49,7 @@ def getDataframe(apiResponse):
 Glue everything together
 """
 def getFormattedData(asset, interval) -> pd.DataFrame:
-    print('[QUERY]')
+    print('\n[QUERY]')
     print('Kraken - ', asset + ' on ' + interval + 'min')
     results = getDatasFromKraken(asset, interval)
     return getDataframe(results)

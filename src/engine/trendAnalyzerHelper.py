@@ -1,5 +1,4 @@
 import os
-import time
 from datetime import datetime
 
 import matplotlib.pyplot as plt
@@ -21,7 +20,8 @@ def define_quantity_volume(df, type_of_trade, asset, currency, nbr_asset_on_trad
     try:
         balanceEuro = float(getAccountBalance()['result']['ZEUR'])
         maximumPercentage = .9
-        volume_to_buy = (balanceEuro / float(nbr_asset_on_trade)) * maximumPercentage
+        money_available = (balanceEuro / float(nbr_asset_on_trade)) * maximumPercentage
+        volume_to_buy = money_available * df['close'][index_max]
 
     except Exception as err:
         raise err
@@ -74,15 +74,18 @@ def get_last_index(peaks_high, peaks_low):
     return last_high_index, last_low_index
 
 
-def calculate_volume_to_buy(self, typeOfTrade, attachments):
+def calculate_volume_to_buy(self, typeOfTrade):
     previous_currency_trade = getLastEventByTypeAndAsset(self.asset, typeOfTrade)
     print('previous trade', previous_currency_trade)
 
     volume_to_buy = None
     if not previous_currency_trade:
-        volume_to_buy = define_quantity_volume(self.df, typeOfTrade,
-                                               self.asset, self.currency,
-                                               self.length_assets, self.index_size - 1)
+        volume_to_buy = define_quantity_volume(df=self.df,
+                                               type_of_trade=typeOfTrade,
+                                               asset=self.asset,
+                                               currency=self.currency,
+                                               nbr_asset_on_trade=self.length_assets,
+                                               index_max=self.index_size - 1)
     return volume_to_buy
 
 
