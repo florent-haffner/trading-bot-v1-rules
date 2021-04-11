@@ -11,13 +11,14 @@ def getLastEventByTypeAndAsset(asset, typeOfTrade):
                 return n
 
 
-def generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset):
+def generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset, interval):
     return [
         {
             'measurement': 'tradeEvent',
             'time': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
             'tags': {
-                'typeOfTrade': type_of_trade
+                'typeOfTrade': type_of_trade,
+                'interval': interval
             },
             'fields': {
                 'asset': asset,
@@ -28,6 +29,6 @@ def generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset):
         }
     ]
 
-def addEvent(type_of_trade, volume_to_buy, df, maximum_index, asset):
-    point = generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset)
+def addEvent(type_of_trade, volume_to_buy, df, maximum_index, asset, interval):
+    point = generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset, interval)
     addTradeEvent(point)

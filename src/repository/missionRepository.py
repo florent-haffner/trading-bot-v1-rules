@@ -1,10 +1,14 @@
 from pymongo import MongoClient
 
-from src.secret.CONSTANT import __MONGO_HOST, __MONGO_USER, __MONGO_PASSWORD
+from src.secret.CONSTANT import __MONGO_HOST, __MONGO_USER, __MONGO_PASSWORD, __MONGO_URI
 
-__MONGO_CLIENT = MongoClient(__MONGO_HOST,
-                             username=__MONGO_USER,
-                             password=__MONGO_PASSWORD)
+__MONGO_CLIENT = None
+
+if __MONGO_URI:
+    __MONGO_CLIENT = MongoClient(__MONGO_URI)
+else:
+    __MONGO_CLIENT = MongoClient(__MONGO_HOST, username=__MONGO_USER, password=__MONGO_PASSWORD)
+
 
 db = __MONGO_CLIENT.tradingBot
 collection = db.mission
@@ -37,7 +41,7 @@ def cleanMission():
 if __name__ == '__main__':
     missionData = {
         "context": {
-            "interval": 60,
+            "interval": 5,
             "assets": [
                 "ETH"
             ]
@@ -52,7 +56,7 @@ if __name__ == '__main__':
 
     missionId = missions[0]['_id']
     missionData = {
-        "interval": 60,
+        "interval": 5,
         "assets": [
             "GRT", "LINK", "ALGO"
         ]

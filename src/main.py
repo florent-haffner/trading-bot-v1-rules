@@ -4,7 +4,7 @@ from time import sleep
 import matplotlib.pyplot as plt
 
 from src.services.krakenDataService import getFormattedData, get_stocks_indicators
-from src.services.missionService import getAllMissions
+from src.repository.missionRepository import getAllMissions
 from src.engine.trendAnalyzer import TrendAnalyzer
 
 
@@ -27,7 +27,7 @@ def run_bot(asset, currency, interval, length_assets):
     df_with_indicators = get_stocks_indicators(df)
 
     three_day_DF = get_last_n_percentage(df_with_indicators, 35)
-    TrendAnalyzer(three_day_DF, asset, currency, length_assets)
+    TrendAnalyzer(three_day_DF, asset, currency, length_assets, interval)
 
     time_to_sleep = 10
     print('Sleeping for about', time_to_sleep, 'seconds.')

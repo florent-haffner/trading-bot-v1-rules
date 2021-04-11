@@ -4,11 +4,12 @@ from src.engine.trendAnalyzerHelper import get_last_index, calculate_volume_to_b
 
 
 class TrendAnalyzer:
-    def __init__(self, df, asset, currency, length_assets):
+    def __init__(self, df, asset, currency, length_assets, interval):
         self.df = df
         self.asset = asset
         self.currency = currency
         self.length_assets = length_assets
+        self.interval = interval
 
         self.analyse_trends()
         self.make_decision()
@@ -54,7 +55,8 @@ class TrendAnalyzer:
                      volume_to_buy=volume_to_buy,
                      asset=self.asset,
                      df=self.df,
-                     maximum_index=self.index_size - 1)
+                     maximum_index=self.index_size - 1,
+                     interval=self.interval)
             send_email(
                 '[BOT-ANALYSIS]', 'Incoming trade : [' + self.asset + '] - type: ' + type_of_trade,
                 attachments)
