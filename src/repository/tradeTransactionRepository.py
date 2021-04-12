@@ -88,7 +88,10 @@ if __name__ == '__main__':
     #                   key=timeseries_sell['tags']['typeOfTrade'],
     #                   updateTransaction=timeseries_sell)
 
-    print(list(getAllTransaction()))
+    transactions = list(getAllTransaction())
+    for transaction in transactions:
+        print(transaction)
+
     cleanTransaction()
 
     # transaction = getTransactionById(transactionId)

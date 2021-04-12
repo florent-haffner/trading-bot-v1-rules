@@ -19,7 +19,6 @@ def generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset, interval
             'interval': interval
         },
         'fields': {
-            'transactionId': transactionId,
             'asset': asset,
             'quantity': volume_to_buy,
             'price': df['close'][maximum_index],
