@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from peakdetect import peakdetect
 
-from src.services.krakenTradeService import getAccountBalance
-from src.services.timeseriesService import getLastEventByTypeAndAsset, getTransactionById
+from src.services.krakenTradeService import getAccountBalance, getTradeBalance
+from src.services.timeseriesService import getLastEventByTypeAndAsset, getTransaction
 from src.services.timeseriesService import getLastEventByTypeAndAsset
 
 
@@ -81,13 +81,29 @@ def calculate_volume_to_buy(self, typeOfTrade, date):
 
     if previous_currency_trade:
         transactionId = previous_currency_trade['transactionId']
-        transaction = getTransactionById(transactionId)
-        print('\nGET TRANSACTION BY ID')
-        print(transaction)
-
+        transaction = getTransaction(transactionId)
+        try:
+            if transaction['sell']:
+                volume = define_volume(df=self.df,
+                                       type_of_trade=typeOfTrade,
+                                       asset=self.asset,
+                                       currency=self.currency,
+                                       nbr_asset_on_trade=self.length_assets,
+                                       index_max=self.index_size - 1)
+                return volume, None
+        except KeyError:
+            pass
 
     volume = None
     if not previous_currency_trade:
+
+        if typeOfTrade == 'sell':
+            result = getTradeBalance(self.asset)
+            possessed_currency = result['result']['m']
+            if possessed_currency == 0.:
+                return possessed_currency, previous_currency_trade
+            return None, previous_currency_trade
+
         volume = define_volume(df=self.df,
                                type_of_trade=typeOfTrade,
                                asset=self.asset,

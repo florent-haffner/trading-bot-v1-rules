@@ -61,7 +61,6 @@ class TrendAnalyzer:
         volume_to_buy, transactionId = calculate_volume_to_buy(self, type_of_trade, date)
         
         if volume_to_buy:
-
             addTradeEvent(type_of_trade=type_of_trade,
                              volume_to_buy=volume_to_buy,
                              asset=self.asset,

@@ -89,7 +89,7 @@ if __name__ == '__main__':
     #                   updateTransaction=timeseries_sell)
 
     print(list(getAllTransaction()))
-    # cleanTransaction()
+    cleanTransaction()
 
     # transaction = getTransactionById(transactionId)
     # print(transaction)
