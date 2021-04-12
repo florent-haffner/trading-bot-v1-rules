@@ -90,7 +90,7 @@ def calculate_volume_to_buy(self, typeOfTrade, date):
                                        currency=self.currency,
                                        nbr_asset_on_trade=self.length_assets,
                                        index_max=self.index_size - 1)
-                return volume, None
+                return volume, transactionId
         except KeyError:
             pass
 
@@ -104,7 +104,8 @@ def calculate_volume_to_buy(self, typeOfTrade, date):
             # possessed_currency = result['result']['m']
             # if possessed_currency == 0.:
             #     return possessed_currency, previous_currency_trade
-            # return None, previous_currency_trade
+
+            return None, previous_currency_trade
 
         volume = define_volume(df=self.df,
                                type_of_trade=typeOfTrade,
@@ -112,7 +113,7 @@ def calculate_volume_to_buy(self, typeOfTrade, date):
                                currency=self.currency,
                                nbr_asset_on_trade=self.length_assets,
                                index_max=self.index_size - 1)
-    return volume, previous_currency_trade
+    return volume, None
 
 
 def find_multiple_curve_min_max(df, key):

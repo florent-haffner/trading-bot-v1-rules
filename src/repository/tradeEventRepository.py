@@ -113,4 +113,5 @@ if __name__ == "__main__":
     # getRecentEventByTypeAndAsset('GRT', 'buy')
 
     analysingRecentTrades()
-    cleanTradeEvents(True)
+
+    # cleanTradeEvents(True)
