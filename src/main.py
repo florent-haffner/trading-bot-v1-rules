@@ -46,6 +46,6 @@ if __name__ == "__main__":
                 currency = 'EUR'
                 run_bot(asset, currency, interval, len(assets))
 
-            time_to_sleep = (interval * 60) / 8
-            print('Sleeping for about', time_to_sleep/60, 'minutes.')
-            sleep(time_to_sleep)
+            # time_to_sleep = (interval * 60) / 8
+            print('Sleeping for about', interval, 'seconds.')
+            sleep(interval)
