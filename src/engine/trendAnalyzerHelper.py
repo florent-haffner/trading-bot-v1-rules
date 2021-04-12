@@ -98,11 +98,13 @@ def calculate_volume_to_buy(self, typeOfTrade, date):
     if not previous_currency_trade:
 
         if typeOfTrade == 'sell':
-            result = getTradeBalance(self.asset)
-            possessed_currency = result['result']['m']
-            if possessed_currency == 0.:
-                return possessed_currency, previous_currency_trade
-            return None, previous_currency_trade
+            previous_currency_trade = getLastEventByTypeAndAsset(self.asset, 'buy')
+
+            # result = getTradeBalance(self.asset)
+            # possessed_currency = result['result']['m']
+            # if possessed_currency == 0.:
+            #     return possessed_currency, previous_currency_trade
+            # return None, previous_currency_trade
 
         volume = define_volume(df=self.df,
                                type_of_trade=typeOfTrade,
