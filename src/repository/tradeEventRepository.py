@@ -53,13 +53,13 @@ def getAllEvents():
     return result
 
 
-def addTradeEvent(event):
+def insertTradeEvent(event):
     print('[INFLUXDB] writing new tradeEvent\n', event)
     __INFLUX_CLIENT.switch_database(__CURRENT_DB)
     __INFLUX_CLIENT.write_points(event)
 
 
-def resetProductionDatabase(bool):
+def cleanTradeEvents(bool):
     if bool:
         print('\nReseting production databse, ciao datas')
         __INFLUX_CLIENT.drop_database(__CURRENT_DB)
@@ -113,3 +113,4 @@ if __name__ == "__main__":
     # getRecentEventByTypeAndAsset('GRT', 'buy')
 
     analysingRecentTrades()
+    # cleanTradeEvents(True)

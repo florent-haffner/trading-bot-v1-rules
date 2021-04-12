@@ -6,13 +6,14 @@ import numpy as np
 from peakdetect import peakdetect
 
 from src.services.krakenTradeService import getAccountBalance
+from src.services.timeseriesService import getLastEventByTypeAndAsset, getTransactionById
 from src.services.timeseriesService import getLastEventByTypeAndAsset
 
 
 class NothingToTrade(Exception): pass
 
 
-def define_quantity_volume(df, type_of_trade, asset, currency, nbr_asset_on_trade, index_max):
+def define_volume(df, type_of_trade, asset, currency, nbr_asset_on_trade, index_max):
     print('\n[VOLUME TRADING QUANTITY]')
     print('Type of trade:', type_of_trade)
 
@@ -74,19 +75,26 @@ def get_last_index(peaks_high, peaks_low):
     return last_high_index, last_low_index
 
 
-def calculate_volume_to_buy(self, typeOfTrade):
+def calculate_volume_to_buy(self, typeOfTrade, date):
     previous_currency_trade = getLastEventByTypeAndAsset(self.asset, typeOfTrade)
-    print('previous trade', previous_currency_trade)
+    print('Found previous trade', previous_currency_trade)
 
-    volume_to_buy = None
+    if previous_currency_trade:
+        transactionId = previous_currency_trade['transactionId']
+        transaction = getTransactionById(transactionId)
+        print('\nGET TRANSACTION BY ID')
+        print(transaction)
+
+
+    volume = None
     if not previous_currency_trade:
-        volume_to_buy = define_quantity_volume(df=self.df,
-                                               type_of_trade=typeOfTrade,
-                                               asset=self.asset,
-                                               currency=self.currency,
-                                               nbr_asset_on_trade=self.length_assets,
-                                               index_max=self.index_size - 1)
-    return volume_to_buy
+        volume = define_volume(df=self.df,
+                               type_of_trade=typeOfTrade,
+                               asset=self.asset,
+                               currency=self.currency,
+                               nbr_asset_on_trade=self.length_assets,
+                               index_max=self.index_size - 1)
+    return volume, previous_currency_trade
 
 
 def find_multiple_curve_min_max(df, key):

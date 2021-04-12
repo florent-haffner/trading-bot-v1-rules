@@ -1,6 +1,5 @@
-from datetime import datetime
-
-from src.repository.timeseriesRepository import getRecentEventByTypeAndAsset, addTradeEvent
+from src.repository.tradeEventRepository import getRecentEventByTypeAndAsset, insertTradeEvent
+from src.repository.tradeTransactionRepository import insertTransactionEvent
 
 
 def getLastEventByTypeAndAsset(asset, typeOfTrade):
@@ -11,25 +10,33 @@ def getLastEventByTypeAndAsset(asset, typeOfTrade):
                 return n
 
 
-def generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset, interval):
-    return [
-        {
-            'measurement': 'tradeEvent',
-            'time': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
-            'tags': {
-                'typeOfTrade': type_of_trade,
-                'interval': interval
-            },
-            'fields': {
-                'asset': asset,
-                'quantity': volume_to_buy,
-                'price': df['close'][maximum_index],
-                'acknowledge': False
-            }
+def generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset, interval, date, transactionId):
+    return {
+        'measurement': 'tradeEvent',
+        'time': date,
+        'tags': {
+            'typeOfTrade': type_of_trade,
+            'interval': interval
+        },
+        'fields': {
+            'transactionId': transactionId,
+            'asset': asset,
+            'quantity': volume_to_buy,
+            'price': df['close'][maximum_index],
+            'acknowledge': False
         }
-    ]
+    }
 
 
-def addEvent(type_of_trade, volume_to_buy, df, maximum_index, asset, interval):
-    point = generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset, interval)
-    addTradeEvent(point)
+def addTradeEvent(type_of_trade, volume_to_buy, df, maximum_index, asset, interval, date, transactionId):
+    point = generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset, interval, date, transactionId)
+    if not transactionId:
+        transactionId = insertTransactionEvent(type_of_trade, point)
+        # print(transactionId)
+        # print(str(transactionId))
+    # raise Exception('')
+    point['fields']['transactionId'] = str(transactionId)
+    insertTradeEvent([point])
+
+def getTransactionById(id):
+    return getTransactionById(id)

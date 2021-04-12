@@ -15,16 +15,17 @@ collection = db.mission
 
 
 def createMission(data):
-    print('[NEW MISSION] ->', data)
+    print('[MONGODB] - [NEW MISSION] ->', data)
     collection.insert_one(data)
 
 
 def getAllMissions():
+    print('[MONGODB] - [GET ALL MISSIONS]')
     return db.mission.find({})
 
 
 def updateMission(id, updatedMission):
-    print('[UPDATE MISSION] ->', updatedMission)
+    print('[MONGODB] - [UPDATE MISSION] ->', updatedMission)
     query = dict(_id=id)
     values = {"$set": {"context": updatedMission}}
 
@@ -33,7 +34,7 @@ def updateMission(id, updatedMission):
 
 
 def cleanMission():
-    print('[REMOVING ALL MISSIONS]')
+    print('[MONGODB] - [REMOVING ALL MISSIONS]')
     collection.delete_many({})
     print('Done. Current list of missions:', list(collection.find({})))
 
