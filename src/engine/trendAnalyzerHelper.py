@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from peakdetect import peakdetect
 
-from src.services.krakenTradeService import getAccountBalance, getTradeBalance
-from src.services.timeseriesService import getLastEventByTypeAndAsset, getTransaction
+from src.services.krakenTradeService import getAccountBalance
 from src.services.timeseriesService import getLastEventByTypeAndAsset
+from src.services.timeseriesService import getTransaction
 
 
 class NothingToTrade(Exception): pass
@@ -19,9 +19,9 @@ def define_volume(df, type_of_trade, asset, currency, nbr_asset_on_trade, index_
 
     volume_to_buy = None
     try:
-        balanceEuro = float(getAccountBalance()['result']['ZEUR'])
-        maximumPercentage = .9
-        money_available = (balanceEuro / float(nbr_asset_on_trade)) * maximumPercentage
+        balance_euro = float(getAccountBalance()['result']['ZEUR'])
+        maximum_percentage = .9
+        money_available = (balance_euro / float(nbr_asset_on_trade)) * maximum_percentage
         volume_to_buy = money_available / df['close'][index_max]
 
     except Exception as err:
@@ -41,18 +41,10 @@ def plot_peaks_close_ema(df, key, higher_peaks, lower_peaks):
     plt.plot(higher_peaks[:, 0], higher_peaks[:, 1], 'ro')
     plt.plot(lower_peaks[:, 0], lower_peaks[:, 1], 'go')
 
-    pathToSaveFigure = '/tmp/' + str(datetime.now()) + '-' + key + '.png'
-
-    plt.savefig(pathToSaveFigure)
+    path_to_save_figure = '/tmp/' + str(datetime.now()) + '-' + key + '.png'
+    plt.savefig(path_to_save_figure)
     plt.close('all')
-    return pathToSaveFigure
-
-
-def plot_close_ema(df):
-    plt.title('MM')
-    plt.plot(df['close'])
-    plt.plot(df['dx_6_ema'], 'r')
-    plt.show()
+    return path_to_save_figure
 
 
 def build_DTO(df, measures, index):
@@ -66,7 +58,8 @@ def remove_tmp_pics(path):
     try:
         os.remove(path)
         print('Removed tmp plot figure from', path)
-    except Exception: pass
+    except OSError:
+        pass
 
 
 def get_last_index(peaks_high, peaks_low):
@@ -75,45 +68,27 @@ def get_last_index(peaks_high, peaks_low):
     return last_high_index, last_low_index
 
 
-def calculate_volume_to_buy(self, typeOfTrade, date):
-    previous_currency_trade = getLastEventByTypeAndAsset(self.asset, typeOfTrade)
-    print('Found previous trade', previous_currency_trade)
+def calculate_volume_to_buy(self, type_of_trade):
+    if type_of_trade == 'buy':
+        previous_currency_trade = getLastEventByTypeAndAsset(self.asset, type_of_trade)
+        if not previous_currency_trade:
+            volume = define_volume(df=self.df,
+                                   type_of_trade=type_of_trade,
+                                   asset=self.asset,
+                                   currency=self.currency,
+                                   nbr_asset_on_trade=self.length_assets,
+                                   index_max=self.index_size - 1)
+            return volume, None
 
-    if previous_currency_trade:
-        transactionId = previous_currency_trade['transactionId']
-        transaction = getTransaction(transactionId)
-        try:
-            if transaction['sell']:
-                volume = define_volume(df=self.df,
-                                       type_of_trade=typeOfTrade,
-                                       asset=self.asset,
-                                       currency=self.currency,
-                                       nbr_asset_on_trade=self.length_assets,
-                                       index_max=self.index_size - 1)
-                return volume, transactionId
-        except KeyError:
-            pass
+    if type_of_trade == 'sell':
+        previous_currency_trade = getLastEventByTypeAndAsset(self.asset, 'buy')
+        if previous_currency_trade:
+            transaction_id = previous_currency_trade['transactionId']
+            transaction = getTransaction(transaction_id)
+            return transaction['buy']['fields']['quantity'], transaction_id
+        pass
 
-    volume = None
-    if not previous_currency_trade:
-
-        if typeOfTrade == 'sell':
-            previous_currency_trade = getLastEventByTypeAndAsset(self.asset, 'buy')
-
-            # result = getTradeBalance(self.asset)
-            # possessed_currency = result['result']['m']
-            # if possessed_currency == 0.:
-            #     return possessed_currency, previous_currency_trade
-
-            return None, previous_currency_trade
-
-        volume = define_volume(df=self.df,
-                               type_of_trade=typeOfTrade,
-                               asset=self.asset,
-                               currency=self.currency,
-                               nbr_asset_on_trade=self.length_assets,
-                               index_max=self.index_size - 1)
-    return volume, None
+    return None, None
 
 
 def find_multiple_curve_min_max(df, key):
@@ -128,5 +103,5 @@ def find_multiple_curve_min_max(df, key):
     higher_peaks = np.array(peaks[0])
     lower_peaks = np.array(peaks[1])
 
-    pathFig = plot_peaks_close_ema(df, key, higher_peaks, lower_peaks)
-    return higher_peaks, lower_peaks, pathFig
+    path_fig = plot_peaks_close_ema(df, key, higher_peaks, lower_peaks)
+    return higher_peaks, lower_peaks, path_fig

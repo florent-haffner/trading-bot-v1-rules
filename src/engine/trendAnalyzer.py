@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from src.helpers.emailSenderHelper import send_email
-from src.services.timeseriesService import insertTradeEvent, addTradeEvent
 from src.engine.trendAnalyzerHelper import get_last_index, calculate_volume_to_buy, find_multiple_curve_min_max
+from src.helpers.emailSenderHelper import send_email
+from src.services.timeseriesService import addTradeEvent
 
 
 class TrendAnalyzer:
@@ -36,42 +36,40 @@ class TrendAnalyzer:
             margin = 10
             if self.last_close_low >= self.index_size - margin or \
                     self.last_macd_low >= self.index_size - margin:
-                typeOfTrade = 'buy'
-                self.create_trade_event(typeOfTrade, attachments)
+                self.create_trade_event(type_of_trade='sell', attachments=attachments)
 
             elif self.last_close_high >= self.index_size - margin or \
                     self.last_macd_high >= self.index_size - margin:
-                typeOfTrade = 'sell'
-                self.create_trade_event(typeOfTrade, attachments)
+                self.create_trade_event(type_of_trade='sell', attachments=attachments)
+
             else:
                 # TODO -> what about checking if I didn't already have stuff
                 print('Trends are currently evolving, waiting...')
 
         except Exception as err:
-            raise err  # TODO -> remove while not bebuging
-            # print('[EXCEPTION] - sending email', err)
-            # send_email('Exception', str(err), {})
+            print('[EXCEPTION] - sending email', err)
+            send_email('Exception', str(err), {})
 
         print('\n[END OF ANALYSIS] ->', self.asset)
         print('\nResume to follow next action', '\n------------------\n')
 
     def create_trade_event(self, type_of_trade, attachments):
-        print('Calculating volume to buy')
+        print('Calculating volume')
         date = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-        volume_to_buy, transactionId = calculate_volume_to_buy(self, type_of_trade, date)
-        
+        volume_to_buy, transaction_id = calculate_volume_to_buy(self, type_of_trade)
+
         if volume_to_buy:
             addTradeEvent(type_of_trade=type_of_trade,
-                             volume_to_buy=volume_to_buy,
-                             asset=self.asset,
-                             df=self.df,
-                             maximum_index=self.index_size - 1,
-                             interval=self.interval,
-                             date=date,
-                             transactionId=transactionId)
+                          volume_to_buy=volume_to_buy,
+                          asset=self.asset,
+                          df=self.df,
+                          maximum_index=self.index_size - 1,
+                          interval=self.interval,
+                          date=date,
+                          transactionId=transaction_id)
             send_email(
                 '[BOT-ANALYSIS]', 'Incoming trade : [' + self.asset + '] - type: ' + type_of_trade,
                 attachments)
-            print(type_of_trade, 'this', volume_to_buy, 'of', self.asset)
+            print(type_of_trade.upper(), 'this', volume_to_buy, 'of', self.asset)
         else:
             print('Nothing to', type_of_trade)

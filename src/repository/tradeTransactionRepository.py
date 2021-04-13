@@ -32,7 +32,7 @@ def getAllTransaction():
     return collection.find({})
 
 
-def updateTransaction(id, key, updateTransaction):
+def updateTransactionById(id, key, updateTransaction):
     query = dict(_id=id)
     values = {"$set": { str(key): updateTransaction }}
     collection.update_one(query, values)
@@ -45,54 +45,56 @@ def cleanTransaction():
     print('Done. Current list of TRANSACTION:', list(collection.find({})))
 
 
+def initEnvironment():
+    timeseries_buy = {
+        'measurement': 'tradeEvent',
+        'time': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        'tags': {
+            'typeOfTrade': 'buy',
+            'interval': '5'
+        },
+        'fields': {
+            'asset': 'ETH',
+            'quantity': 200,
+            'price': 200,
+            'acknowledge': False
+        }
+    }
+
+    transactions = list(getAllTransaction())
+    if not transactions:
+        insertTransactionEvent(
+            key=timeseries_buy['tags']['typeOfTrade'],
+            data=timeseries_buy)
+        transactions = list(getAllTransaction())
+    print(transactions)
+
+    transactionId = transactions[0]['_id']
+    timeseries_sell = {
+        'measurement': 'tradeEvent',
+        'time': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        'tags': {
+            'typeOfTrade': 'sell',
+            'interval': '5'
+        },
+        'fields': {
+            'asset': 'ETH',
+            'quantity': 200,
+            'price': 200,
+            'acknowledge': False
+        }
+    }
+    updateTransactionById(id=transactionId,
+                          key=timeseries_sell['tags']['typeOfTrade'],
+                          updateTransaction=timeseries_sell)
+
+
 if __name__ == '__main__':
-    # timeseries_buy = {
-    #     'measurement': 'tradeEvent',
-    #     'time': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
-    #     'tags': {
-    #         'typeOfTrade': 'buy',
-    #         'interval': '5'
-    #     },
-    #     'fields': {
-    #         'asset': 'ETH',
-    #         'quantity': 200,
-    #         'price': 200,
-    #         'acknowledge': False
-    #     }
-    # }
-    #
-    # transactions = list(getAllTransaction())
-    # if not transactions:
-    #     insertTransactionEvent(
-    #         key=timeseries_buy['tags']['typeOfTrade'],
-    #         data=timeseries_buy)
-    #     transactions = list(getAllTransaction())
-    # print(transactions)
-    #
-    # transactionId = transactions[0]['_id']
-    # timeseries_sell = {
-    #     'measurement': 'tradeEvent',
-    #     'time': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
-    #     'tags': {
-    #         'typeOfTrade': 'sell',
-    #         'interval': '5'
-    #     },
-    #     'fields': {
-    #         'asset': 'ETH',
-    #         'quantity': 200,
-    #         'price': 200,
-    #         'acknowledge': False
-    #     }
-    # }
-    # updateTransaction(id=transactionId,
-    #                   key=timeseries_sell['tags']['typeOfTrade'],
-    #                   updateTransaction=timeseries_sell)
+    # initEnvironment()
 
     transactions = list(getAllTransaction())
     for transaction in transactions:
+        print(transaction.keys())
         print(transaction)
 
-    # cleanTransaction
-
-    # transaction = getTransactionById(transactionId)
-    # print(transaction)
+    # cleanTransaction()
