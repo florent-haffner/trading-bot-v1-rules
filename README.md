@@ -1,6 +1,6 @@
-# MoneyMakr-bot
+# Trading-bot
 
-# Infrastructure
+## Infrastructure and dependency
 
 Use docker to launch MongoDB + InfluxDB instances.
 
