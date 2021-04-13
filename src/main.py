@@ -2,6 +2,7 @@ from datetime import datetime
 from time import sleep
 
 import matplotlib.pyplot as plt
+import pymongo.errors
 
 from src.services.krakenDataService import getFormattedData, get_stocks_indicators
 from src.repository.missionRepository import getAllMissions
@@ -37,15 +38,18 @@ def run_bot(asset, currency, interval, length_assets):
 if __name__ == "__main__":
     print("[TRADING BOT]\n")
     while True:
-        missions = list(getAllMissions())
-        for mission in missions:
-            assets = mission['context']['assets']
-            interval = mission['context']['interval']
-            print('[ASSETS TO QUERY] :', assets)
-            for asset in assets:
-                currency = 'EUR'
-                run_bot(asset, currency, interval, len(assets))
+        try:
+            missions = list(getAllMissions())
+            for mission in missions:
+                assets = mission['context']['assets']
+                interval = mission['context']['interval']
+                print('[ASSETS TO QUERY] :', assets)
+                for asset in assets:
+                    currency = 'EUR'
+                    run_bot(asset, currency, interval, len(assets))
 
-            # time_to_sleep = (interval * 60) / 8
-            print('Sleeping for about', interval, 'seconds.')
-            sleep(interval)
+                # time_to_sleep = (interval * 60) / 8
+                print('Sleeping for about', interval, 'seconds.')
+                sleep(interval)
+        except pymongo.errors.ServerSelectionTimeoutError:
+            sleep(30)
