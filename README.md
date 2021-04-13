@@ -4,11 +4,16 @@
 
 Use docker to launch MongoDB + InfluxDB instances.
 
-Config influxDB `influx CREATE USER admin WITH PASSWORD '<password>' WITH ALL PRIVILEGES`
+Set user for Influx :
+
+    influx CREATE USER admin WITH PASSWORD '<password>' WITH ALL PRIVILEGES
+
+Python's bot dependencies :
+
+    conda create -n trading-bot python=3.8 && conda activate trading-bot
+    pip3 install -r requirements.txt
 
 ## How to use
-
-Check this out later, boy.
 
 `$HOME/anaconda3/envs/trading-bot/bin/python -m src.main`
 
@@ -16,11 +21,6 @@ Check this out later, boy.
 
 
 ## Env - OBSOLETE CURRENTLY
-
-Python and general dependancies
-
-    conda create -n trading-bot python=3.8 && conda activate trading-bot
-    pip3 install -r requirements.txt
 
 GPU acceleration /w CUDA and cuDNN, here version used on Arch linux.
 ```
