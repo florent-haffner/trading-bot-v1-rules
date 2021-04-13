@@ -8,7 +8,8 @@ class TradeToKrakenError(Exception): pass
 
 
 API = krakenex.API()
-API.load_key(os.getcwd() + '/secret/kraken.key')
+current_file_absolute_path = os.path.dirname(os.path.realpath(__file__))
+API.load_key(current_file_absolute_path + '/../' + 'secret/kraken.key')
 
 """
 :param asset -> the currency, ex : BTC, ETH, GRT
