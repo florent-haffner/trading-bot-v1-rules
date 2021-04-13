@@ -1,12 +1,14 @@
-import krakenex
+import os
 from datetime import datetime
+
+import krakenex
 
 
 class TradeToKrakenError(Exception): pass
 
 
 API = krakenex.API()
-API.load_key('src/secret/kraken.key')
+API.load_key(os.getcwd() + '/secret/kraken.key')
 
 """
 :param asset -> the currency, ex : BTC, ETH, GRT
