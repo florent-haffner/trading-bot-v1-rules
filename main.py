@@ -37,6 +37,7 @@ def run_bot(asset, currency, interval, length_assets):
 
 if __name__ == "__main__":
     print("[TRADING BOT]\n")
+    sleep(10)
     while True:
         try:
             missions = list(getAllMissions())

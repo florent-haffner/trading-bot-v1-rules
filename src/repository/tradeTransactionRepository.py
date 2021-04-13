@@ -97,4 +97,6 @@ if __name__ == '__main__':
         print(transaction.keys())
         print(transaction)
 
+    print('\n')
+    print(getTransactionById('6075ef59488b86ad29315060'))
     # cleanTransaction()

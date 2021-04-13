@@ -34,14 +34,13 @@ def addTradeEvent(type_of_trade, volume_to_buy, df, maximum_index, asset, interv
         transactionId = insertTransactionEvent(type_of_trade, point)
     point['fields']['transactionId'] = str(transactionId)
 
-    # Adding new tradeEvent
+    # Adding new tradeEvent on InfluxDB
     insertTradeEvent([point])
 
-    # Upgrading previously created transaction
+    # Upgrading previous transaction on MongoDB
     if type_of_trade == 'sell':
-        transaction = getTransaction(transactionId)
-        print('Updating', transaction, 'to complete transaction')
-        updateTransaction(transactionId, 'sell', point)
+        print('Updating', transactionId, 'to complete transaction')
+        updateTransaction(transactionId, type_of_trade, point)
 
 
 def getTransaction(id):
