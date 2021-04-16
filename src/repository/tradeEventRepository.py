@@ -9,7 +9,7 @@ __INFLUX_CLIENT = None
 __CURRENT_DB = None
 
 if __INFLUX_URI:
-    from influxdb_client import InfluxDBClient # TODO -> clean this
+    from influxdb_client import InfluxDBClient  # TODO -> clean this
     __CURRENT_DB = __INFLUX_DB_TRADE_EVENT + '_prod'
     __INFLUX_CLIENT = InfluxDBClient(
         url=__INFLUX_URI, token=__INFLUX_TOKEN
@@ -96,8 +96,7 @@ def initEnvironment():
             'fields': {
                 'asset': 'GRT',
                 'quantity': 32.,
-                'price': 32.,
-                'acknowledge': False
+                'price': 32.
             }
         }
     ]

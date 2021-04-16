@@ -5,11 +5,11 @@ from time import sleep
 import pymongo.errors
 import pandas as pd
 
-from src.engine.trendAnalyzer import TrendAnalyzer
+from src.engine.analysisEngine import AnalysisEngine
 from src.repository.missionRepository import getAllMissions
 from src.services.krakenDataService import getFormattedData, get_stocks_indicators
 
-__DEBUG = True
+__DEBUG = False
 
 
 def get_last_n_percentage(df, nbr_percentage):
@@ -36,7 +36,7 @@ def run_bot(asset, currency, interval, length_assets):
     df_with_indicators = get_stocks_indicators(df)
 
     three_day_DF = get_last_n_percentage(df_with_indicators, 35)
-    TrendAnalyzer(__DEBUG, three_day_DF, asset, currency, length_assets, interval)
+    AnalysisEngine(__DEBUG, three_day_DF, asset, currency, length_assets, interval)
 
     sleep_between_analysis = interval / 10
     print('Sleeping for about', sleep_between_analysis, 'seconds.')

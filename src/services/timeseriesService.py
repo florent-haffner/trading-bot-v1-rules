@@ -34,8 +34,7 @@ def generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset, interval
         'fields': {
             'asset': asset,
             'quantity': volume_to_buy,
-            'price': df['close'][maximum_index],
-            'acknowledge': False
+            'price': df['close'][maximum_index]
         }
     }
 

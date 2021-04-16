@@ -98,10 +98,4 @@ if __name__ == '__main__':
     for transaction in transactions:
         print(transaction.keys())
 
-    print('\n')
-    # transactionId = ''
-    # print(getTransactionById(transactionId))
-    # updateTransactionById(transactionId, 'sell', {'key': 'value'})
-    # print(getTransactionById(transactionId))
-
     # cleanTransaction()

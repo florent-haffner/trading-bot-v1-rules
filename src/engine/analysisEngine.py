@@ -1,13 +1,11 @@
-import os
 from datetime import datetime
 
-from src.engine.trendAnalyzerHelper import get_last_index, calculate_volume_to_buy, find_multiple_curve_min_max
+from src.engine.analysisEngineHelper import get_last_index, calculate_volume_to_buy, find_multiple_curve_min_max
 from src.helpers.emailSenderHelper import send_email
-from src.services.krakenDataService import getFormattedData
 from src.services.timeseriesService import addTradeEvent
 
 
-class TrendAnalyzer:
+class AnalysisEngine:
     def __init__(self, mode, df, asset, currency, length_assets, interval):
         self.df = df
         self.debug = mode
