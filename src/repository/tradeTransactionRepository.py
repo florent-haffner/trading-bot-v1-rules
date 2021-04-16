@@ -33,10 +33,12 @@ def getAllTransaction():
 
 
 def updateTransactionById(id, key, updateTransaction):
-    query = dict(_id=id)
-    values = {"$set": { str(key): updateTransaction }}
-    collection.update_one(query, values)
-    print('[MONGODB] - [UPDATED TRANSACTION] ->', id)
+    print('[MONGODB] - [UPDATING TRANSACTION] ->', id)
+    values = {"$set": {key: updateTransaction}}
+    return collection.update_one(
+        filter=dict({'_id': ObjectId(id)}),
+        update=values,
+        upsert=False)
 
 
 def cleanTransaction():
@@ -95,8 +97,11 @@ if __name__ == '__main__':
     transactions = list(getAllTransaction())
     for transaction in transactions:
         print(transaction.keys())
-        print(transaction)
 
     print('\n')
-    print(getTransactionById('6075ef59488b86ad29315060'))
+    # transactionId = ''
+    # print(getTransactionById(transactionId))
+    # updateTransactionById(transactionId, 'sell', {'key': 'value'})
+    # print(getTransactionById(transactionId))
+
     # cleanTransaction()

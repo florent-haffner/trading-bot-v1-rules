@@ -119,4 +119,4 @@ if __name__ == "__main__":
 
     analysingRecentTrades()
 
-    cleanTradeEvents()
+    # cleanTradeEvents()

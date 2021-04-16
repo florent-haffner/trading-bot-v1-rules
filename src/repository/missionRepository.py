@@ -65,4 +65,4 @@ if __name__ == '__main__':
     updateMission(missionId, missionData)
 
     print(list(getAllMissions()))
-    # cleanMission()
+    cleanMission()
