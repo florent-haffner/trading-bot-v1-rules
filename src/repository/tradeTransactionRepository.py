@@ -91,17 +91,18 @@ def initEnvironment():
                           updateTransaction=timeseries_sell)
 
 
+def getTransactionByAsset(asset):
+    return collection.find({
+        'buy.fields.asset': asset,
+    })
+
+
 if __name__ == '__main__':
     # initEnvironment()
 
     transactions = list(getAllTransaction())
-    print(len(transactions))
-    # for transaction in transactions:
-    #     print(transaction)
+    print('nbr transaction', len(transactions))
+    for transaction in transactions:
+        print(transaction)
 
     # cleanTransaction()
-    print('Calculating win/loss per asset')
-    grt = collection.find({
-        'buy.fields.asset': 'GRT',
-    })
-    print(list(grt))
