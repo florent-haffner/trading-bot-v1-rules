@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from bson import ObjectId
 from pymongo import MongoClient
@@ -97,6 +97,13 @@ def getTransactionByAsset(asset):
         'buy.fields.asset': asset,
     })
 
+
+def getLastDayTransactionByAsset(asset):
+    previousDay = datetime.now() - timedelta(days=1)
+    return collection.find({
+        'buy.fields.asset': asset,
+        'buy.time': {'$gte': previousDay.strftime(DATE_STR)},
+    })
 
 
 if __name__ == '__main__':

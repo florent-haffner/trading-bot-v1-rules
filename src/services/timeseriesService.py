@@ -2,7 +2,7 @@ from src.helpers.dateHelper import set_datetime
 from src.repository.missionRepository import getAllMissions
 from src.repository.tradeEventRepository import getRecentEventByTypeAndAsset, insertTradeEvent
 from src.repository.tradeTransactionRepository import insertTransactionEvent, getTransactionById, updateTransactionById, \
-    getTransactionByAsset
+    getTransactionByAsset, getLastDayTransactionByAsset
 
 
 def getLastEventByTypeAndAsset(asset, typeOfTrade):
@@ -115,5 +115,12 @@ def calculateWInLossPerMission():
             print('Lgt transaction', lengthTransaction, 'amount', amount)
 
 
+def getTransactionPerDayAsset(asset):
+    return getLastDayTransactionByAsset(asset)
+
+
 if __name__ == '__main__':
-    calculateWInLossPerMission()
+    # calculateWInLossPerMission()
+
+    transactionsPerDay = list(getTransactionPerDayAsset('GRT'))
+    print('transactionPerDay', transactionsPerDay)
