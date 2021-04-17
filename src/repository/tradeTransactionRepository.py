@@ -95,7 +95,13 @@ if __name__ == '__main__':
     # initEnvironment()
 
     transactions = list(getAllTransaction())
-    for transaction in transactions:
-        print(transaction.keys())
+    print(len(transactions))
+    # for transaction in transactions:
+    #     print(transaction)
 
     # cleanTransaction()
+    print('Calculating win/loss per asset')
+    grt = collection.find({
+        'buy.fields.asset': 'GRT',
+    })
+    print(list(grt))

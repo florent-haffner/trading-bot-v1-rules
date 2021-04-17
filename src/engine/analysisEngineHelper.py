@@ -108,7 +108,7 @@ def find_multiple_curve_min_max(df, key):
     else:
         print('NEGATIVE')
 
-    peaks = peakdetect(df[key], lookahead=4)
+    peaks = peakdetect(df[key], lookahead=2)
     higher_peaks = np.array(peaks[0])
     lower_peaks = np.array(peaks[1])
 
