@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from src.engine.analysisEngineHelper import get_last_index, calculate_volume_to_buy, find_multiple_curve_min_max
+from src.helpers.CONSTANT import DATE_STR
 from src.helpers.emailSenderHelper import send_email
 from src.services.timeseriesService import addTradeEvent
 
@@ -62,7 +63,7 @@ class AnalysisEngine:
 
     def create_trade_event(self, type_of_trade, attachments):
         print('Calculating volume')
-        date = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+        date = datetime.now().strftime(DATE_STR)
         volume_to_buy, transaction_id = calculate_volume_to_buy(self, type_of_trade)
 
         if volume_to_buy:

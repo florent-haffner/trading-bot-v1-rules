@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 
-from src.secret.CONSTANT import __MONGO_HOST, __MONGO_USER, __MONGO_PASSWORD, __MONGO_URI
+from src.secret.SECRET_CONSTANT import __MONGO_HOST, __MONGO_USER, __MONGO_PASSWORD, __MONGO_URI
 
 __MONGO_CLIENT = None
 

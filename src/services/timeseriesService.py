@@ -1,12 +1,8 @@
-from datetime import datetime
-
+from src.helpers.dateHelper import set_datetime
+from src.repository.missionRepository import getAllMissions
 from src.repository.tradeEventRepository import getRecentEventByTypeAndAsset, insertTradeEvent
 from src.repository.tradeTransactionRepository import insertTransactionEvent, getTransactionById, updateTransactionById, \
     getTransactionByAsset
-
-
-def set_datetime(datetime_str):
-    return datetime.strptime(datetime_str[:-1], '%Y-%m-%dT%H:%M:%S')
 
 
 def getLastEventByTypeAndAsset(asset, typeOfTrade):
@@ -82,7 +78,6 @@ def updateTransaction(id, key, data):
 
 def calculateWinLossPerTransactions(transactions):
     total = []
-    print(len(transactions))
     for transaction in transactions:
         typeOfTrade = ['buy', 'sell']
         transactionAmount = []
@@ -106,12 +101,19 @@ def calculateWinLossPerTransactions(transactions):
     for amountPerTransaction in total:
         totalAmount = totalAmount + amountPerTransaction
 
-    return totalAmount
+    return len(transactions), totalAmount
+
+
+def calculateWInLossPerMission():
+    print('\n[CALCULATING WIN/LOSS]\n')
+    missions = list(getAllMissions())
+    for mission in missions:
+        for asset in mission['context']['assets']:
+            print('\n[', asset, '] -> Calculating win/loss pet asset')
+            transactionFromAsset = list(getTransactionByAsset(asset))
+            lengthTransaction, amount = calculateWinLossPerTransactions(transactionFromAsset)
+            print('Lgt transaction', lengthTransaction, 'amount', amount)
 
 
 if __name__ == '__main__':
-    param = 'GRT'
-    print('Calculating win/loss pet asset ->', param)
-    transactionFromAsset = list(getTransactionByAsset(param))
-    amount = calculateWinLossPerTransactions(transactionFromAsset)
-    print(amount)
+    calculateWInLossPerMission()

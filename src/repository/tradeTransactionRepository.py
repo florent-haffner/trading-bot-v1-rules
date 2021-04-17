@@ -3,7 +3,8 @@ from datetime import datetime
 from bson import ObjectId
 from pymongo import MongoClient
 
-from src.secret.CONSTANT import __MONGO_HOST, __MONGO_USER, __MONGO_PASSWORD, __MONGO_URI
+from src.helpers.CONSTANT import DATE_STR
+from src.secret.SECRET_CONSTANT import __MONGO_HOST, __MONGO_USER, __MONGO_PASSWORD, __MONGO_URI
 
 __MONGO_CLIENT = None
 
@@ -50,7 +51,7 @@ def cleanTransaction():
 def initEnvironment():
     timeseries_buy = {
         'measurement': 'tradeEvent',
-        'time': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        'time': datetime.now().strftime(DATE_STR),
         'tags': {
             'typeOfTrade': 'buy',
             'interval': '5'
@@ -74,7 +75,7 @@ def initEnvironment():
     transactionId = transactions[0]['_id']
     timeseries_sell = {
         'measurement': 'tradeEvent',
-        'time': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        'time': datetime.now().strftime(DATE_STR),
         'tags': {
             'typeOfTrade': 'sell',
             'interval': '5'
@@ -95,6 +96,7 @@ def getTransactionByAsset(asset):
     return collection.find({
         'buy.fields.asset': asset,
     })
+
 
 
 if __name__ == '__main__':

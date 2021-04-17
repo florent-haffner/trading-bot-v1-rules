@@ -2,7 +2,8 @@ from datetime import datetime, timedelta
 
 from influxdb import InfluxDBClient
 
-from src.secret.CONSTANT import __INFLUX_HOST, __INFLUX_PORT, __INFLUX_USER, __INFLUX_PASSWORD, \
+from src.helpers.CONSTANT import DATE_STR
+from src.secret.SECRET_CONSTANT import __INFLUX_HOST, __INFLUX_PORT, __INFLUX_USER, __INFLUX_PASSWORD, \
     __INFLUX_DB_TRADE_EVENT, __INFLUX_URI, __INFLUX_TOKEN
 
 __INFLUX_CLIENT = None
@@ -89,7 +90,7 @@ def initEnvironment():
     point = [
         {
             'measurement': 'tradeEvent',
-            'time': (datetime.now() + timedelta(hours=2)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            'time': (datetime.now() + timedelta(hours=2)).strftime(DATE_STR),
             'tags': {
                 'typeOfTrade': 'buy'
             },
@@ -102,7 +103,7 @@ def initEnvironment():
     ]
 
     insertTradeEvent(point)
-    point[0]['time'] = (datetime.now() + timedelta(hours=4)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    point[0]['time'] = (datetime.now() + timedelta(hours=4)).strftime(DATE_STR)
     insertTradeEvent(point)
     getRecentEventByTypeAndAsset('GRT', 'buy')
     getRecentEventByTypeAndAsset('GRT', 'sell')

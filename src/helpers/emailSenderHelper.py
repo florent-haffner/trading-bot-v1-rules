@@ -1,5 +1,5 @@
 from src.engine.analysisEngineHelper import remove_tmp_pics
-from src.secret.CONSTANT import __EMAIL_USER, __EMAIL_PASSWORD
+from src.secret.SECRET_CONSTANT import __EMAIL_USER, __EMAIL_PASSWORD
 
 import smtplib
 from datetime import datetime

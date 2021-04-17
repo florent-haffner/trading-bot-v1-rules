@@ -70,7 +70,7 @@ def get_last_index(peaks_high, peaks_low):
 
 def calculate_volume_to_buy(self, type_of_trade):
     if type_of_trade == 'buy':
-        previous_currency_trade = getLastEventByTypeAndAsset(self.asset, type_of_trade)
+        previous_currency_trade = getLastEventByTypeAndAsset(self.mission, type_of_trade)
         # Ignore the previous trade if it has been fullfilled
         if previous_currency_trade:
             transaction = getTransaction(previous_currency_trade['transactionId'])
@@ -84,14 +84,14 @@ def calculate_volume_to_buy(self, type_of_trade):
         if not previous_currency_trade:
             volume = define_volume(df=self.df,
                                    type_of_trade=type_of_trade,
-                                   asset=self.asset,
+                                   asset=self.mission,
                                    currency=self.currency,
                                    nbr_asset_on_trade=self.length_assets,
                                    index_max=self.index_size - 1)
             return volume, None
 
     if type_of_trade == 'sell':
-        previous_currency_trade = getLastEventByTypeAndAsset(self.asset, 'buy')
+        previous_currency_trade = getLastEventByTypeAndAsset(self.mission, 'buy')
         if previous_currency_trade:
             transaction_id = previous_currency_trade['transactionId']
             transaction = getTransaction(transaction_id)
