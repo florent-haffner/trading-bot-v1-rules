@@ -1,6 +1,8 @@
+import json
+
 from src.helpers.dateHelper import set_datetime
 from src.repository.missionRepository import getAllMissions
-from src.repository.tradeEventRepository import getRecentEventByTypeAndAsset, insertTradeEvent
+from src.repository.tradeEventRepository import getRecentEventByTypeAndAsset, insertTradeEvent, getAllEvents
 from src.repository.tradeTransactionRepository import insertTransactionEvent, getTransactionById, updateTransactionById, \
     getTransactionByAsset, getLastDayTransactionByAsset
 
@@ -119,8 +121,21 @@ def getTransactionPerDayAsset(asset):
     return getLastDayTransactionByAsset(asset)
 
 
+def analysingRecentTrades():
+    events = getAllEvents()
+    print(events.keys(), '\n')
+    types = list(events.keys())
+    for n in range(len(types)):
+        eventType = types[n][1]['typeOfTrade']
+        # print(eventType, list(events[list(events.keys())[n]]))
+        print('\n[', eventType.upper(), ']')
+        for event in list(events[list(events.keys())[n]]):
+            print(json.dumps(event, indent=2))
+
+
 if __name__ == '__main__':
     calculateWInLossPerMission()
+    # analysingRecentTrades()
 
-    transactionsPerDay = list(getTransactionPerDayAsset('GRT'))
-    print('transactionPerDay', transactionsPerDay)
+    # transactionsPerDay = list(getTransactionPerDayAsset('GRT'))
+    # print('\ntransactionPerDay', transactionsPerDay)
