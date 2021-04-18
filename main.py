@@ -1,15 +1,14 @@
-import os
 from datetime import datetime
 from time import sleep
 
 import pymongo.errors
-import pandas as pd
 
 from src.engine.analysisEngine import AnalysisEngine
 from src.repository.missionRepository import getAllMissions
 from src.services.krakenDataService import getFormattedData, get_stocks_indicators
 
 __DEBUG = True
+__OFFLINE = False
 
 
 def get_last_n_percentage(df, nbr_percentage):
@@ -23,19 +22,17 @@ def get_last_n_percentage(df, nbr_percentage):
 def run_bot(asset, currency, interval, length_assets):
     df = getFormattedData(asset + currency, str(interval))
 
-    # if not __DEBUG:
-    #     print('SIMULATION MODE')
-    #     df = getFormattedData(asset + currency, str(interval))
-    # else:
-    #     print('DEVELOPMENT MODE')
-    #     type_of_trade = ['buy', 'sell']
-    #     chosen_type = type_of_trade[0]
-    #     path_csv = os.getcwd() + '/data/mock-' + asset + '-' + chosen_type + '.csv'
-    #     print('Get CSV from ', path_csv)
-    #     df = pd.read_csv(path_csv)
+    if __OFFLINE:
+        import os
+        import pandas as pd
+        print('DEVELOPMENT MODE')
+        type_of_trade = ['buy', 'sell']
+        chosen_type = type_of_trade[0]
+        path_csv = os.getcwd() + '/data/mock-' + asset + '-' + chosen_type + '.csv'
+        print('Get CSV from ', path_csv)
+        df = pd.read_csv(path_csv)
 
     df_with_indicators = get_stocks_indicators(df)
-
     three_day_DF = get_last_n_percentage(df_with_indicators, 35)
     AnalysisEngine(__DEBUG, three_day_DF, asset, currency, length_assets, interval)
 
@@ -46,7 +43,12 @@ def run_bot(asset, currency, interval, length_assets):
 
 def run():
     print("[TRADING BOT]\n")
-    # sleep(10)
+    if __DEBUG:
+        print('SIMULATION MODE -> Exception will be raised')
+    else:
+        print('PRODUCTION MODE -> Exception will not be raised')
+
+    sleep(2.5)
     while True:
         try:
             missions = list(getAllMissions())
@@ -61,11 +63,6 @@ def run():
                 # time_to_sleep = (interval * 60) / 8
                 print('Sleeping for about', interval, 'seconds.')
                 sleep(interval)
-
-                if __DEBUG:
-                    print('\n[DEBUG = ON] -> Shutting down the bot')
-                    break
-            if __DEBUG: break
 
         except pymongo.errors.ServerSelectionTimeoutError:
             sleep(30)

@@ -1,6 +1,5 @@
-import json
+from datetime import datetime
 
-from src.helpers.dateHelper import set_datetime
 from src.repository.missionRepository import getAllMissions
 from src.repository.tradeEventRepository import getRecentEventByTypeAndAsset, insertTradeEvent, getAllEvents
 from src.repository.tradeTransactionRepository import insertTransactionEvent, getTransactionById, updateTransactionById, \
@@ -24,6 +23,7 @@ def getLastEventByTypeAndAsset(asset, typeOfTrade):
 
 def generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset, interval, date):
     return {
+        'time': datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S.%f+00:00"),
         'measurement': 'tradeEvent',
         'tags': {
             'typeOfTrade': type_of_trade,
@@ -48,6 +48,7 @@ def addTradeEvent(type_of_trade, volume_to_buy, df, maximum_index, asset, interv
 
     if type_of_trade == 'buy':
         # Adding new tradeEvent on InfluxDB
+        del point['time']
         insertTradeEvent([point])
         success = True
 
@@ -58,6 +59,7 @@ def addTradeEvent(type_of_trade, volume_to_buy, df, maximum_index, asset, interv
                                    key=type_of_trade,
                                    data=point)
         if result:
+            del point['time']
             insertTradeEvent([point])
             success = True
     return success
@@ -122,7 +124,6 @@ def getTransactionPerDayAsset(asset):
 
 
 def analysingRecentTrades():
-    import json
     result = {
         'buy': [],
         'sell': []

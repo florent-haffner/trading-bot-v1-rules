@@ -6,15 +6,17 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 from src.helpers.CONSTANT import DATE_STR
 from src.secret.SECRET_CONSTANT import __INFLUX_DB_TRADE_EVENT, __INFLUX_URI, __INFLUX_TOKEN
 
-__CURRENT_BUCKET = __INFLUX_DB_TRADE_EVENT + '_dev'
 __INFLUX_CLIENT = InfluxDBClient(
     url=__INFLUX_URI,
     token=__INFLUX_TOKEN,
 )
+__CURRENT_BUCKET = __INFLUX_DB_TRADE_EVENT + '_dev'
 __INFLUXDB_CURRENT_ORG = "florent.haffner@protonmail.com"
+__MEASUREMENT_NAME = "tradeEvent"
+
 __WRITE_API = __INFLUX_CLIENT.write_api(write_options=SYNCHRONOUS)
 __QUERY_API = __INFLUX_CLIENT.query_api()
-__MEASUREMENT_NAME = "tradeEvent"
+
 
 
 def buildDTO(record):
@@ -114,6 +116,7 @@ def cleanTradeEvents():
 
 
 def initEnvironment():
+    from time import sleep
     print('INIT ENV - test and documentation purpose\n')
     getAllEvents()
 
@@ -124,14 +127,19 @@ def initEnvironment():
             'fields': {
                 'asset': 'GRT',
                 'quantity': 32.,
-                'price': 32.
+                'price': 32.,
+                'transactionId': 'lol'
             }
         }
+
     ]
     insertTradeEvent(point)
-
-    from time import sleep
     sleep(1)
+
+    point[0]['fields']['asset'] = "ALGO"
+    insertTradeEvent(point)
+    sleep(1)
+
     point[0]['fields']['asset'] = "ALGO"
     insertTradeEvent(point)
     sleep(1)
@@ -140,7 +148,17 @@ def initEnvironment():
     insertTradeEvent(point)
     sleep(1)
 
+    getRecentEventByTypeAndAsset('ETH', 'buy')
+
     getAllEvents()
+
+    # Trying to understand the date format used by InfluxDB
+    res = getRecentEventByTypeAndAsset('GRT', 'buy')
+    last_date = res[0]['time']
+    print('last_date')
+    print(last_date, 'STRING', str(last_date), type(last_date))
+    sleep(1)
+
     countAllEvents()
     getRecentEventByTypeAndAsset(asset='GRT', typeOfTrade='buy')
 
@@ -151,8 +169,8 @@ if __name__ == "__main__":
     # initEnvironment()
 
     events = getAllEvents()
-    print(events)
+    for event in events:
+        print(event)
 
+    getRecentEventByTypeAndAsset('GRT', 'buy')
     # cleanTradeEvents()
-
-    pass

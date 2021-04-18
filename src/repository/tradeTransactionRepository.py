@@ -19,6 +19,7 @@ def getTransactionById(id):
 
 def insertTransactionEvent(key, data):
     print('[MONGODB] - [NEW TRANSACTION] ->', data)
+    data['time'] = datetime.now().strftime(DATE_STR)
     transactionId = collection.insert_one({key: data})
     return transactionId.inserted_id
 
