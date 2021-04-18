@@ -4,14 +4,9 @@ from bson import ObjectId
 from pymongo import MongoClient
 
 from src.helpers.CONSTANT import DATE_STR
-from src.secret.SECRET_CONSTANT import __MONGO_HOST, __MONGO_USER, __MONGO_PASSWORD, __MONGO_URI
+from src.secret.SECRET_CONSTANT import __MONGO_URI
 
-__MONGO_CLIENT = None
-
-if __MONGO_URI:
-    __MONGO_CLIENT = MongoClient(__MONGO_URI)
-else:
-    __MONGO_CLIENT = MongoClient(__MONGO_HOST, username=__MONGO_USER, password=__MONGO_PASSWORD)
+__MONGO_CLIENT = MongoClient(__MONGO_URI)
 
 
 db = __MONGO_CLIENT.tradingBot
