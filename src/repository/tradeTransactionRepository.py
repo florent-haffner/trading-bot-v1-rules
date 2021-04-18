@@ -99,10 +99,13 @@ def getTransactionByAsset(asset):
 
 
 def getLastDayTransactionByAsset(asset):
-    previousDay = datetime.now() - timedelta(days=1)
+    previousDayFromMidnight = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
+    thisDayAtMidgnight = datetime.combine(datetime.today(), datetime.min.time())
+
     return collection.find({
         'buy.fields.asset': asset,
-        'buy.time': {'$gte': previousDay.strftime(DATE_STR)},
+        'buy.time': {'$gte': previousDayFromMidnight.strftime(DATE_STR)},
+        'sell.time': {'$lte': thisDayAtMidgnight.strftime(DATE_STR)},
     })
 
 

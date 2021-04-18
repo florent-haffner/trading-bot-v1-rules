@@ -120,7 +120,7 @@ def getTransactionPerDayAsset(asset):
 
 
 if __name__ == '__main__':
-    # calculateWInLossPerMission()
+    calculateWInLossPerMission()
 
     transactionsPerDay = list(getTransactionPerDayAsset('GRT'))
     print('transactionPerDay', transactionsPerDay)
