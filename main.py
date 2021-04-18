@@ -9,7 +9,7 @@ from src.engine.analysisEngine import AnalysisEngine
 from src.repository.missionRepository import getAllMissions
 from src.services.krakenDataService import getFormattedData, get_stocks_indicators
 
-__DEBUG = False
+__DEBUG = True
 
 
 def get_last_n_percentage(df, nbr_percentage):
@@ -21,17 +21,18 @@ def get_last_n_percentage(df, nbr_percentage):
 
 
 def run_bot(asset, currency, interval, length_assets):
-    df = None
-    if not __DEBUG:
-        print('DEVELOPMENT MODE')
-        df = getFormattedData(asset + currency, str(interval))
-    else:
-        print('SIMULATION MODE')
-        type_of_trade = ['buy', 'sell']
-        chosen_type = type_of_trade[0]
-        path_csv = os.getcwd() + '/data/mock-' + asset + '-' + chosen_type + '.csv'
-        print('Get CSV from ', path_csv)
-        df = pd.read_csv(path_csv)
+    df = getFormattedData(asset + currency, str(interval))
+
+    # if not __DEBUG:
+    #     print('SIMULATION MODE')
+    #     df = getFormattedData(asset + currency, str(interval))
+    # else:
+    #     print('DEVELOPMENT MODE')
+    #     type_of_trade = ['buy', 'sell']
+    #     chosen_type = type_of_trade[0]
+    #     path_csv = os.getcwd() + '/data/mock-' + asset + '-' + chosen_type + '.csv'
+    #     print('Get CSV from ', path_csv)
+    #     df = pd.read_csv(path_csv)
 
     df_with_indicators = get_stocks_indicators(df)
 

@@ -9,7 +9,7 @@ from src.secret.SECRET_CONSTANT import __MONGO_URI
 __MONGO_CLIENT = MongoClient(__MONGO_URI)
 
 
-db = __MONGO_CLIENT.tradingBot
+db = __MONGO_CLIENT.tradingbot
 collection = db.tradeTransaction
 
 

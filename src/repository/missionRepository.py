@@ -10,7 +10,7 @@ else:
     __MONGO_CLIENT = MongoClient(__MONGO_HOST, username=__MONGO_USER, password=__MONGO_PASSWORD)
 
 
-db = __MONGO_CLIENT.tradingBot
+db = __MONGO_CLIENT.tradingbot
 collection = db.mission
 
 

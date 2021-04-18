@@ -9,23 +9,22 @@ from src.repository.tradeTransactionRepository import insertTransactionEvent, ge
 
 def getLastEventByTypeAndAsset(asset, typeOfTrade):
     result = getRecentEventByTypeAndAsset(asset, typeOfTrade)
-    for items in result:
+    for item in result:
         most_recent = None
-        for item in items:
-            if not most_recent:
+        if not most_recent:
+            most_recent = item
+        if most_recent:
+            print(most_recent, item)
+            most_recent_time = most_recent['time']
+            last_time = item['time']
+            if last_time > most_recent_time:
                 most_recent = item
-            if most_recent:
-                most_recent_time = set_datetime(most_recent['time'])
-                last_time = set_datetime(item['time'])
-                if last_time > most_recent_time:
-                    most_recent = item
         return most_recent
 
 
 def generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset, interval, date):
     return {
         'measurement': 'tradeEvent',
-        'time': date,
         'tags': {
             'typeOfTrade': type_of_trade,
             'interval': interval
@@ -82,6 +81,7 @@ def calculateWinLossPerTransactions(transactions):
     total = []
     for transaction in transactions:
         typeOfTrade = ['buy', 'sell']
+        print(transaction)
         transactionAmount = []
         for trade in typeOfTrade:
             try:
@@ -122,20 +122,25 @@ def getTransactionPerDayAsset(asset):
 
 
 def analysingRecentTrades():
+    import json
+    result = {
+        'buy': [],
+        'sell': []
+    }
     events = getAllEvents()
-    print(events.keys(), '\n')
-    types = list(events.keys())
-    for n in range(len(types)):
-        eventType = types[n][1]['typeOfTrade']
-        # print(eventType, list(events[list(events.keys())[n]]))
-        print('\n[', eventType.upper(), ']')
-        for event in list(events[list(events.keys())[n]]):
-            print(json.dumps(event, indent=2))
+    for event in events:
+        trade = event['typeOfTrade']
+        if trade == 'buy':
+            result['buy'].append(event)
+        else:
+            result['sell'].append(event)
+    print('Nbr buy', len(result['buy']))
+    print('Nbr sell', len(result['sell']))
 
 
 if __name__ == '__main__':
     calculateWInLossPerMission()
-    # analysingRecentTrades()
+    analysingRecentTrades()
 
     # transactionsPerDay = list(getTransactionPerDayAsset('GRT'))
     # print('\ntransactionPerDay', transactionsPerDay)
