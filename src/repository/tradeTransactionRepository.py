@@ -112,4 +112,4 @@ if __name__ == '__main__':
     for transaction in transactions:
         print(transaction)
 
-    cleanTransaction()
+    # cleanTransaction()

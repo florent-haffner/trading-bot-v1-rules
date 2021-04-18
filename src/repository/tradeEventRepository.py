@@ -80,11 +80,24 @@ def cleanTradeEvents():
 def initEnvironment():
     delete_api = __INFLUX_CLIENT.delete_api()
     # GET EVERYTHING
-    query = """
-        from (bucket:"ts_trade_event_dev")\
-        |> range(start: -2d)\
-        |> filter(fn: (r) => r._measurement == "tradeEvent")\
-        |> filter(fn: (r) => r.typeOfTrade == "buy" )
+    query = f"""
+        from (bucket:"{__CURRENT_BUCKET}")
+        |> range(start: -1d)
+        |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
+        |> filter(fn: (r) => r.typeOfTrade == "buy")
+    """
+
+    getByAsset = f"""
+        from (bucket:"{__CURRENT_BUCKET}")
+        |> range(start: -1d)
+        |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
+        |> filter(fn: (r) => r.typeOfTrade == "buy")
+        |> pivot(
+            rowKey: ["_time"],
+            columnKey: ["_field"],
+            valueColumn: "_value"
+        )
+        |> filter(fn: (r) => r.asset == "GRT")
     """
 
     result_db_request = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
@@ -107,25 +120,47 @@ def initEnvironment():
         }
     ]
     __WRITE_API.write(__CURRENT_BUCKET, __INFLUXDB_CURRENT_ORG, point)
+    from time import sleep
+
+    print('INSERT + sleep')
+    sleep(1)
+    point[0]['fields']['asset'] = "ALGO"
+    __WRITE_API.write(__CURRENT_BUCKET, __INFLUXDB_CURRENT_ORG, point)
+
+    sleep(1)
+    point[0]['fields']['asset'] = "LINK"
+    __WRITE_API.write(__CURRENT_BUCKET, __INFLUXDB_CURRENT_ORG, point)
+    sleep(1)
 
     result_db_request = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
     results = []
     for table in result_db_request:
         for record in table.records:
-            results.append( (record.get_field(), record.get_value()) )
-    print('result', results)
+            print('record', record)
+            results.append({record.get_field(): record.get_value()})
 
+    print('GetAll', results)
+
+    result_db_request = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=getByAsset)
+    print('GET BY ASSET')
+    results = []
+    for table in result_db_request:
+        print('table', table)
+        for record in table.records:
+            print('record', record)
+            # results.append({record.get_field(): record.get_value()})
+    print('query', results)
+
+    print('Removing everything')
     delete_api.delete('1970-01-01T00:00:00Z', datetime.today().strftime(DATE_STR),
                       '_measurement=' + __MEASUREMENT_NAME,
                       bucket=__CURRENT_BUCKET, org=__INFLUXDB_CURRENT_ORG)
-
-
     result_db_request = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
     results = []
     for table in result_db_request:
         for record in table.records:
             results.append((record.get_field(), record.get_value()))
-    print('Remove everything', results)
+    print('Empty results', results)
 
 
 if __name__ == "__main__":

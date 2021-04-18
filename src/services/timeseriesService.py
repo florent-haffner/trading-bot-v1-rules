@@ -113,8 +113,8 @@ def calculateWInLossPerMission():
         for asset in mission['context']['assets']:
             print('\n[', asset, '] -> Calculating win/loss pet asset')
             transactionFromAsset = list(getTransactionByAsset(asset))
-            lengthTransaction, amount = calculateWinLossPerTransactions(transactionFromAsset)
-            print('Lgt transaction', lengthTransaction, 'amount', amount)
+            nbrTransaction, amount = calculateWinLossPerTransactions(transactionFromAsset)
+            print('Nbr transactions', nbrTransaction, 'amount in Euro', amount)
 
 
 def getTransactionPerDayAsset(asset):
