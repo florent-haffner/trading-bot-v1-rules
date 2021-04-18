@@ -168,9 +168,7 @@ def initEnvironment():
 if __name__ == "__main__":
     # initEnvironment()
 
-    events = getAllEvents()
-    for event in events:
-        print(event)
-
     getRecentEventByTypeAndAsset('GRT', 'buy')
+    getAllEvents()
+
     # cleanTradeEvents()

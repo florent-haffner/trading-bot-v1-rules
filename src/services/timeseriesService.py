@@ -7,18 +7,16 @@ from src.repository.tradeTransactionRepository import insertTransactionEvent, ge
 
 
 def getLastEventByTypeAndAsset(asset, typeOfTrade):
+    print('Get las event by type', typeOfTrade, 'and asset:', asset)
     result = getRecentEventByTypeAndAsset(asset, typeOfTrade)
+    most_recent = None
     for item in result:
-        most_recent = None
         if not most_recent:
             most_recent = item
         if most_recent:
-            print(most_recent, item)
-            most_recent_time = most_recent['time']
-            last_time = item['time']
-            if last_time > most_recent_time:
+            if item['time'] > most_recent['time']:
                 most_recent = item
-        return most_recent
+    return most_recent
 
 
 def generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset, interval, date):
@@ -140,8 +138,10 @@ def analysingRecentTrades():
 
 
 if __name__ == '__main__':
-    calculateWInLossPerMission()
-    analysingRecentTrades()
+    # calculateWInLossPerMission()
+    # analysingRecentTrades()
+
+    getLastEventByTypeAndAsset('GRT', 'buy')
 
     # transactionsPerDay = list(getTransactionPerDayAsset('GRT'))
     # print('\ntransactionPerDay', transactionsPerDay)
