@@ -15,9 +15,11 @@ Python's bot dependencies :
 
 ## How to use
 
-`$HOME/anaconda3/envs/trading-bot/bin/python -m src.main`
-
 `cp tradingBot.service /lib/systemd/system/tradingBot.service`
+
+`systemctl start tradingBot && systemctl enable tradingBot`
+
+To check the logs of the process : `journalctl _PID=1077`
 
 
 ## Env - OBSOLETE CURRENTLY
