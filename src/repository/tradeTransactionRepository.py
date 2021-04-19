@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from bson import ObjectId
 from pymongo import MongoClient
 
-from src.helpers.CONSTANT import DATE_STR
+from src.helpers.dateHelper import DATE_STR
 from src.secret.SECRET_CONSTANT import __MONGO_URI
 
 __MONGO_CLIENT = MongoClient(__MONGO_URI)

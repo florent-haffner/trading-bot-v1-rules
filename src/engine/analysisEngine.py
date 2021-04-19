@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from src.engine.analysisEngineHelper import get_last_index, calculate_volume_to_buy, find_multiple_curve_min_max
-from src.helpers.CONSTANT import DATE_STR
+from src.helpers.dateHelper import DATE_STR
 from src.helpers.emailSenderHelper import send_email
 from src.services.timeseriesService import addTradeEvent
 

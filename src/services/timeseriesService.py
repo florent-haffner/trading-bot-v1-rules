@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from src.helpers.dateHelper import DATE_UTC_TZ_STR
 from src.repository.missionRepository import getAllMissions
 from src.repository.tradeEventRepository import getRecentEventByTypeAndAsset, insertTradeEvent, getAllEvents
 from src.repository.tradeTransactionRepository import insertTransactionEvent, getTransactionById, updateTransactionById, \
@@ -21,7 +22,7 @@ def getLastEventByTypeAndAsset(asset, typeOfTrade):
 
 def generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset, interval, date):
     return {
-        'time': datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S.%f+00:00"),
+        'time': datetime.strftime(datetime.now(), DATE_UTC_TZ_STR),
         'measurement': 'tradeEvent',
         'tags': {
             'typeOfTrade': type_of_trade,

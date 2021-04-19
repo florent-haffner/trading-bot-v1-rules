@@ -3,7 +3,7 @@ from datetime import datetime
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
 
-from src.helpers.CONSTANT import DATE_STR
+from src.helpers.dateHelper import DATE_STR
 from src.secret.SECRET_CONSTANT import __INFLUX_DB_TRADE_EVENT, __INFLUX_URI, __INFLUX_TOKEN
 
 __INFLUX_CLIENT = InfluxDBClient(
@@ -107,7 +107,7 @@ def insertTradeEvent(event):
 
 
 def cleanTradeEvents():
-    print('Removing everything')
+    print('\nRemoving everything')
     delete_api = __INFLUX_CLIENT.delete_api()
     delete_api.delete('1970-01-01T00:00:00Z', datetime.today().strftime(DATE_STR),
                       '_measurement=' + __MEASUREMENT_NAME,
