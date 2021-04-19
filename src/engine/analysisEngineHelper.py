@@ -6,14 +6,12 @@ import numpy as np
 from peakdetect import peakdetect
 
 from src.services.krakenTradeService import getAccountBalance
-from src.services.timeseriesService import getLastEventByTypeAndAsset
-from src.services.timeseriesService import getTransaction
 
 
 class NothingToTrade(Exception): pass
 
 
-def define_volume(df, type_of_trade, asset, currency, nbr_asset_on_trade, index_max):
+def define_volume(df, type_of_trade, nbr_asset_on_trade, index_max):
     print('\n[VOLUME TRADING QUANTITY]')
     print('Type of trade:', type_of_trade)
 
@@ -66,38 +64,6 @@ def get_last_index(peaks_high, peaks_low):
     last_high_index = peaks_high[:, 0][len(peaks_high[:, 1]) - 1]
     last_low_index = peaks_low[:, 0][len(peaks_low[:, 1]) - 1]
     return last_high_index, last_low_index
-
-
-def calculate_volume_to_buy(self, type_of_trade):
-    if type_of_trade == 'buy':
-        previous_currency_trade = getLastEventByTypeAndAsset(self.asset, type_of_trade)
-        # Ignore the previous trade if it has been fullfilled
-        if previous_currency_trade:
-            transaction = getTransaction(previous_currency_trade['transactionId'])
-            try:
-                if transaction['sell']:
-                    previous_currency_trade = None
-            except KeyError:
-                pass
-
-        # If there is no previous trade, define quantity
-        if not previous_currency_trade:
-            volume = define_volume(df=self.df,
-                                   type_of_trade=type_of_trade,
-                                   asset=self.asset,
-                                   currency=self.currency,
-                                   nbr_asset_on_trade=self.length_assets,
-                                   index_max=self.index_size - 1)
-            return volume, None
-
-    if type_of_trade == 'sell':
-        previous_currency_trade = getLastEventByTypeAndAsset(self.asset, 'buy')
-        if previous_currency_trade:
-            transaction_id = previous_currency_trade['transactionId']
-            transaction = getTransaction(transaction_id)
-            return transaction['buy']['fields']['quantity'], transaction_id
-
-    return None, None
 
 
 def find_multiple_curve_min_max(df, key):

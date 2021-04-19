@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from src.engine.analysisEngineHelper import get_last_index, calculate_volume_to_buy, find_multiple_curve_min_max
+from src.engine.analysisEngineHelper import get_last_index, find_multiple_curve_min_max, define_volume
 from src.helpers.dateHelper import DATE_STR
 from src.helpers.emailSenderHelper import send_email
-from src.services.timeseriesService import addTradeEvent
+from src.services.timeseriesService import addTradeEvent, getLastEventByTypeAndAsset, getTransaction
 
 
 class AnalysisEngine:
@@ -64,7 +64,7 @@ class AnalysisEngine:
     def create_trade_event(self, type_of_trade, attachments):
         print('Calculating volume')
         date = datetime.now().strftime(DATE_STR)
-        volume_to_buy, transaction_id = calculate_volume_to_buy(self, type_of_trade)
+        volume_to_buy, transaction_id = self.calculate_volume_to_buy(type_of_trade)
 
         if volume_to_buy:
             success = addTradeEvent(type_of_trade=type_of_trade,
@@ -82,3 +82,32 @@ class AnalysisEngine:
                 print(type_of_trade.upper(), 'this', volume_to_buy, 'of', self.asset)
         else:
             print('Nothing to', type_of_trade)
+
+    def calculate_volume_to_buy(self, type_of_trade):
+        if type_of_trade == 'buy':
+            previous_currency_trade = getLastEventByTypeAndAsset(self.asset, type_of_trade)
+            # Ignore the previous trade if it has been fullfilled
+            if previous_currency_trade:
+                transaction = getTransaction(previous_currency_trade['transactionId'])
+                try:
+                    if transaction['sell']:
+                        previous_currency_trade = None
+                except KeyError:
+                    pass
+
+            # If there is no previous trade, define quantity
+            if not previous_currency_trade:
+                volume = define_volume(df=self.df,
+                                       type_of_trade=type_of_trade,
+                                       nbr_asset_on_trade=self.length_assets,
+                                       index_max=self.index_size - 1)
+                return volume, None
+
+        if type_of_trade == 'sell':
+            previous_currency_trade = getLastEventByTypeAndAsset(self.asset, 'buy')
+            if previous_currency_trade:
+                transaction_id = previous_currency_trade['transactionId']
+                transaction = getTransaction(transaction_id)
+                return transaction['buy']['fields']['quantity'], transaction_id
+
+        return None, None
