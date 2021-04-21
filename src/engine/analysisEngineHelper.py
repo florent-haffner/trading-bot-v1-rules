@@ -33,8 +33,9 @@ def plot_peaks_close_ema(df, key, higher_peaks, lower_peaks):
     plt.ion()
     plt.title(key)
     plt.plot(df[key])
-    if key == 'close_12_ema':
-        plt.plot(df['close'])
+    plt.plot(df['close_12_ema'])
+    # if key == 'close_12_ema':
+    #     plt.plot(df['close'])
 
     plt.plot(higher_peaks[:, 0], higher_peaks[:, 1], 'ro')
     plt.plot(lower_peaks[:, 0], lower_peaks[:, 1], 'go')
@@ -66,7 +67,7 @@ def get_last_index(peaks_high, peaks_low):
     return last_high_index, last_low_index
 
 
-def find_multiple_curve_min_max(df, key):
+def find_multiple_curve_min_max(df, key, nbr_occurrences):
     print('CURVE - ', key, '- Detecting peaks min/max')
     length_df = len(df)
     if df[key][length_df - 1] > 0:
@@ -74,7 +75,7 @@ def find_multiple_curve_min_max(df, key):
     else:
         print('NEGATIVE')
 
-    peaks = peakdetect(df[key], lookahead=2)
+    peaks = peakdetect(df[key], lookahead=nbr_occurrences)
     higher_peaks = np.array(peaks[0])
     lower_peaks = np.array(peaks[1])
 

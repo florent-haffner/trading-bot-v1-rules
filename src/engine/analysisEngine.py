@@ -21,32 +21,63 @@ class AnalysisEngine:
     def analyse_trends(self):
         print('\n[TREND ANALYSIS]')
 
-        macd_high, macd_low, self.pathFigMACD = find_multiple_curve_min_max(self.df, 'macds')
-        close_high, close_low, self.pathFigCLOSE = find_multiple_curve_min_max(self.df, 'close_12_ema')
+        nbr_occurrences = 4
+        macd_high, macd_low, self.pathFigMACD = find_multiple_curve_min_max(self.df,
+                                                                            key='macds',
+                                                                            nbr_occurrences=nbr_occurrences)
+        # close_12_high, close_12_low, self.pathFigCLOSE = find_multiple_curve_min_max(self.df,
+        #                                                                              key='close_12_ema',
+        #                                                                              nbr_occurrences=nbr_occurrences)
+        close_high, close_low, self.pathFigClose = find_multiple_curve_min_max(self.df,
+                                                                               key='close',
+                                                                               nbr_occurrences=nbr_occurrences)
 
         self.index_size = len(self.df)
         self.last_macd_high, self.last_macd_low = get_last_index(macd_high, macd_low)
+        # self.last_close_12_high, self.last_close_12_low = get_last_index(close_12_high, close_12_low)
         self.last_close_high, self.last_close_low = get_last_index(close_high, close_low)
+
+        # # TODO -> REMOVE THIS
+        # print(self.df)
+        # print(self.df.keys())
+        # import matplotlib.pyplot as plt
+        # key = 'close'
+        #
+        # import numpy as np
+        # from peakdetect import peakdetect
+        #
+        # peaks = peakdetect(self.df[key], lookahead=margin)
+        # higher_peaks = np.array(peaks[0])
+        # lower_peaks = np.array(peaks[1])
+        #
+        # plt.plot(self.df[key])
+        # plt.plot(self.df['close_12_ema'])
+        # plt.plot(higher_peaks[:, 0], higher_peaks[:, 1], 'ro')
+        # plt.plot(lower_peaks[:, 0], lower_peaks[:, 1], 'go')
+        #
+        # print('higher_peaks', higher_peaks)
+        # print('lower_peaks', lower_peaks)
+        # plt.show()
+        #
+        # raise Exception('')
 
         print('\n[DETECTED LAST INDEX]', self.index_size)
         print('close index { high:', self.last_close_high, ' low:', self.last_close_low, '}')
 
     def make_decision(self):
         print('\n[DECISION MAKING]')
-        attachments = [self.pathFigCLOSE, self.pathFigMACD]
+        attachments = [self.pathFigClose]
         try:
-            margin = 10
-            if self.last_close_low >= self.index_size - margin or \
-                    self.last_macd_low >= self.index_size - margin:
+            margin_trade_out_of_range = 10
+            if self.last_close_low >= self.index_size - margin_trade_out_of_range:
                 type_of_trade = 'buy'
                 print('Type of trade:', type_of_trade)
-                self.create_trade_event(type_of_trade, attachments=attachments)
+                self.compute_trade_event(type_of_trade, attachments=attachments)
 
-            elif self.last_close_high >= self.index_size - margin or \
-                    self.last_macd_high >= self.index_size - margin:
+            elif self.last_close_high >= self.index_size - margin_trade_out_of_range:
                 type_of_trade = 'sell'
                 print('Type of trade:', type_of_trade)
-                self.create_trade_event(type_of_trade, attachments=attachments)
+                self.compute_trade_event(type_of_trade, attachments=attachments)
 
             else:
                 # TODO -> what about checking if I didn't already have stuff
@@ -61,7 +92,7 @@ class AnalysisEngine:
         print('\n[END OF ANALYSIS] ->', self.asset)
         print('\nResume to follow next action', '\n------------------\n')
 
-    def create_trade_event(self, type_of_trade, attachments):
+    def compute_trade_event(self, type_of_trade, attachments):
         print('Calculating volume')
         date = datetime.now().strftime(DATE_STR)
         volume_to_buy, transaction_id = self.calculate_volume_to_buy(type_of_trade)

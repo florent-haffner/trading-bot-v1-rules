@@ -115,7 +115,7 @@ def calculateWInLossPerMission():
             print('\n[', asset, '] -> Calculating win/loss pet asset')
             transactionFromAsset = list(getTransactionByAsset(asset))
             nbrTransaction, amount = calculateWinLossPerTransactions(transactionFromAsset)
-            print('Nbr transactions', nbrTransaction, 'amount in Euro', amount)
+            print('Nbr transactions', nbrTransaction, 'amount in Euro', round(amount, 3))
 
 
 def getTransactionPerDayAsset(asset):
@@ -139,10 +139,10 @@ def analysingRecentTrades():
 
 
 if __name__ == '__main__':
-    # calculateWInLossPerMission()
+    calculateWInLossPerMission()
     # analysingRecentTrades()
 
-    getLastEventByTypeAndAsset('GRT', 'buy')
+    # getLastEventByTypeAndAsset('GRT', 'buy')
 
     # transactionsPerDay = list(getTransactionPerDayAsset('GRT'))
     # print('\ntransactionPerDay', transactionsPerDay)
