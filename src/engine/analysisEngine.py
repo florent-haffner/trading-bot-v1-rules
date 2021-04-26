@@ -1,9 +1,44 @@
 from datetime import datetime
 
+import numpy as np
+from numpy import mean
+from peakdetect import peakdetect
+
 from src.engine.analysisEngineHelper import get_last_index, find_multiple_curve_min_max, define_volume
 from src.helpers.dateHelper import DATE_STR
 from src.helpers.emailSenderHelper import send_email
 from src.services.timeseriesService import addTradeEvent, getLastEventByTypeAndAsset, getTransaction
+
+
+def detect_short_time_data(self):
+    print('[ALGO] - Short time detection')
+    #
+    # TODO <- remove this
+    #
+    import matplotlib.pyplot as plt
+
+    shorter_df = self.df[200:]
+    shorter_df.reset_index(inplace=True)
+
+    peaks = peakdetect(shorter_df['close'], lookahead=1)
+    higher_peaks = np.array(peaks[0])
+    lower_peaks = np.array(peaks[1])
+
+    last_short_index = len(shorter_df) - 1
+    last_event = shorter_df['close'][last_short_index]
+    high_mean = mean(higher_peaks[:, 1])
+    low_mean = mean(lower_peaks[:, 1])
+
+    print('last', last_event, 'high_mean', high_mean, 'low_mean', low_mean)
+    # print('higher_peaks', higher_peaks)
+    # print('lower_peaks', lower_peaks)
+
+    plt.plot(shorter_df['close'])
+    plt.plot(shorter_df['close_12_ema'])
+    plt.plot(higher_peaks[:, 0], higher_peaks[:, 1], 'ro')
+    plt.plot(lower_peaks[:, 0], lower_peaks[:, 1], 'go')
+    plt.show()
+    raise Exception('')
 
 
 class AnalysisEngine:
@@ -37,29 +72,7 @@ class AnalysisEngine:
         # self.last_close_12_high, self.last_close_12_low = get_last_index(close_12_high, close_12_low)
         self.last_close_high, self.last_close_low = get_last_index(close_high, close_low)
 
-        # # TODO -> REMOVE THIS
-        # print(self.df)
-        # print(self.df.keys())
-        # import matplotlib.pyplot as plt
-        # key = 'close'
-        #
-        # import numpy as np
-        # from peakdetect import peakdetect
-        #
-        # peaks = peakdetect(self.df[key], lookahead=margin)
-        # higher_peaks = np.array(peaks[0])
-        # lower_peaks = np.array(peaks[1])
-        #
-        # plt.plot(self.df[key])
-        # plt.plot(self.df['close_12_ema'])
-        # plt.plot(higher_peaks[:, 0], higher_peaks[:, 1], 'ro')
-        # plt.plot(lower_peaks[:, 0], lower_peaks[:, 1], 'go')
-        #
-        # print('higher_peaks', higher_peaks)
-        # print('lower_peaks', lower_peaks)
-        # plt.show()
-        #
-        # raise Exception('')
+        detect_short_time_data(self)
 
         print('\n[DETECTED LAST INDEX]', self.index_size)
         print('close index { high:', self.last_close_high, ' low:', self.last_close_low, '}')

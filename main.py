@@ -2,6 +2,7 @@ from datetime import datetime
 from time import sleep
 
 import pymongo.errors
+from numpy import mean
 
 from src.engine.analysisEngine import AnalysisEngine
 from src.repository.missionRepository import getAllMissions
@@ -34,6 +35,7 @@ def run_bot(asset, currency, interval, length_assets):
 
     df_with_indicators = get_stocks_indicators(df)
     three_day_DF = get_last_n_percentage(df_with_indicators, 35)
+
     AnalysisEngine(__DEBUG, three_day_DF, asset, currency, length_assets, interval)
 
     sleep_between_analysis = interval / 10
@@ -68,36 +70,5 @@ def run():
             sleep(30)
 
 
-def short_trend_analyser_algorithm(input_array):
-    print("[PROTO] SHORT TREND ANALYZER ALGORITHM")
-    print("--------------------------------------")
-    length = len(input_array)
-    print('Array length', length, '\n')
-
-    previous = None
-    current_top = None
-    current_bottom = None
-    inc_not_top = 0
-    inc_not_bottom = 0
-    state_array = []
-    for item in range(len(input_array) - 1, -1, -1):
-        current = input_array[item]
-        if not previous:
-            previous = current
-            print("previous", previous)
-        else:
-            previous = input_array[item + 1]
-            if current > previous:
-                print('new top', current)
-            else:
-                inc_not_top = inc_not_top + 1
-                print('NOPE', current, inc_not_top)
-            # print('previous', previous, "current", )
-
-
 if __name__ == "__main__":
-    # run()
-    input_array = [
-        -5, -3, -2, -1, 0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -3, -2, 1
-    ]
-    short_trend_analyser_algorithm(input_array)
+    run()
