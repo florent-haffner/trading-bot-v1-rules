@@ -15,8 +15,8 @@ __OFFLINE = False
 def get_last_n_percentage(df, nbr_percentage):
     calculated_length = (len(df) * nbr_percentage) / 100
     tmp_df = df[:int(calculated_length)]
-    print('TMP_DF - from', datetime.fromtimestamp(tmp_df.head(1)['timestamp'].iloc[0]),
-          'to', datetime.fromtimestamp(tmp_df.tail(1)['timestamp'].iloc[-1]))
+    print('TMP_DF - last:', datetime.fromtimestamp(tmp_df.head(1)['timestamp'].iloc[0]),
+          'first:', datetime.fromtimestamp(tmp_df.tail(1)['timestamp'].iloc[-1]))
     return tmp_df
 
 
@@ -64,7 +64,7 @@ def run():
 
                 # time_to_sleep = (interval * 60) / 8
                 print('Sleeping for about', interval, 'seconds.')
-                sleep(interval)
+                sleep(interval * 60)
 
         except pymongo.errors.ServerSelectionTimeoutError:
             sleep(30)

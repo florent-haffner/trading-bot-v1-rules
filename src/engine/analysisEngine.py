@@ -10,37 +10,6 @@ from src.helpers.emailSenderHelper import send_email
 from src.services.timeseriesService import addTradeEvent, getLastEventByTypeAndAsset, getTransaction
 
 
-def detect_short_time_data(self):
-    print('[ALGO] - Short time detection')
-    #
-    # TODO <- remove this
-    #
-    import matplotlib.pyplot as plt
-
-    shorter_df = self.df[200:]
-    shorter_df.reset_index(inplace=True)
-
-    peaks = peakdetect(shorter_df['close'], lookahead=1)
-    higher_peaks = np.array(peaks[0])
-    lower_peaks = np.array(peaks[1])
-
-    last_short_index = len(shorter_df) - 1
-    last_event = shorter_df['close'][last_short_index]
-    high_mean = mean(higher_peaks[:, 1])
-    low_mean = mean(lower_peaks[:, 1])
-
-    print('last', last_event, 'high_mean', high_mean, 'low_mean', low_mean)
-    # print('higher_peaks', higher_peaks)
-    # print('lower_peaks', lower_peaks)
-
-    plt.plot(shorter_df['close'])
-    plt.plot(shorter_df['close_12_ema'])
-    plt.plot(higher_peaks[:, 0], higher_peaks[:, 1], 'ro')
-    plt.plot(lower_peaks[:, 0], lower_peaks[:, 1], 'go')
-    plt.show()
-    raise Exception('')
-
-
 class AnalysisEngine:
     def __init__(self, mode, df, asset, currency, length_assets, interval):
         self.df = df
@@ -72,7 +41,7 @@ class AnalysisEngine:
         # self.last_close_12_high, self.last_close_12_low = get_last_index(close_12_high, close_12_low)
         self.last_close_high, self.last_close_low = get_last_index(close_high, close_low)
 
-        detect_short_time_data(self)
+        self.detect_short_time_trend()
 
         print('\n[DETECTED LAST INDEX]', self.index_size)
         print('close index { high:', self.last_close_high, ' low:', self.last_close_low, '}')
@@ -155,3 +124,35 @@ class AnalysisEngine:
                 return transaction['buy']['fields']['quantity'], transaction_id
 
         return None, None
+
+    def detect_short_time_trend(self):
+        print('[ALGO] - Short time detection')
+        #
+        # TODO <- remove this
+        #
+        import matplotlib.pyplot as plt
+
+        shorter_df = self.df[:200]
+        shorter_df.reset_index(inplace=True)
+        print('SHORTER_DF - last:', datetime.fromtimestamp(shorter_df.head(1)['timestamp'].iloc[0]),
+              'first:', datetime.fromtimestamp(shorter_df.tail(1)['timestamp'].iloc[-1]))
+
+        peaks = peakdetect(shorter_df['close'], lookahead=1)
+        higher_peaks = np.array(peaks[0])
+        lower_peaks = np.array(peaks[1])
+
+        last_short_index = len(shorter_df) - 1
+        last_event = shorter_df['close'][last_short_index]
+        high_mean = mean(higher_peaks[:, 1])
+        low_mean = mean(lower_peaks[:, 1])
+
+        print('last', last_event, 'high_mean', high_mean, 'low_mean', low_mean)
+        # print('higher_peaks', higher_peaks)
+        # print('lower_peaks', lower_peaks)
+
+        plt.plot(shorter_df['close'])
+        plt.plot(shorter_df['close_12_ema'])
+        plt.plot(higher_peaks[:, 0], higher_peaks[:, 1], 'ro')
+        plt.plot(lower_peaks[:, 0], lower_peaks[:, 1], 'go')
+        plt.show()
+        raise Exception('')
