@@ -132,10 +132,10 @@ class AnalysisEngine:
         #
         import matplotlib.pyplot as plt
 
-        shorter_df = self.df[:200]
+        shorter_df = self.df[200:]
         shorter_df.reset_index(inplace=True)
-        print('SHORTER_DF - last:', datetime.fromtimestamp(shorter_df.head(1)['timestamp'].iloc[0]),
-              'first:', datetime.fromtimestamp(shorter_df.tail(1)['timestamp'].iloc[-1]))
+        print('SHORT TIME DF - first:', datetime.fromtimestamp(shorter_df.head(1)['timestamp'].iloc[0]),
+              'last:', datetime.fromtimestamp(shorter_df.tail(1)['timestamp'].iloc[-1]))
 
         peaks = peakdetect(shorter_df['close'], lookahead=1)
         higher_peaks = np.array(peaks[0])

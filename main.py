@@ -1,8 +1,10 @@
+from threading import Thread
+from multiprocessing import Process
+
 from datetime import datetime
 from time import sleep
 
 import pymongo.errors
-from numpy import mean
 
 from src.engine.analysisEngine import AnalysisEngine
 from src.repository.missionRepository import getAllMissions
@@ -14,9 +16,9 @@ __OFFLINE = False
 
 def get_last_n_percentage(df, nbr_percentage):
     calculated_length = (len(df) * nbr_percentage) / 100
-    tmp_df = df[:int(calculated_length)]
-    print('TMP_DF - last:', datetime.fromtimestamp(tmp_df.head(1)['timestamp'].iloc[0]),
-          'first:', datetime.fromtimestamp(tmp_df.tail(1)['timestamp'].iloc[-1]))
+    tmp_df = df[int(calculated_length):]
+    print('DF 3days - first:', datetime.fromtimestamp(tmp_df.head(1)['timestamp'].iloc[0]),
+          'last:', datetime.fromtimestamp(tmp_df.tail(1)['timestamp'].iloc[-1]))
     return tmp_df
 
 
@@ -43,14 +45,14 @@ def run_bot(asset, currency, interval, length_assets):
     sleep(sleep_between_analysis)
 
 
-def run():
+def bot_main_process():
     print("[TRADING BOT]\n")
     if __DEBUG:
         print('SIMULATION MODE -> Exception will be raised')
     else:
-        print('PRODUCTION MODE -> Exception will not be raised')
+        print('PRODUCTION MODE -> Exception will stay silent')
+    sleep(1)
 
-    sleep(2.5)
     while True:
         try:
             missions = list(getAllMissions())
@@ -67,8 +69,46 @@ def run():
                 sleep(interval * 60)
 
         except pymongo.errors.ServerSelectionTimeoutError:
-            sleep(30)
+            sleep(10)
+
+
+def multiprocess():
+    results = []  # Creating a Global Variable
+
+    def calc_square(numbers):
+        global results
+        for i in numbers:
+            print('square: ', str(i * i))
+            results.append(i * i)
+            print('witnin a result: ' + str(results))
+    arr = [2, 3, 8, 9]
+    p1 = Process(target=calc_square, args=(arr,))
+    # creating one Process here p1
+    p1.start()
+    # starting Processes here parallel by using start function.
+    p1.join()    # this join() will wait until the calc_square() function is    finished.
+    print('result : '+str(results))  # this print didn't work here we have to print it within the process
+    print("Successed!")
+
+
+def multithread():
+    def child_thread():
+        while True:
+            print("Child thread here")
+            sleep(1)
+
+    t1 = Thread(target=child_thread)
+    t2 = Thread(target=bot_main_process)
+
+    t1.start()
+    t2.start()
+
+    t1.join()
+    t2.join()
 
 
 if __name__ == "__main__":
-    run()
+    bot_main_process()
+
+    # multithread()
+    # multiprocess()  # Should be choose because I do I/O on network + calculation
