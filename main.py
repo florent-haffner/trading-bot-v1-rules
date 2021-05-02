@@ -38,9 +38,10 @@ def run_bot(asset, currency, interval, length_assets):
     df_with_indicators = get_stocks_indicators(df)
     print('DF FULL - first:', datetime.fromtimestamp(df_with_indicators.head(1)['timestamp'].iloc[0]),
           'last:', datetime.fromtimestamp(df_with_indicators.tail(1)['timestamp'].iloc[-1]))
-    n_percent_df = get_last_n_percentage(df_with_indicators, 35)
 
+    # n_percent_df = get_last_n_percentage(df_with_indicators, 35)
     # AnalysisEngine(__DEBUG, n_percent_df, asset, currency, length_assets, interval)
+
     AnalysisEngine(__DEBUG, df_with_indicators, asset, currency, length_assets, interval)
 
     sleep_between_analysis = interval / 10
@@ -67,9 +68,9 @@ def bot_main_process():
                     currency = 'EUR'
                     run_bot(asset, currency, interval, len(assets))
 
-                # time_to_sleep = (interval * 60) / 8
-                print('Sleeping for about', interval, 'seconds.')
-                sleep(interval * 60)
+                time_to_sleep = interval * 10
+                print('Sleeping for about', time_to_sleep, 'seconds.')
+                sleep(time_to_sleep)
 
         except pymongo.errors.ServerSelectionTimeoutError:
             sleep(10)
