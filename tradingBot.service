@@ -3,7 +3,7 @@ Description=Trading bot service
 
 [Service]
 Type=simple
-ExecStart=/home/bot/anaconda3/envs/trading-bot/bin/python /home/bot/trading-bot-interval/main.py
+ExecStart=/home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/main.py
 Restart=always
 RestartSec=5s
 StartLimitBurst=20
