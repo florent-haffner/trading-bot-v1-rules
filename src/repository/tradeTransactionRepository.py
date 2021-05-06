@@ -1,19 +1,15 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from bson import ObjectId
 from pymongo import MongoClient
 
-from src.secret.CONSTANT import __MONGO_HOST, __MONGO_USER, __MONGO_PASSWORD, __MONGO_URI
+from src.helpers.dateHelper import DATE_STR
+from src.secret.SECRET_CONSTANT import __MONGO_URI
 
-__MONGO_CLIENT = None
-
-if __MONGO_URI:
-    __MONGO_CLIENT = MongoClient(__MONGO_URI)
-else:
-    __MONGO_CLIENT = MongoClient(__MONGO_HOST, username=__MONGO_USER, password=__MONGO_PASSWORD)
+__MONGO_CLIENT = MongoClient(__MONGO_URI)
 
 
-db = __MONGO_CLIENT.tradingBot
+db = __MONGO_CLIENT.tradingbot
 collection = db.tradeTransaction
 
 
@@ -23,6 +19,7 @@ def getTransactionById(id):
 
 def insertTransactionEvent(key, data):
     print('[MONGODB] - [NEW TRANSACTION] ->', data)
+    data['time'] = datetime.now().strftime(DATE_STR)
     transactionId = collection.insert_one({key: data})
     return transactionId.inserted_id
 
@@ -50,7 +47,7 @@ def cleanTransaction():
 def initEnvironment():
     timeseries_buy = {
         'measurement': 'tradeEvent',
-        'time': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        'time': datetime.now().strftime(DATE_STR),
         'tags': {
             'typeOfTrade': 'buy',
             'interval': '5'
@@ -74,7 +71,7 @@ def initEnvironment():
     transactionId = transactions[0]['_id']
     timeseries_sell = {
         'measurement': 'tradeEvent',
-        'time': datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        'time': datetime.now().strftime(DATE_STR),
         'tags': {
             'typeOfTrade': 'sell',
             'interval': '5'
@@ -91,11 +88,29 @@ def initEnvironment():
                           updateTransaction=timeseries_sell)
 
 
+def getTransactionByAsset(asset):
+    return collection.find({
+        'buy.fields.asset': asset,
+    })
+
+
+def getLastDayTransactionByAsset(asset):
+    previousDayFromMidnight = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
+    thisDayAtMidgnight = datetime.combine(datetime.today(), datetime.min.time())
+
+    return collection.find({
+        'buy.fields.asset': asset,
+        'buy.time': {'$gte': previousDayFromMidnight.strftime(DATE_STR)},
+        'sell.time': {'$lte': thisDayAtMidgnight.strftime(DATE_STR)},
+    })
+
+
 if __name__ == '__main__':
     # initEnvironment()
 
     transactions = list(getAllTransaction())
+    print('nbr transaction', len(transactions))
     for transaction in transactions:
-        print(transaction.keys())
+        print(transaction)
 
     # cleanTransaction()

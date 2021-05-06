@@ -3,7 +3,7 @@ Description=Trading bot service
 
 [Service]
 Type=simple
-ExecStart=cd /home/bot/MoneyMakr-bot && /home/bot/anaconda3/envs/trading-bot/bin/python -m src.main
+ExecStart=/home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/main.py
 Restart=always
 RestartSec=5s
 StartLimitBurst=20

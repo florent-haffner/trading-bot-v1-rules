@@ -1,121 +1,174 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from influxdb import InfluxDBClient
+from influxdb_client import InfluxDBClient
+from influxdb_client.client.write_api import SYNCHRONOUS
 
-from src.secret.CONSTANT import __INFLUX_HOST, __INFLUX_PORT, __INFLUX_USER, __INFLUX_PASSWORD, \
-    __INFLUX_DB_TRADE_EVENT, __INFLUX_URI, __INFLUX_TOKEN
+from src.helpers.dateHelper import DATE_STR
+from src.secret.SECRET_CONSTANT import __INFLUX_DB_TRADE_EVENT, __INFLUX_URI, __INFLUX_TOKEN
 
-__INFLUX_CLIENT = None
-__CURRENT_DB = None
+__INFLUX_CLIENT = InfluxDBClient(
+    url=__INFLUX_URI,
+    token=__INFLUX_TOKEN,
+)
+__CURRENT_BUCKET = __INFLUX_DB_TRADE_EVENT + '_dev'
+__INFLUXDB_CURRENT_ORG = "florent.haffner@protonmail.com"
+__MEASUREMENT_NAME = "tradeEvent"
 
-if __INFLUX_URI:
-    from influxdb_client import InfluxDBClient  # TODO -> clean this
-    __CURRENT_DB = __INFLUX_DB_TRADE_EVENT + '_prod'
-    __INFLUX_CLIENT = InfluxDBClient(
-        url=__INFLUX_URI, token=__INFLUX_TOKEN
-    )
-else:
-    __CURRENT_DB = __INFLUX_DB_TRADE_EVENT + '_dev'
-    __INFLUX_CLIENT = InfluxDBClient(
-        host=__INFLUX_HOST,
-        port=__INFLUX_PORT,
-        username=__INFLUX_USER,
-        password=__INFLUX_PASSWORD,
-        database=__CURRENT_DB
-    )
+__WRITE_API = __INFLUX_CLIENT.write_api(write_options=SYNCHRONOUS)
+__QUERY_API = __INFLUX_CLIENT.query_api()
+
+
+
+def buildDTO(record):
+    result = {
+        'time': record['_time'],
+        'measurement': record['_measurement'],
+        'typeOfTrade': record['typeOfTrade'],
+        'asset': record['asset'],
+        'price': record['price'],
+        'quantity': record['quantity'],
+        'transactionId': record['transactionId']
+    }
+    return result
+
 
 def getRecentEventByTypeAndAsset(asset, typeOfTrade):
-    result = __INFLUX_CLIENT.query(
-        'SELECT * FROM ' + __CURRENT_DB + '"autogen"."tradeEvent" '
-        'WHERE time > now() - 2d AND asset = ' + "'" + asset + "'" +
-        'AND typeOfTrade = ' + "'" + typeOfTrade + "'" +
-        'GROUP BY "typeOfTrade"'
-    )
-    print('[INFLUXDB], querying the last recent tradeEvents ->', asset, typeOfTrade, '\n', result)
-    return result
+    query = f"""
+        from (bucket:"{__CURRENT_BUCKET}")
+        |> range(start: -1d)
+        |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
+        |> filter(fn: (r) => r.typeOfTrade == "{typeOfTrade}")
+        |> pivot(
+            rowKey: ["_time"],
+            columnKey: ["_field"],
+            valueColumn: "_value"
+        )
+        |> filter(fn: (r) => r.asset == "{asset}")
+    """
+    request_result = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
+    results = []
+    for table in request_result:
+        for record in table.records:
+            result = buildDTO(record)
+            results.append(result)
+    print('[INFLUXDB], querying the last recent tradeEvents ->', asset, typeOfTrade, '\n', results)
+    return results
 
 
 def countAllEvents():
-    result = __INFLUX_CLIENT.query(
-        'SELECT "count(*)" ' +
-        'FROM "' + __CURRENT_DB + '"."autogen"."tradeEvent" ' +
-        'WHERE time > now() - 7d GROUP BY "typeOfTrade"'
-    )
-    print('[INFLUXDB], counting the number of this weeks events\n', result)
-    return result
+    print('[INFLUXDB], count event from the last seven days.')
+    query = f"""
+        from (bucket:"{__CURRENT_BUCKET}")
+            |> range(start: -7d)
+            |> pivot(
+                rowKey: ["_time"],
+                columnKey: ["_field"],
+                valueColumn: "_value"
+            )
+    """
+
+    countEvents = 0
+    request_result = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
+    for table in request_result:
+        countEvents = len(table.records)
+    print('[INFLUXDB], events in the last 7 days:', countEvents)
+    return countEvents
 
 
 def getAllEvents():
-    result = __INFLUX_CLIENT.query(
-        'SELECT * ' +
-        'FROM "' + __CURRENT_DB + '"."autogen"."tradeEvent" ' +
-        'WHERE time > now() - 7d GROUP BY "typeOfTrade"'
-    )
-    print('[INFLUXDB], counting the number of this weeks events\n', result)
-    return result
+    print('[INFLUXDB], getAllEvents from the last two days.')
+    query = f"""
+        from (bucket:"{__CURRENT_BUCKET}")
+            |> range(start: -2d)
+            |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
+            |> pivot(
+                    rowKey: ["_time"],
+                    columnKey: ["_field"],
+                    valueColumn: "_value"
+            )
+    """
+    results = []
+    request_result = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
+    for table in request_result:
+        if len(table.records) > 1:
+            for record in table.records:
+                try:
+                    dto = buildDTO(record)
+                    results.append(dto)
+                except KeyError:
+                    return []
+    print('[INFLUXDB], getAllEvents response, items length:', len(results))
+    return results
 
 
 def insertTradeEvent(event):
     print('[INFLUXDB] writing new tradeEvent\n', event)
-    __INFLUX_CLIENT.switch_database(__CURRENT_DB)
-    __INFLUX_CLIENT.write_points(event)
+    __WRITE_API.write(__CURRENT_BUCKET, __INFLUXDB_CURRENT_ORG, event)
 
 
 def cleanTradeEvents():
-    print('\nReseting production databse, ciao datas')
-    __INFLUX_CLIENT.drop_database(__CURRENT_DB)
-    __INFLUX_CLIENT.create_database(__CURRENT_DB)
-
-
-def analysingRecentTrades():
-    events = getAllEvents()
-    print(events.keys(), '\n')
-    types = list(events.keys())
-    for n in range(len(types)):
-        eventType = types[n][1]['typeOfTrade']
-        import json
-        # print(eventType, list(events[list(events.keys())[n]]))
-        print('\n[', eventType.upper(), ']')
-        for event in list(events[list(events.keys())[n]]):
-            print(json.dumps(event, indent=2))
+    print('\nRemoving everything')
+    delete_api = __INFLUX_CLIENT.delete_api()
+    delete_api.delete('1970-01-01T00:00:00Z', datetime.today().strftime(DATE_STR),
+                      '_measurement=' + __MEASUREMENT_NAME,
+                      bucket=__CURRENT_BUCKET, org=__INFLUXDB_CURRENT_ORG)
+    print('Results', getAllEvents())
 
 
 def initEnvironment():
-    tmp_db = 'tmp'
-    print('Current DBs', __INFLUX_CLIENT.get_list_database())
-    print('Creating :', tmp_db, ', temporary DB', '\n')
-    __INFLUX_CLIENT.create_database(tmp_db)
+    from time import sleep
+    print('INIT ENV - test and documentation purpose\n')
+    getAllEvents()
 
     point = [
         {
-            'measurement': 'tradeEvent',
-            'time': (datetime.now() + timedelta(hours=2)).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            'tags': {
-                'typeOfTrade': 'buy'
-            },
+            'measurement': __MEASUREMENT_NAME,
+            'tags': {'typeOfTrade': 'buy'},
             'fields': {
                 'asset': 'GRT',
                 'quantity': 32.,
-                'price': 32.
+                'price': 32.,
+                'transactionId': 'lol'
             }
         }
+
     ]
-
     insertTradeEvent(point)
-    point[0]['time'] = (datetime.now() + timedelta(hours=4)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    sleep(1)
+
+    point[0]['fields']['asset'] = "ALGO"
     insertTradeEvent(point)
-    getRecentEventByTypeAndAsset('GRT', 'buy')
-    getRecentEventByTypeAndAsset('GRT', 'sell')
+    sleep(1)
 
-    __INFLUX_CLIENT.drop_database(tmp_db)
-    print('\nRemoving :', tmp_db, ', temporary DB')
+    point[0]['fields']['asset'] = "ALGO"
+    insertTradeEvent(point)
+    sleep(1)
 
-    getRecentEventByTypeAndAsset('GRT', 'buy')
+    point[0]['fields']['asset'] = "LINK"
+    insertTradeEvent(point)
+    sleep(1)
+
+    getRecentEventByTypeAndAsset('ETH', 'buy')
+
+    getAllEvents()
+
+    # Trying to understand the date format used by InfluxDB
+    res = getRecentEventByTypeAndAsset('GRT', 'buy')
+    last_date = res[0]['time']
+    print('last_date')
+    print(last_date, 'STRING', str(last_date), type(last_date))
+    sleep(1)
+
+    countAllEvents()
+    getRecentEventByTypeAndAsset(asset='GRT', typeOfTrade='buy')
+
+    cleanTradeEvents()
 
 
 if __name__ == "__main__":
     # initEnvironment()
 
-    analysingRecentTrades()
+    getRecentEventByTypeAndAsset('GRT', 'buy')
+    getAllEvents()
 
-    # cleanTradeEvents()
+    cleanTradeEvents()

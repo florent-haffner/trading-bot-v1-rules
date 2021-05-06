@@ -1,6 +1,6 @@
 # Trading-bot
 
-## Infrastructure and dependency
+## Infrastructure
 
 Use docker to launch MongoDB + InfluxDB instances.
 
@@ -8,16 +8,25 @@ Set user for Influx :
 
     influx CREATE USER admin WITH PASSWORD '<password>' WITH ALL PRIVILEGES
 
-Python's bot dependencies :
+## Dependancy
 
-    conda create -n trading-bot python=3.8 && conda activate trading-bot
-    pip3 install -r requirements.txt
+Python management
 
-## How to use
+     wget https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
 
-`$HOME/anaconda3/envs/trading-bot/bin/python -m src.main`
+Bot dependencies :
 
-`cp tradingBot.service /lib/systemd/system/tradingBot.service`
+    conda create -n trading-bot python=3.8
+
+    conda activate trading-bot && pip3 install -r requirements.txt
+
+## Launching service 
+
+    sudo cp tradingBot.service /lib/systemd/system/tradingBot.service
+
+    systemctl start tradingBot && systemctl enable tradingBot
+
+To check the logs of the process : `journalctl _PID=1077`
 
 
 ## Env - OBSOLETE CURRENTLY

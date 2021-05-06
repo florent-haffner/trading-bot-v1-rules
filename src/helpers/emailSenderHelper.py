@@ -1,5 +1,6 @@
 from src.engine.analysisEngineHelper import remove_tmp_pics
-from src.secret.CONSTANT import __EMAIL_USER, __EMAIL_PASSWORD
+from src.helpers.dateHelper import SIMPLE_DATE_STR
+from src.secret.SECRET_CONSTANT import __EMAIL_USER, __EMAIL_PASSWORD
 
 import smtplib
 from datetime import datetime
@@ -17,7 +18,7 @@ def send_email(subject, body, attachments):
     msg = MIMEMultipart()
     msg['From'] = __EMAIL_USER
     msg['To'] = __DESTINATION
-    msg['Subject'] = '[' + datetime.now().strftime("%Y-%m-%d %H:%M") + '] ' + subject
+    msg['Subject'] = '[' + datetime.now().strftime(SIMPLE_DATE_STR) + '] ' + subject
 
     msgText = MIMEText('<b>%s</b>' % (body), 'html')
     msg.attach(msgText)
