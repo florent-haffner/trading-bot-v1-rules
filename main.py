@@ -1,7 +1,6 @@
-from threading import Thread
-from multiprocessing import Process
-
 from datetime import datetime
+from multiprocessing import Process
+from threading import Thread
 from time import sleep
 
 import pymongo.errors
@@ -39,9 +38,6 @@ def run_bot(asset, currency, interval, length_assets):
     print('DF FULL - first:', datetime.fromtimestamp(df_with_indicators.head(1)['timestamp'].iloc[0]),
           'last:', datetime.fromtimestamp(df_with_indicators.tail(1)['timestamp'].iloc[-1]))
 
-    # n_percent_df = get_last_n_percentage(df_with_indicators, 35)
-    # AnalysisEngine(__DEBUG, n_percent_df, asset, currency, length_assets, interval)
-
     AnalysisEngine(__DEBUG, df_with_indicators, asset, currency, length_assets, interval)
 
     sleep_between_analysis = interval / 10
@@ -50,11 +46,11 @@ def run_bot(asset, currency, interval, length_assets):
 
 
 def bot_main_process():
-    print("[TRADING BOT]\n")
+    print("[TRADING BOT]")
     if __DEBUG:
-        print('SIMULATION MODE -> Exception will be raised')
+        print('SIMULATION MODE -> Exception will be raised\n')
     else:
-        print('PRODUCTION MODE -> Exception will stay silent')
+        print('PRODUCTION MODE -> Exception will stay silent\n')
     sleep(1)
 
     while True:

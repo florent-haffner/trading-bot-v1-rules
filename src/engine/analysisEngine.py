@@ -31,6 +31,7 @@ class AnalysisEngine:
         self.length_assets = length_assets
         self.interval = interval
         self.event_type = None
+        self.index_size = None
 
         self.analyse_trends()
         self.make_decision()
@@ -38,46 +39,62 @@ class AnalysisEngine:
     def analyse_trends(self):
         print('\n[TREND ANALYSIS]')
 
-        nbr_occurrences = 4
-        macd_high, macd_low, self.pathFigMACD = find_multiple_curve_min_max(self.df,
-                                                                            key='macds',
-                                                                            nbr_occurrences=nbr_occurrences)
-        # close_12_high, close_12_low, self.pathFigCLOSE = find_multiple_curve_min_max(self.df,
-        #                                                                              key='close_12_ema',
-        #                                                                              nbr_occurrences=nbr_occurrences)
-        close_high, close_low, self.pathFigClose = find_multiple_curve_min_max(self.df,
-                                                                               key='close',
-                                                                               nbr_occurrences=nbr_occurrences)
+        # nbr_occurrences = 4
+        # macd_high, macd_low, self.pathFigMACD = find_multiple_curve_min_max(self.df,
+        #                                                                     key='macds',
+        #                                                                     nbr_occurrences=nbr_occurrences)
+        # close_high, close_low, self.pathFigClose = find_multiple_curve_min_max(self.df,
+        #                                                                        key='close',
+        #                                                                        nbr_occurrences=nbr_occurrences)
 
         self.index_size = len(self.df)
-        # self.last_macd_high, self.last_macd_low = get_last_index(macd_high, macd_low)
-        # self.last_close_12_high, self.last_close_12_low = get_last_index(close_12_high, close_12_low)
-        # self.last_close_high, self.last_close_low = get_last_index(close_high, close_low)
-
         self.detect_short_time_trend()
 
-        # print('\n[DETECTED LAST INDEX]', self.index_size)
-        # print('close index { high:', self.last_close_high, ' low:', self.last_close_low, '}')
+    def detect_short_time_trend(self):
+        print(self.asset, '- Short time detection')
+
+        tree_hour_in_minute = 60 * 3
+        shorter_df = self.df[tree_hour_in_minute:]
+        shorter_df.reset_index(inplace=True)
+        print('SHORT TIME DF - first:', datetime.fromtimestamp(shorter_df.head(1)['timestamp'].iloc[0]),
+              'last:', datetime.fromtimestamp(shorter_df.tail(1)['timestamp'].iloc[-1]))
+
+        high_mean_short, low_mean_short, higher_peaks_short, lower_peaks_short, last_close = \
+            compute_mean_peaks(shorter_df, 1)
+        print('last', round(last_close, 4),
+              'high_mean', round(high_mean_short, 4),
+              'low_mean', round(low_mean_short, 4))
+
+        one_hour = 60
+        last_hour_df = shorter_df[one_hour:]
+        last_hour_df.reset_index(inplace=True)
+
+        high_mean_shorter, low_mean_shorter, higher_peaks_shorter, lower_peaks_shorter, _ = \
+            compute_mean_peaks(last_hour_df, 1)
+        print('last', round(last_close, 4),
+              'high_mean', round(high_mean_shorter, 4),
+              'low_mean', round(low_mean_shorter, 4))
+
+        if last_close < low_mean_short:
+            self.event_type = 'buy'
+        elif last_close > low_mean_short:
+            self.event_type = 'sell'
+        else:
+            self.event_type = 'wait'
 
     def make_decision(self):
         print('\n[DECISION MAKING]')
-        attachments = [self.pathFigClose]
+        # attachments = [self.pathFigClose]
+        attachments = None
         try:
-            # margin_trade_out_of_range = 10
-            # if self.last_close_low >= self.index_size - margin_trade_out_of_range:
-            #     type_of_trade = 'buy'
             print('Type of trade:', self.event_type)
             if self.event_type == 'buy':
                 self.generate_trade_event(self.event_type, attachments=attachments)
 
-            # elif self.last_close_high >= self.index_size - margin_trade_out_of_range:
             elif self.event_type == 'sell':
-                    # type_of_trade = 'sell'
-                # print('Type of trade:', type_of_trade)
                 self.generate_trade_event(self.event_type, attachments=attachments)
 
             else:
-                # TODO -> what about checking if I didn't already have stuff
                 print('Trends are currently evolving, waiting...')
 
         except Exception as err:
@@ -91,22 +108,18 @@ class AnalysisEngine:
 
     def generate_trade_event(self, type_of_trade, attachments):
         print('Calculating volume')
-        date = datetime.now().strftime(DATE_STR)
         volume_to_buy, transaction_id = self.calculate_volume_to_buy(type_of_trade)
-
         if volume_to_buy:
             success = addTradeEvent(type_of_trade=type_of_trade,
                                     volume_to_buy=volume_to_buy,
                                     asset=self.asset,
-                                    df=self.df,
-                                    maximum_index=self.index_size - 1,
                                     interval=self.interval,
-                                    date=date,
-                                    transactionId=transaction_id)
+                                    currency=self.currency,
+                                    transaction_id=transaction_id)
             if success:
-                send_email(
-                    '[BOT-ANALYSIS]', 'Incoming trade : [' + self.asset + '] - type: ' + type_of_trade,
-                    attachments)
+                # send_email(
+                #     '[BOT-ANALYSIS]', 'Incoming trade : [' + self.asset + '] - type: ' + type_of_trade,
+                #     attachments)
                 print(type_of_trade.upper(), 'this', volume_to_buy, 'of', self.asset)
         else:
             print('Nothing to', type_of_trade)
@@ -140,61 +153,3 @@ class AnalysisEngine:
 
         return None, None
 
-    def detect_short_time_trend(self):
-        print(self.asset, '- Short time detection')
-
-        tree_hour_in_minute = 60 * 3
-        shorter_df = self.df[tree_hour_in_minute:]
-        shorter_df.reset_index(inplace=True)
-        print('SHORT TIME DF - first:', datetime.fromtimestamp(shorter_df.head(1)['timestamp'].iloc[0]),
-              'last:', datetime.fromtimestamp(shorter_df.tail(1)['timestamp'].iloc[-1]))
-
-        high_mean_short, low_mean_short, higher_peaks_short, lower_peaks_short, last_close = \
-            compute_mean_peaks(shorter_df, 1)
-        print('last', round(last_close, 4),
-              'high_mean', round(high_mean_short, 4),
-              'low_mean', round(low_mean_short, 4))
-
-        #
-        # TODO <- remove this
-        #
-        # import matplotlib.pyplot as plt
-        # plt.plot(shorter_df['close'])
-        # plt.plot(shorter_df['close_12_ema'])
-        # plt.plot(higher_peaks_short[:, 0], higher_peaks_short[:, 1], 'ro')
-        # plt.plot(lower_peaks_short[:, 0], lower_peaks_short[:, 1], 'go')
-        # plt.show()
-        #
-        # TODO <- remove this
-        #
-
-        one_hour = 60
-        last_hour_df = shorter_df[one_hour:]
-        last_hour_df.reset_index(inplace=True)
-
-        high_mean_shorter, low_mean_shorter, higher_peaks_shorter, lower_peaks_shorter, _ = \
-            compute_mean_peaks(last_hour_df, 1)
-        print('last', round(last_close, 4),
-              'high_mean', round(high_mean_shorter, 4),
-              'low_mean', round(low_mean_shorter, 4))
-
-        if last_close < low_mean_short:
-            self.event_type = 'buy'
-        elif last_close > low_mean_short:
-            self.event_type = 'sell'
-        else:
-            self.event_type = 'wait'
-
-        #
-        # TODO <- remove this
-        #
-        # plt.plot(last_hour_df['close'])
-        # plt.plot(last_hour_df['close_12_ema'])
-        # plt.plot(higher_peaks_shorter[:, 0], higher_peaks_shorter[:, 1], 'ro')
-        # plt.plot(lower_peaks_shorter[:, 0], lower_peaks_shorter[:, 1], 'go')
-        # plt.show()
-
-        # raise Exception('')
-        #
-        # TODO <- remove this
-        #

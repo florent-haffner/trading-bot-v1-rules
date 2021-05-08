@@ -49,7 +49,8 @@ def getDataframe(apiResponse):
 Glue everything together
 """
 def getFormattedData(asset, interval) -> pd.DataFrame:
-    print('\n[QUERY] - Kraken - ', asset + ' on ' + interval + 'min')
+    print('\n--------------------------------------------------\n',
+          '[QUERY] - Kraken - ', asset + ' on ' + interval + 'min')
     results = getDatasFromKraken(asset, interval)
     return getDataframe(results)
 
@@ -97,7 +98,6 @@ def get_stocks_indicators(df):
     df['close_12_ema'] = df.get('close_12_ema')
     df['close_26_ema'] = df.get('close_26_ema')
     return df
-
 
 
 if __name__ == "__main__":

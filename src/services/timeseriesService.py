@@ -5,6 +5,7 @@ from src.repository.missionRepository import getAllMissions
 from src.repository.tradeEventRepository import getRecentEventByTypeAndAsset, insertTradeEvent, getAllEvents
 from src.repository.tradeTransactionRepository import insertTransactionEvent, getTransactionById, updateTransactionById, \
     getTransactionByAsset, getLastDayTransactionByAsset
+from src.services.krakenTradeService import getLastPrice
 
 
 def getLastEventByTypeAndAsset(asset, typeOfTrade):
@@ -20,7 +21,7 @@ def getLastEventByTypeAndAsset(asset, typeOfTrade):
     return most_recent
 
 
-def generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset, interval, date):
+def generateDTO(type_of_trade, volume_to_buy, asset, interval, price):
     return {
         'time': datetime.strftime(datetime.now(), DATE_UTC_TZ_STR),
         'measurement': 'tradeEvent',
@@ -31,19 +32,20 @@ def generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset, interval
         'fields': {
             'asset': asset,
             'quantity': volume_to_buy,
-            'price': df['close'][maximum_index]
+            'price': price
         }
     }
 
 
-def addTradeEvent(type_of_trade, volume_to_buy, df, maximum_index, asset, interval, date, transactionId):
+def addTradeEvent(type_of_trade, volume_to_buy, asset, interval, currency, transaction_id):
     success = False
-    point = generateDTO(type_of_trade, volume_to_buy, df, maximum_index, asset, interval, date)
+    price = getLastPrice(asset, currency)
+    point = generateDTO(type_of_trade=type_of_trade, volume_to_buy=volume_to_buy,
+                        asset=asset, interval=interval, price=price)
 
-    if not transactionId:
-        transactionId = insertTransactionEvent(type_of_trade, point)
-        print(transactionId)
-    point['fields']['transactionId'] = str(transactionId)
+    if not transaction_id:
+        transaction_id = insertTransactionEvent(type_of_trade, point)
+    point['fields']['transactionId'] = str(transaction_id)
 
     if type_of_trade == 'buy':
         # Adding new tradeEvent on InfluxDB
@@ -53,8 +55,8 @@ def addTradeEvent(type_of_trade, volume_to_buy, df, maximum_index, asset, interv
 
     # Upgrading previous transaction on MongoDB
     if type_of_trade == 'sell':
-        print('Updating', transactionId, 'to complete transaction')
-        result = updateTransaction(id=transactionId,
+        print('Updating', transaction_id, 'to complete transaction')
+        result = updateTransaction(id=transaction_id,
                                    key=type_of_trade,
                                    data=point)
         if result:

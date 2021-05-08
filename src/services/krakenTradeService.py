@@ -49,6 +49,22 @@ def createNewOrder(asset, type, quantity):
         raise err
 
 
+"""
+:param asset -> the currency, ex : BTC, ETH, GRT
+"""
+def getLastPrice(asset, currency):
+    try:
+        combo = str(asset + currency).upper()
+        result = API.query_public(
+            'Ticker', {
+                'pair': combo,
+            })
+        if result:
+            return result['result'][combo]['a'][0]
+    except Exception as err:
+        raise err
+
+
 if __name__ == "__main__":
     # asset = 'GRT'
     # curreny = 'EUR'
