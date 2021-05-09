@@ -8,11 +8,11 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 
-__DESTINATION = 'neltharak@gmail.com'
+__DESTINATION: str = 'neltharak@gmail.com'
 
 
 def send_email(subject, body, attachments):
-    __SENDER = __EMAIL_USER
+    __SENDER: str = __EMAIL_USER
 
     msg = MIMEMultipart()
     msg['From'] = __EMAIL_USER
@@ -47,5 +47,5 @@ def send_email(subject, body, attachments):
 
 if __name__ == '__main__':
     send_email('no files', '', [])
-    attachments = ['/tmp/2021-04-05 16:47:11.089790-macds.png', '/tmp/2021-04-05 16:47:11.296193-close_12_ema.png']
-    send_email('files', 'wsh', attachments)
+    # attachments = ['/tmp/2021-04-05 16:47:11.089790-macds.png', '/tmp/2021-04-05 16:47:11.296193-close_12_ema.png']
+    # send_email('files', 'wsh', attachments)

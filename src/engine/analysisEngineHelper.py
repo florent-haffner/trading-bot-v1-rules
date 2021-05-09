@@ -1,3 +1,6 @@
+from typing import Dict, Any
+import pandas as pd
+
 from src.helpers.params import MAXIMUM_PERCENTAGE_EUR
 from src.services.krakenTradeService import getAccountBalance
 
@@ -5,21 +8,21 @@ from src.services.krakenTradeService import getAccountBalance
 class NothingToTrade(Exception): pass
 
 
-def define_volume(df, type_of_trade, nbr_asset_on_trade, index_max):
+def define_volume(df: pd.DataFrame, type_of_trade: str, nbr_asset_on_trade: float, index_max: int) -> float:
     print('\n[VOLUME TRADING QUANTITY]')
     print('Type of trade:', type_of_trade)
-    volume_to_buy = None
+    volume_to_buy: float
     try:
-        balance_euro = float(getAccountBalance()['result']['ZEUR'])
-        money_available = (balance_euro / float(nbr_asset_on_trade)) * MAXIMUM_PERCENTAGE_EUR
-        volume_to_buy = money_available / df['close'][index_max]
+        balance_euro: float = float(getAccountBalance()['result']['ZEUR'])
+        money_available: float = (balance_euro / float(nbr_asset_on_trade)) * MAXIMUM_PERCENTAGE_EUR
+        volume_to_buy: float = money_available / df['close'][index_max]
     except Exception as err:
         raise err
     return volume_to_buy
 
 
-def build_DTO(df, measures, index):
-    DTO = {}
+def build_dto(df, measures, index) -> Dict:
+    DTO: Dict[str, Any] = {}
     for measure in measures:
         DTO[measure] = df[measure][index]
     return DTO
