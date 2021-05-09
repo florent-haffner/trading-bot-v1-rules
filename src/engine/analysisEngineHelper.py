@@ -1,10 +1,4 @@
-import os
-from datetime import datetime
-
-import matplotlib.pyplot as plt
-import numpy as np
-from peakdetect import peakdetect
-
+from src.helpers.params import MAXIMUM_PERCENTAGE_EUR
 from src.services.krakenTradeService import getAccountBalance
 
 
@@ -14,20 +8,31 @@ class NothingToTrade(Exception): pass
 def define_volume(df, type_of_trade, nbr_asset_on_trade, index_max):
     print('\n[VOLUME TRADING QUANTITY]')
     print('Type of trade:', type_of_trade)
-
     volume_to_buy = None
     try:
         balance_euro = float(getAccountBalance()['result']['ZEUR'])
-        maximum_percentage = .9
-        money_available = (balance_euro / float(nbr_asset_on_trade)) * maximum_percentage
+        money_available = (balance_euro / float(nbr_asset_on_trade)) * MAXIMUM_PERCENTAGE_EUR
         volume_to_buy = money_available / df['close'][index_max]
-
     except Exception as err:
         raise err
-
     return volume_to_buy
 
 
+def build_DTO(df, measures, index):
+    DTO = {}
+    for measure in measures:
+        DTO[measure] = df[measure][index]
+    return DTO
+
+
+def get_last_index(peaks_high, peaks_low):
+    last_high_index = peaks_high[:, 0][len(peaks_high[:, 1]) - 1]
+    last_low_index = peaks_low[:, 0][len(peaks_low[:, 1]) - 1]
+    return last_high_index, last_low_index
+
+
+# TODO -> remove these unused part of codebase
+"""
 def plot_peaks_close_ema(df, key, higher_peaks, lower_peaks):
     fig = plt.figure()
     plt.ion()
@@ -46,27 +51,6 @@ def plot_peaks_close_ema(df, key, higher_peaks, lower_peaks):
     return path_to_save_figure
 
 
-def build_DTO(df, measures, index):
-    DTO = {}
-    for measure in measures:
-        DTO[measure] = df[measure][index]
-    return DTO
-
-
-def remove_tmp_pics(path):
-    try:
-        os.remove(path)
-        print('Removed tmp plot figure from', path)
-    except OSError:
-        pass
-
-
-def get_last_index(peaks_high, peaks_low):
-    last_high_index = peaks_high[:, 0][len(peaks_high[:, 1]) - 1]
-    last_low_index = peaks_low[:, 0][len(peaks_low[:, 1]) - 1]
-    return last_high_index, last_low_index
-
-
 def find_multiple_curve_min_max(df, key, nbr_occurrences):
     print('CURVE - ', key, '- Detecting peaks min/max')
     length_df = len(df)
@@ -81,3 +65,11 @@ def find_multiple_curve_min_max(df, key, nbr_occurrences):
 
     path_fig = plot_peaks_close_ema(df, key, higher_peaks, lower_peaks)
     return higher_peaks, lower_peaks, path_fig
+
+def remove_tmp_pics(path):
+    try:
+        os.remove(path)
+        print('Removed tmp plot figure from', path)
+    except OSError:
+        pass
+"""

@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from src.helpers.dateHelper import DATE_UTC_TZ_STR
+from src.helpers.params import MAXIMUM_FEES
 from src.repository.missionRepository import getAllMissions
 from src.repository.tradeEventRepository import getRecentEventByTypeAndAsset, insertTradeEvent, getAllEvents
 from src.repository.tradeTransactionRepository import insertTransactionEvent, getTransactionById, updateTransactionById, \
@@ -39,7 +40,7 @@ def generateDTO(type_of_trade, volume_to_buy, asset, interval, price):
 
 def addTradeEvent(type_of_trade, volume_to_buy, asset, interval, currency, transaction_id):
     success = False
-    price = getLastPrice(asset, currency)
+    price = float(getLastPrice(asset, currency))
     point = generateDTO(type_of_trade=type_of_trade, volume_to_buy=volume_to_buy,
                         asset=asset, interval=interval, price=price)
 
@@ -90,7 +91,9 @@ def calculateWinLossPerTransactions(transactions):
             try:
                 field = transaction[trade]['fields']
                 amountPerTransaction = field['quantity'] * field['price']
-                transactionAmount.append(amountPerTransaction)
+                fees = amountPerTransaction * MAXIMUM_FEES
+                net_amount = amountPerTransaction - fees
+                transactionAmount.append(net_amount)
 
             except KeyError:
                 pass
@@ -109,6 +112,15 @@ def calculateWinLossPerTransactions(transactions):
     return len(transactions), totalAmount
 
 
+def getAllTransactionPerDay():
+    print('\n[Getting all transaction per day]\n')
+    missions = list(getAllMissions())
+    for mission in missions:
+        for asset in mission['context']['assets']:
+            transactionsPerDay = list(getTransactionPerDayAsset(asset))
+            print('Transaction per day', len(transactionsPerDay))
+
+
 def calculateWInLossPerMission():
     print('\n[CALCULATING WIN/LOSS]\n')
     missions = list(getAllMissions())
@@ -124,6 +136,8 @@ def getTransactionPerDayAsset(asset):
     return getLastDayTransactionByAsset(asset)
 
 
+# TODO -> not sure this is still usefull
+"""
 def analysingRecentTrades():
     result = {
         'buy': [],
@@ -138,13 +152,11 @@ def analysingRecentTrades():
             result['sell'].append(event)
     print('Nbr buy', len(result['buy']))
     print('Nbr sell', len(result['sell']))
-
+"""
 
 if __name__ == '__main__':
-    calculateWInLossPerMission()
-    # analysingRecentTrades()
-
     # getLastEventByTypeAndAsset('GRT', 'buy')
 
-    # transactionsPerDay = list(getTransactionPerDayAsset('GRT'))
-    # print('\ntransactionPerDay', transactionsPerDay)
+    # calculateWInLossPerMission()
+
+    getAllTransactionPerDay()

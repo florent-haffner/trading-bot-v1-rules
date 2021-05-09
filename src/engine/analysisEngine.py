@@ -5,8 +5,7 @@ import pandas as pd
 from numpy import mean
 from peakdetect import peakdetect
 
-from src.engine.analysisEngineHelper import get_last_index, find_multiple_curve_min_max, define_volume
-from src.helpers.dateHelper import DATE_STR
+from src.engine.analysisEngineHelper import define_volume
 from src.helpers.emailSenderHelper import send_email
 from src.services.timeseriesService import addTradeEvent, getLastEventByTypeAndAsset, getTransaction
 
@@ -33,12 +32,17 @@ class AnalysisEngine:
         self.event_type = None
         self.index_size = None
 
-        self.analyse_trends()
+        self.index_size = len(self.df)
+        # self.analyse_trends()
+        self.detect_short_time_trend()
         self.make_decision()
 
+    # TODO -> this method just became useless
+    """
     def analyse_trends(self):
         print('\n[TREND ANALYSIS]')
 
+        # TODO -> maybe get this out of the codebase
         # nbr_occurrences = 4
         # macd_high, macd_low, self.pathFigMACD = find_multiple_curve_min_max(self.df,
         #                                                                     key='macds',
@@ -47,8 +51,9 @@ class AnalysisEngine:
         #                                                                        key='close',
         #                                                                        nbr_occurrences=nbr_occurrences)
 
-        self.index_size = len(self.df)
-        self.detect_short_time_trend()
+        # self.index_size = len(self.df)
+        # self.detect_short_time_trend()
+    """
 
     def detect_short_time_trend(self):
         print(self.asset, '- Short time detection')
@@ -127,7 +132,7 @@ class AnalysisEngine:
     def calculate_volume_to_buy(self, type_of_trade):
         if type_of_trade == 'buy':
             previous_currency_trade = getLastEventByTypeAndAsset(self.asset, type_of_trade)
-            # Ignore the previous trade if it has been fullfilled
+            # Ignore the previous trade if it has been fulfilled
             if previous_currency_trade:
                 transaction = getTransaction(previous_currency_trade['transactionId'])
                 try:
@@ -152,4 +157,3 @@ class AnalysisEngine:
                 return transaction['buy']['fields']['quantity'], transaction_id
 
         return None, None
-

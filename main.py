@@ -5,12 +5,10 @@ from time import sleep
 
 import pymongo.errors
 
+from src.helpers.params import __DEBUG, __OFFLINE
 from src.engine.analysisEngine import AnalysisEngine
 from src.repository.missionRepository import getAllMissions
 from src.services.krakenDataService import getFormattedData, get_stocks_indicators
-
-__DEBUG = True
-__OFFLINE = False
 
 
 def get_last_n_percentage(df, nbr_percentage):
