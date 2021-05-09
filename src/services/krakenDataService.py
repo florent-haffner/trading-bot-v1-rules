@@ -29,7 +29,7 @@ def getDatasFromKraken(asset, interval) -> object:
 :param apiResponse -> datas from api
 :return pandas Dataframe object
 """
-def getDataframe(apiResponse):
+def getDataframe(apiResponse) -> pd.DataFrame:
     firstMapKey = list(apiResponse['result'].keys())[0]
     schema = ['timestamp', 'open', 'high', 'low', 'close', 'vwap', 'volume', 'count']
     df = pd.DataFrame(apiResponse['result'][firstMapKey], columns=schema)
@@ -91,8 +91,8 @@ def getXy(dataset, X_key, y_key) -> [pd.DataFrame]:
 #     return X_scaled, y_scaled
 
 
-def get_stocks_indicators(df):
-    df = StockDataFrame.retype(df)
+def get_stocks_indicators(df: object) -> pd.DataFrame:
+    df: pd.DataFrame = StockDataFrame.retype(df)
     df['macd'] = df.get('macd')
     df['ema'] = df.get('dx_6_ema')
     df['close_12_ema'] = df.get('close_12_ema')
