@@ -1,4 +1,3 @@
-from src.engine.analysisEngineHelper import remove_tmp_pics
 from src.helpers.dateHelper import SIMPLE_DATE_STR
 from src.secret.SECRET_CONSTANT import __EMAIL_USER, __EMAIL_PASSWORD
 
@@ -36,9 +35,10 @@ def send_email(subject, body, attachments):
             smtpObj.login(__EMAIL_USER, __EMAIL_PASSWORD)
             smtpObj.sendmail(__SENDER, __DESTINATION, msg.as_string())
 
-        if attachments:
-            for file in attachments:
-                remove_tmp_pics(file)
+        # TODO -> check if still useful
+        # if attachments:
+        #     for file in attachments:
+        #         remove_tmp_pics(file)
     except Exception as e:
         print(e)
     print('Sended email to', __DESTINATION, 'from', __EMAIL_USER, ', length msg', len(msg), 'and', len(attachments),
