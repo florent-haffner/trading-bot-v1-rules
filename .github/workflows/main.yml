@@ -16,7 +16,7 @@ jobs:
               DEPLOY_KEY: ${{secrets.DEPLOY_KEY}}
           with:
               flags: '-avc --delete'
-              src: 'dist/'
+              src: '/'
               dest: '{{secrets.SERVER_USER}}@"${{secrets.SERVER_IP}}":/home/{{secrets.SERVER_USER}}/trading-bot-interval/'
 
       -   name: Display status from deploy
