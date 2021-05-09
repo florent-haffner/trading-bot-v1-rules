@@ -10,8 +10,8 @@ else:
     __MONGO_CLIENT = MongoClient(__MONGO_HOST, username=__MONGO_USER, password=__MONGO_PASSWORD)
 
 
-db = __MONGO_CLIENT.tradingbot
-collection = db.mission
+db = __MONGO_CLIENT['tradingbot']
+collection = db['mission']
 
 
 def createMission(data):
@@ -42,7 +42,7 @@ def cleanMission():
 if __name__ == '__main__':
     missionData = {
         "context": {
-            "interval": 5,
+            "interval": 1,
             "assets": [
                 "GRT", "LINK", "ALGO"
             ]
@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
     missionId = missions[0]['_id']
     missionData = {
-        "interval": 1,
+        "interval": 5,
         "assets": [
             "GRT", "LINK", "ALGO"
         ]

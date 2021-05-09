@@ -45,7 +45,7 @@ def run_bot(asset, currency, interval, length_assets):
 
 
 def bot_main_process():
-    print("[TRADING BOT]")
+    print("[TRADING BOT ACTIVATED] - HELLO MASTER")
     if __DEBUG:
         print('SIMULATION MODE -> Exception will be raised\n')
     else:

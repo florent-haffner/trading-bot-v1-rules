@@ -8,9 +8,8 @@ from src.secret.SECRET_CONSTANT import __MONGO_URI
 
 __MONGO_CLIENT = MongoClient(__MONGO_URI)
 
-
-db = __MONGO_CLIENT.tradingbot
-collection = db.tradeTransaction
+db = __MONGO_CLIENT['tradingbot']
+collection = db['tradeTransaction']
 
 
 def getTransactionById(id):
@@ -88,7 +87,7 @@ def initEnvironment():
                           updateTransaction=timeseries_sell)
 
 
-def getTransactionByAsset(asset):
+def getTransactionsByAsset(asset):
     return collection.find({
         'buy.fields.asset': asset,
     })
