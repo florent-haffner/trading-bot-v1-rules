@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from typing import Dict, Any
 
 import krakenex
 
@@ -14,7 +15,7 @@ API.load_key(current_file_absolute_path + '/../' + 'secret/kraken.key')
 """
 :param asset -> the currency, ex : BTC, ETH, GRT
 """
-def getTradeBalance(asset):
+def getTradeBalance(asset) -> Dict[str, Any]:
     try:
         return API.query_private('TradeBalance', {'asset': asset})
     except Exception as err:
@@ -24,7 +25,7 @@ def getTradeBalance(asset):
 :param asset -> the currency, ex : BTC, ETH, GRT
 """
 
-def getAccountBalance():
+def getAccountBalance() -> Dict[str, Any]:
     try:
         return API.query_private('Balance')
     except Exception as err:
@@ -34,7 +35,7 @@ def getAccountBalance():
 """
 :param asset -> the currency, ex : BTC, ETH, GRT
 """
-def createNewOrder(asset, type, quantity):
+def createNewOrder(asset, type, quantity): # TODO : check the return type -> if possible to get the price bought
     try:
         return API.query_private(
             'AddOrder', {
@@ -52,7 +53,7 @@ def createNewOrder(asset, type, quantity):
 """
 :param asset -> the currency, ex : BTC, ETH, GRT
 """
-def getLastPrice(asset, currency):
+def getLastPrice(asset, currency) -> Dict[str, Any]:
     try:
         combo = str(asset + currency).upper()
         result = API.query_public(

@@ -1,5 +1,7 @@
+from typing import Any, Union, Dict
+
 import pandas as pd
-from requests import get
+from requests import get, Response
 
 from stockstats import StockDataFrame
 
@@ -13,14 +15,13 @@ class RequestToKrakenError(Exception): pass
 :param asset -> the pair of currency, ex : BTCEUR, ETHEUR, ALGOUSD
 :param interval -> data interval in minutes (1, 5, 10, 60, 120, 360, 1440)
 """
-def getDatasFromKraken(asset, interval) -> object:
-    URL = __KRAKEN_API + '?pair=' + asset + '&interval=' + interval
+def getDatasFromKraken(asset, interval) -> Dict:
+    URL: str = __KRAKEN_API + '?pair=' + asset + '&interval=' + interval
     try:
-        res = get(URL)
+        res: Response = get(URL)
         if len(res.json()['error']) > 0:
             raise RequestToKrakenError('Unable to reach proper datas')
         return res.json()
-
     except Exception as err:
         raise err
 
@@ -32,17 +33,17 @@ def getDatasFromKraken(asset, interval) -> object:
 def getDataframe(apiResponse) -> pd.DataFrame:
     firstMapKey = list(apiResponse['result'].keys())[0]
     schema = ['timestamp', 'open', 'high', 'low', 'close', 'vwap', 'volume', 'count']
-    df = pd.DataFrame(apiResponse['result'][firstMapKey], columns=schema)
-    df.sort_values(by=['timestamp'])
+    dataframe: pd.DataFrame = pd.DataFrame(apiResponse['result'][firstMapKey], columns=schema)
+    dataframe.sort_values(by=['timestamp'])
 
-    df['open'] = df['open'].astype(float)
-    df['high'] = df['high'].astype(float)
-    df['low'] = df['low'].astype(float)
-    df['close'] = df['close'].astype(float)
-    df['vwap'] = df['vwap'].astype(float)
-    df['volume'] = df['volume'].astype(float)
-    df['count'] = df['count'].astype(float)
-    return df
+    dataframe['open'] = dataframe['open'].astype(float)
+    dataframe['high'] = dataframe['high'].astype(float)
+    dataframe['low'] = dataframe['low'].astype(float)
+    dataframe['close'] = dataframe['close'].astype(float)
+    dataframe['vwap'] = dataframe['vwap'].astype(float)
+    dataframe['volume'] = dataframe['volume'].astype(float)
+    dataframe['count'] = dataframe['count'].astype(float)
+    return dataframe
 
 
 """
@@ -51,18 +52,18 @@ Glue everything together
 def getFormattedData(asset, interval) -> pd.DataFrame:
     print('\n--------------------------------------------------\n',
           '[QUERY] - Kraken - ', asset + ' on ' + interval + 'min')
-    results = getDatasFromKraken(asset, interval)
+    results: Dict = getDatasFromKraken(asset, interval)
     return getDataframe(results)
 
 
+# TODO -> Not used anymore
 """
 Help split dataset
 :param full_dataset -> straight forward
 :param split_radio -> value between 0 & 1, like 0.85 for example
 :return properly splitted train_dataset and test_dataset
-"""
 def splitDataset(full_dataset, split_ratio) -> [pd.DataFrame]:
-    split_length = int(len(full_dataset) * split_ratio)
+    split_length: int = int(len(full_dataset) * split_ratio)
     train_set = full_dataset[:split_length]
     test_set = full_dataset[split_length:]
     return train_set, test_set
@@ -73,7 +74,7 @@ def getXy(dataset, X_key, y_key) -> [pd.DataFrame]:
         return dataset[X_key], dataset[y_key]
     except KeyError:
         raise KeyError('Error with the keys', X_key, ' or ', y_key)
-
+"""
 
 # """
 # :param get X, y
@@ -91,13 +92,13 @@ def getXy(dataset, X_key, y_key) -> [pd.DataFrame]:
 #     return X_scaled, y_scaled
 
 
-def get_stocks_indicators(df: object) -> pd.DataFrame:
-    df: pd.DataFrame = StockDataFrame.retype(df)
-    df['macd'] = df.get('macd')
-    df['ema'] = df.get('dx_6_ema')
-    df['close_12_ema'] = df.get('close_12_ema')
-    df['close_26_ema'] = df.get('close_26_ema')
-    return df
+def get_stocks_indicators(dataframe: pd.DataFrame) -> pd.DataFrame:
+    dataframe: pd.DataFrame = StockDataFrame.retype(dataframe)
+    dataframe['macd'] = dataframe.get('macd')
+    dataframe['ema'] = dataframe.get('dx_6_ema')
+    dataframe['close_12_ema'] = dataframe.get('close_12_ema')
+    dataframe['close_26_ema'] = dataframe.get('close_26_ema')
+    return dataframe
 
 
 if __name__ == "__main__":

@@ -1,11 +1,9 @@
 from datetime import datetime
 
 from src.helpers.dateHelper import DATE_UTC_TZ_STR
-from src.helpers.params import MAXIMUM_FEES
-from src.repository.missionRepository import getAllMissions
-from src.repository.tradeEventRepository import getRecentEventByTypeAndAsset, insertTradeEvent, getAllEvents
-from src.repository.tradeTransactionRepository import insertTransactionEvent, getTransactionById, updateTransactionById, \
-    getTransactionsByAsset, getLastDayTransactionByAsset
+from src.repository.tradeEventRepository import getRecentEventByTypeAndAsset, insertTradeEvent
+from src.repository.tradeTransactionRepository import insertTransactionEvent, getTransactionById, \
+    updateTransactionById, getLastDayTransactionByAsset
 from src.services.krakenTradeService import getLastPrice
 
 
