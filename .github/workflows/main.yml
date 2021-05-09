@@ -1,19 +1,23 @@
 name: Push-to-EC2
-on: push
+on:
+  push:
+    branches: [ main ]
 jobs:
   deploy:
     name: Push to EC2 Instance
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the code
-        uses: actions/checkout@v1
+      -   run: sudo apt-get install rsync
+      -   name: Deploy theme on server
+          id: deploy_theme
+          uses: Pendect/action-rsyncer@v1.1.0
+          env:
+              DEPLOY_KEY: ${{secrets.DEPLOY_KEY}}
+          with:
+              flags: '-avc --delete'
+              src: 'dist/'
+              dest: '{{secrets.SERVER_USER}}@"${{secrets.SERVER_IP}}":/home/{{secrets.SERVER_USER}}/trading-bot-interval/'
 
-      - name: Deploy to my EC2 instance
-        uses: easingthemes/ssh-deploy@v2.1.5
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          SOURCE: "./"
-          REMOTE_HOST: "ec2-52-47-172-101.eu-west-3.compute.amazonaws.com"
-          REMOTE_USER: "ubuntu"
-          TARGET: "/home/ubuntu/trading-bot-interval"
+      -   name: Display status from deploy
+          run: echo "${{ steps.deploy.outputs.status }}"
