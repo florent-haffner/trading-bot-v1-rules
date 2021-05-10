@@ -19,6 +19,7 @@ jobs:
           TARGET: "/home/${{ secrets.SERVER_USER }}/trading-bot-interval"
 
       - uses: actions/checkout@v2
+#      - uses: s-weigand/setup-conda@v1
 
       - name: Removing old python env
         uses: appleboy/ssh-action@master
@@ -28,7 +29,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            rm -rf /home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot
-            conda create -n trading-bot python=3.8
-            conda activate trading-bot && pip3 install -r requirements.txt
+            rm -rf /home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot |
+            conda create -n trading-bot python=3.8 |
+            conda activate trading-bot && pip3 install -r requirements.txt |
             sudo systemctl restart tradinbBot
