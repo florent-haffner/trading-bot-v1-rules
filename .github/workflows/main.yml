@@ -1,10 +1,14 @@
 name: Push-to-EC2
-on: push
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
 jobs:
   deploy:
     name: Push to EC2 Instance
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout the code
         uses: actions/checkout@v1
@@ -17,3 +21,16 @@ jobs:
           REMOTE_HOST: ${{ secrets.SERVER_IP }}
           REMOTE_USER: ${{ secrets.SERVER_USER }}
           TARGET: "/home/${{ secrets.SERVER_USER }}/trading-bot-interval"
+
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - run: rm "/home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot
+      - uses: s-weigand/setup-conda@v1
+        with:
+          activate-conda: false
+      - run: conda create -n trading-bot python=3.8
+      - run: conda activate trading-bot && pip3 install -r requirements.txt
