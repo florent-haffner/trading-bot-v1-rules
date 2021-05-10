@@ -39,5 +39,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-              conda create -n trading-bot python=3.8 && conda activate trading-bot && pip3 install -r requirements.txt
-              sudo systemctl restart tradinbBot
+              /home/${{ secrets.SERVER_USER }}/anaconda3/bin/conda create -n trading-bot python=3.8
+              /home/${{ secrets.SERVER_USER }}/anaconda3/bin/conda activate trading-bot && pip3 install -r requirements.txt
+              sudo cp tradingBot.service /lib/systemd/system/tradingBot.service && systemctl restart tradinbBot
