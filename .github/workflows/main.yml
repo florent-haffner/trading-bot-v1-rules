@@ -38,4 +38,4 @@ jobs:
           script: |
               /home/${{ secrets.SERVER_USER }}/anaconda3/bin/conda create -n trading-bot python=3.8
               /home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot/bin/pip3 install -r ~/trading-bot-interval/requirements.txt
-              sudo cp tradingBot.service /lib/systemd/system/tradingBot.service && systemctl restart tradinbBot
+              sudo systemctl restart tradinbBot
