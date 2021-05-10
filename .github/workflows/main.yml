@@ -31,13 +31,13 @@ jobs:
           script: |
             rm -rf /home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot
 
-    - name: Recreating new env + rebooting scripts
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SERVER_IP }}
-        username: ${{ secrets.SERVER_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
-        script: |
-            conda create -n trading-bot python=3.8 && conda activate trading-bot && pip3 install -r requirements.txt
-            sudo systemctl restart tradinbBot
+      - name: Recreating new env + rebooting scripts
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+              conda create -n trading-bot python=3.8 && conda activate trading-bot && pip3 install -r requirements.txt
+              sudo systemctl restart tradinbBot
