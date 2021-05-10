@@ -37,5 +37,5 @@ jobs:
           port: 22
           script: |
               /home/${{ secrets.SERVER_USER }}/anaconda3/bin/conda create -n trading-bot python=3.8
-              /home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot/bin/pip3 install -r ~/trading-bot-interval/requirements.txt
+              /home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot/bin/pip3 install -r /home/${{ secrets.SERVER_USER }}/trading-bot-interval/requirements.txt
               sudo systemctl restart tradinbBot
