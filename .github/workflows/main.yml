@@ -19,7 +19,7 @@ jobs:
           TARGET: "/home/${{ secrets.SERVER_USER }}/trading-bot-interval"
 
       - uses: actions/checkout@v2
-#      - uses: s-weigand/setup-conda@v1
+      - uses: s-weigand/setup-conda@v1
 
       - name: Removing old python env
         uses: appleboy/ssh-action@master
