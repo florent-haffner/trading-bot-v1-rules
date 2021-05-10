@@ -40,5 +40,5 @@ jobs:
           port: 22
           script: |
               /home/${{ secrets.SERVER_USER }}/anaconda3/bin/conda create -n trading-bot python=3.8
-              /home/${{ secrets.SERVER_USER }}/anaconda3/bin/conda activate trading-bot && pip3 install -r requirements.txt
+              /home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot/bin/pip3 install -r requirements.txt
               sudo cp tradingBot.service /lib/systemd/system/tradingBot.service && systemctl restart tradinbBot
