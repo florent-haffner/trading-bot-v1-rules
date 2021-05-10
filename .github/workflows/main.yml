@@ -3,7 +3,7 @@ on: push
 
 jobs:
   deploy:
-    name: Push to EC2 Instance
+    name: Deploy application on EC2
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
@@ -27,16 +27,8 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          script: rm /home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot
-
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.8
-      - run : ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ${{ secrets.SERVEUR_USE }}@${{ secrets.SERVER_IP }}
-      - run: rm /home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot
-      - uses: s-weigand/setup-conda@v1
-        with:
-          activate-conda: false
-      - run: conda create -n trading-bot python=3.8
-      - run: conda activate trading-bot && pip3 install -r requirements.txt
+          script: |
+            rm -rf /home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot
+            conda create -n trading-bot python=3.8
+            conda activate trading-bot && pip3 install -r requirements.txt
+            sudo systemctl restart tradinbBot
