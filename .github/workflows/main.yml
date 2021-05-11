@@ -18,7 +18,7 @@ jobs:
           REMOTE_USER: ${{ secrets.SERVER_USER }}
           TARGET: "/home/${{ secrets.SERVER_USER }}/trading-bot-interval"
 
-      - name: Refresh python env
+      - name: Refresh python env and restart application
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -29,4 +29,4 @@ jobs:
               rm -rf /home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot
               /home/${{ secrets.SERVER_USER }}/anaconda3/bin/conda create -n trading-bot python=3.8
               /home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot/bin/pip3 install -r /home/${{ secrets.SERVER_USER }}/trading-bot-interval/requirement.txt
-#              sudo systemctl restart tradinbBot
+              sudo cp tradingBot.service /lib/systemd/system/tradingBot.service && sudo systemctl restart tradingBot
