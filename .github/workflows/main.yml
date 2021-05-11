@@ -29,4 +29,5 @@ jobs:
               rm -rf /home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot
               /home/${{ secrets.SERVER_USER }}/anaconda3/bin/conda create -n trading-bot python=3.8
               /home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot/bin/pip3 install -r /home/${{ secrets.SERVER_USER }}/trading-bot-interval/requirement.txt
-#              sudo systemctl restart tradinbBot
+      - name: Restart the application
+        run: ssh staging 'sudo systemctl restart tradinbBot'
