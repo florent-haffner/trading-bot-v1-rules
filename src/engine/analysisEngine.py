@@ -147,9 +147,9 @@ class AnalysisEngine:
             # If there is no previous trade, define quantity
             if not previous_currency_trade:
                 volume: float = define_volume(df=self.df,
-                                       type_of_trade=type_of_trade,
-                                       nbr_asset_on_trade=self.length_assets,
-                                       index_max=self.index_size - 1)
+                                              type_of_trade=type_of_trade,
+                                              nbr_asset_on_trade=self.length_assets,
+                                              index_max=self.index_size - 1)
                 return volume, None
 
         if type_of_trade == 'sell':
