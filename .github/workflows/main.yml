@@ -33,6 +33,7 @@ jobs:
           port: 22
           script: |
               rm -rf /home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot
+              rm -rf /home/${{ secrets.SERVER_USER }}/trading-bot-interval/.git
               /home/${{ secrets.SERVER_USER }}/anaconda3/bin/conda create -n trading-bot python=3.8
               /home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot/bin/pip3 install -r /home/${{ secrets.SERVER_USER }}/trading-bot-interval/requirement.txt
               sudo cp /home/${{ secrets.SERVER_USER }}/trading-bot-interval/tradingBot.service /lib/systemd/system/tradingBot.service && sudo systemctl restart tradingBot
