@@ -39,9 +39,9 @@ def run_bot(asset, currency, interval, length_assets):
 
     AnalysisEngine(__DEBUG, df_with_indicators, asset, currency, length_assets, interval)
 
-    sleep_between_analysis: float = interval / 10
-    print('Sleeping for about', sleep_between_analysis, 'seconds.')
-    sleep(sleep_between_analysis)
+    # sleep_between_analysis: float = interval / 10
+    # print('Sleeping for about', sleep_between_analysis, 'seconds.')
+    # sleep(sleep_between_analysis)
 
 
 def bot_main_process():
@@ -54,16 +54,30 @@ def bot_main_process():
 
     while True:
         try:
+            startMissionQuery = datetime.now()
             missions: list = list(getAllMissions())
+            endMissionQuery = datetime.now()
+
+            time_diff: int = int((endMissionQuery - startMissionQuery).total_seconds() * 1000)
+            print('Executed MongoDB in', time_diff, 'ms')
+
             for mission in missions:
                 assets: str = mission['context']['assets']
                 interval: int = mission['context']['interval']
                 print('[ASSETS TO QUERY] :', assets)
                 for asset in assets:
                     currency: str = 'EUR'
+                    startBotAnalysis = datetime.now()
                     run_bot(asset, currency, interval, len(assets))
+                    endBotAnalysis = datetime.now()
+                    time_diff: int = int((endBotAnalysis - startBotAnalysis).total_seconds() * 1000)
+                    print('Executed bot analysis in', time_diff, 'ms')
 
                 time_to_sleep: float = interval * 10
+                endPipeline = datetime.now()
+                time_diff: int = int((endPipeline - startMissionQuery).total_seconds() * 1000)
+                print('Executed full pipeline in', time_diff, 'ms')
+
                 print('Sleeping for about', time_to_sleep, 'seconds.')
                 sleep(time_to_sleep)
 
