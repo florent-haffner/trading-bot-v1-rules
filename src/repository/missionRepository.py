@@ -43,6 +43,7 @@ if __name__ == '__main__':
     missionData = {
         "context": {
             "interval": 1,
+            "interval_unit": 'm',
             "assets": [
                 "GRT", "LINK", "ALGO"
             ]
@@ -58,6 +59,7 @@ if __name__ == '__main__':
     missionId = missions[0]['_id']
     missionData = {
         "interval": 5,
+        "interval_unit": 'm',
         "assets": [
             "GRT", "LINK", "ALGO"
         ]

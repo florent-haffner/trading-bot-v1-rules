@@ -9,7 +9,7 @@ import pymongo.errors
 from pandas import DataFrame, read_csv
 
 from src.engine.analysisEngine import AnalysisEngine
-from src.helpers.params import __DEBUG, __OFFLINE
+from src.helpers.params import __DEBUG, __OFFLINE, __ENVIRONMENT
 from src.repository.missionRepository import getAllMissions
 from src.services.krakenDataService import getFormattedData, get_stocks_indicators
 
@@ -46,6 +46,7 @@ def run_bot(asset, currency, interval, length_assets):
 
 def bot_main_process():
     print("[TRADING BOT ACTIVATED] - HELLO MASTER")
+    print(__ENVIRONMENT, __ENVIRONMENT.value, type(__ENVIRONMENT)) # TODO -> use this for db
     if __DEBUG:
         print('SIMULATION MODE -> Exception will be raised\n')
     else:
