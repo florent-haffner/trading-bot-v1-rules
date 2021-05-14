@@ -1,7 +1,12 @@
+from typing import Dict, Any, List
+from datetime import datetime
+from json import dumps
+
 from telethon import TelegramClient, sync  # DO NOT TOUCH THIS IMPORT
 from telethon.tl.functions.contacts import GetContactsRequest
 from telethon.tl.types import InputPeerUser
 
+from src.helpers.dateHelper import SIMPLE_DATE_STR
 from src.helpers.params import MAXIMUM_FEES
 from src.secret.SECRET_CONSTANT import __TELEGRAM_APP_ID, __TELEGRAM_APP_HASH, __TELEGRAM_PHONE_NBR
 from src.repository.missionRepository import getAllMissions
@@ -50,6 +55,7 @@ def getAllTransactionPerDay():
 
 def calculateWInLossPerMission():
     print('\n[CALCULATING WIN/LOSS]\n')
+    results: List = []
     missions = list(getAllMissions())
     for mission in missions:
         for asset in mission['context']['assets']:
@@ -57,7 +63,25 @@ def calculateWInLossPerMission():
             # transactionFromAsset = list(getTransactionsByAsset(asset))
             transactionFromAsset = list(getTransactionPerDayAsset(asset))
             nbrTransaction, amount = calculateWinLossPerTransactions(transactionFromAsset)
-            print('Nbr transactions', nbrTransaction, 'amount in Euro', round(amount, 3))
+
+            dto: Dict[str, Any] = generateDTO(asset, nbrTransaction, round(amount, 3))
+            print('Current analysis result', dto)
+            results.append(dto)
+
+    msg_to_send = f"""
+    <p>[BOT ANALYSIS OF THE DAY]</p>
+    <p>{datetime.now().strftime(SIMPLE_DATE_STR)}</p>
+    <p>{ str(dumps(results, indent=2)) }</p>
+    """
+    sendMessage(msg_to_send)
+
+
+def generateDTO(asset, nbr_transaction, amount_money):
+    return {
+        "asset": asset,
+        "nbr_transactions": nbr_transaction,
+        "amount_money": amount_money
+    }
 
 
 """
@@ -88,13 +112,6 @@ def sendMessage(message):
 if __name__ == '__main__':
     # getLastEventByTypeAndAsset('GRT', 'buy')
 
-    msg = """
-    <p>[BOT ANALYSIS OF THE DAY]</p>
-    <p>Ich bin ein msg</p>
-    <p>Another line</p>
-    """
-    sendMessage(msg)
-
-    # calculateWInLossPerMission()
+    calculateWInLossPerMission()
 
     # getAllTransactionPerDay()
