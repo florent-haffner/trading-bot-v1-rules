@@ -1,5 +1,6 @@
 #ENV
 nohup.out
+src/client/session.session
 
 #SECRET
 src/secret/

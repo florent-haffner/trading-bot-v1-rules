@@ -3,6 +3,7 @@ from datetime import datetime
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
 
+from src.helpers.params import __ENVIRONMENT
 from src.helpers.dateHelper import DATE_STR
 from src.secret.SECRET_CONSTANT import __INFLUX_DB_TRADE_EVENT, __INFLUX_URI, __INFLUX_TOKEN
 
@@ -10,7 +11,7 @@ __INFLUX_CLIENT = InfluxDBClient(
     url=__INFLUX_URI,
     token=__INFLUX_TOKEN,
 )
-__CURRENT_BUCKET = __INFLUX_DB_TRADE_EVENT + '_dev'
+__CURRENT_BUCKET = __INFLUX_DB_TRADE_EVENT + '_' + __ENVIRONMENT
 __INFLUXDB_CURRENT_ORG = "florent.haffner@protonmail.com"
 __MEASUREMENT_NAME = "tradeEvent"
 
