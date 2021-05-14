@@ -1,3 +1,4 @@
+from tokenize import String
 from typing import Dict, Any, List
 from datetime import datetime
 from json import dumps
@@ -16,6 +17,7 @@ from src.services.timeseriesService import getTransactionPerDayAsset
 
 def calculateWinLossPerTransactions(transactions):
     total = []
+    beginningAmount = 0
     for transaction in transactions:
         typeOfTrade = ['buy', 'sell']
         print(transaction)
@@ -24,8 +26,13 @@ def calculateWinLossPerTransactions(transactions):
             try:
                 field = transaction[trade]['fields']
                 amountPerTransaction = field['quantity'] * field['price']
+
+                if not beginningAmount:
+                    beginningAmount = amountPerTransaction
+
                 fees = amountPerTransaction * MAXIMUM_FEES
                 net_amount = amountPerTransaction - fees
+
                 transactionAmount.append(net_amount)
             except KeyError:
                 pass
@@ -41,7 +48,7 @@ def calculateWinLossPerTransactions(transactions):
     for amountPerTransaction in total:
         totalAmount = totalAmount + amountPerTransaction
 
-    return len(transactions), totalAmount
+    return len(transactions), totalAmount, beginningAmount
 
 
 def getAllTransactionPerDay():
@@ -62,11 +69,24 @@ def calculateWInLossPerMission():
             print('\n[', asset, '] -> Calculating win/loss pet asset')
             # transactionFromAsset = list(getTransactionsByAsset(asset))
             transactionFromAsset = list(getTransactionPerDayAsset(asset))
-            nbrTransaction, amount = calculateWinLossPerTransactions(transactionFromAsset)
+            nbrTransaction, amount, beginningAmount = calculateWinLossPerTransactions(transactionFromAsset)
 
-            dto: Dict[str, Any] = generateDTO(asset, nbrTransaction, round(amount, 3))
+            dto: Dict[str, Any] = generateDTO(asset, round(beginningAmount, 2), nbrTransaction, round(amount, 3))
             print('Current analysis result', dto)
             results.append(dto)
+
+    # Calculating the overall percentage
+    asset: String = 'total'
+    nbrTransactionSum: int = 0
+    amountSum: int = 0
+    resultsSum: int = 0
+    for res in results:
+        amountSum = amountSum + res['beginning_amount']
+        nbrTransactionSum = nbrTransactionSum + res['nbr_transactions']
+        resultsSum = resultsSum + res['result']
+    percent: float = resultsSum * 100 / amountSum if amountSum else 0
+    dto: Dict[str, Any] = generateDTO(asset, round(amountSum, 2), nbrTransactionSum, round(percent, 3))
+    results.append(dto)
 
     msg_to_send = f"""
     <p>[BOT ANALYSIS OF THE DAY]</p>
@@ -76,11 +96,13 @@ def calculateWInLossPerMission():
     sendMessage(msg_to_send)
 
 
-def generateDTO(asset, nbr_transaction, amount_money):
+def generateDTO(asset, beginning_amount, nbr_transaction, amount_money):
     return {
         "asset": asset,
+        "beginning_amount": beginning_amount,
         "nbr_transactions": nbr_transaction,
-        "amount_money": amount_money
+        "result": amount_money,
+        "percent": round(amount_money * 100 / beginning_amount, 2) if beginning_amount else 0
     }
 
 
