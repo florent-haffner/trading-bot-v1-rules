@@ -21,7 +21,7 @@ def createMission(data):
 
 def getAllMissions():
     print('[MONGODB] - [GET ALL MISSIONS]')
-    return db.mission.find({})
+    return collection.find({})
 
 
 def updateMission(id, updatedMission):

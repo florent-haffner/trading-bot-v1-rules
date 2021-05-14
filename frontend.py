@@ -9,6 +9,7 @@ from telethon.tl.types import InputPeerUser
 
 from src.helpers.dateHelper import SIMPLE_DATE_STR
 from src.helpers.params import MAXIMUM_FEES
+from src.repository.analysisRepository import createDomainObject, insertAnalysis
 from src.secret.SECRET_CONSTANT import __TELEGRAM_APP_ID, __TELEGRAM_APP_HASH, __TELEGRAM_PHONE_NBR
 from src.repository.missionRepository import getAllMissions
 from src.repository.tradeTransactionRepository import getTransactionsByAsset
@@ -87,6 +88,10 @@ def calculateWInLossPerMission():
     percent: float = resultsSum * 100 / amountSum if amountSum else 0
     dto: Dict[str, Any] = generateDTO(asset, round(amountSum, 2), nbrTransactionSum, round(percent, 3))
     results.append(dto)
+
+    # Store data on MongoDB
+    data = createDomainObject(results)
+    insertAnalysis(data)
 
     msg_to_send = f"""
     <p>[BOT ANALYSIS OF THE DAY]</p>
