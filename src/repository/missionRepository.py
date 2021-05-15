@@ -41,20 +41,20 @@ def cleanMission():
 
 
 if __name__ == '__main__':
-    missionData = {
-        "context": {
-            "interval": 1,
-            "interval_unit": 'm',
-            "assets": [
-                "GRT", "LINK", "ALGO"
-            ]
-        }
-    }
-
     missions = list(getAllMissions())
     if not missions:
+        missionData = {
+            "context": {
+                "interval": 1,
+                "interval_unit": 'm',
+                "assets": [
+                    "GRT", "LINK", "ALGO"
+                ]
+            }
+        }
         createMission(missionData)
         missions = list(getAllMissions())
+
     print(missions)
 
     missionId = missions[0]['_id']
