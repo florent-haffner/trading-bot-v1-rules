@@ -46,7 +46,7 @@ def run_bot(asset, currency, interval, length_assets):
 
 def bot_main_process():
     print("[TRADING BOT ACTIVATED] - HELLO MASTER")
-    print(__ENVIRONMENT, __ENVIRONMENT.value, type(__ENVIRONMENT)) # TODO -> use this for db
+    print(__ENVIRONMENT, type(__ENVIRONMENT)) # TODO -> use this for db
     if __DEBUG:
         print('SIMULATION MODE -> Exception will be raised\n')
     else:

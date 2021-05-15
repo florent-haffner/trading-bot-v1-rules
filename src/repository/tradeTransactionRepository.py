@@ -4,11 +4,13 @@ from bson import ObjectId
 from pymongo import MongoClient
 
 from src.helpers.dateHelper import DATE_STR
-from src.secret.SECRET_CONSTANT import __MONGO_URI
+from src.helpers.params import __ENVIRONMENT
+from src.secret.SECRET_CONSTANT import __MONGO_URI, __MONGO_DB
 
 __MONGO_CLIENT = MongoClient(__MONGO_URI)
 
-db = __MONGO_CLIENT['tradingbot']
+db_name = __MONGO_DB + '_' + __ENVIRONMENT
+db = __MONGO_CLIENT[db_name]
 collection = db['tradeTransaction']
 
 

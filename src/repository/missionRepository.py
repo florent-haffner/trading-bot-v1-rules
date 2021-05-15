@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 
-from src.secret.SECRET_CONSTANT import __MONGO_HOST, __MONGO_USER, __MONGO_PASSWORD, __MONGO_URI
+from src.helpers.params import __ENVIRONMENT
+from src.secret.SECRET_CONSTANT import __MONGO_HOST, __MONGO_USER, __MONGO_PASSWORD, __MONGO_URI, __MONGO_DB
 
 __MONGO_CLIENT = None
 
@@ -9,8 +10,8 @@ if __MONGO_URI:
 else:
     __MONGO_CLIENT = MongoClient(__MONGO_HOST, username=__MONGO_USER, password=__MONGO_PASSWORD)
 
-
-db = __MONGO_CLIENT['tradingbot']
+db_name = __MONGO_DB + '_' + __ENVIRONMENT
+db = __MONGO_CLIENT[db_name]
 collection = db['mission']
 
 
@@ -67,4 +68,3 @@ if __name__ == '__main__':
     updateMission(missionId, missionData)
 
     print(list(getAllMissions()))
-    # cleanMission()

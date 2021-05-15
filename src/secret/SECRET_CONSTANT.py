@@ -33,6 +33,7 @@ __MONGO_PROTOCOL: String = "mongodb+srv"
 __MONGO_HOST: String = "cluster0.njz0p.mongodb.net/tradingbot?retryWrites=true&w=majority"
 __MONGO_USER: String = "mongobot"
 __MONGO_PASSWORD: String = "QUu1fh00YkMQ3AcR"
+__MONGO_DB: String = "trading_bot"
 
 __MONGO_URI: String = __MONGO_PROTOCOL + "://" +\
               __MONGO_USER + ":" + urllib.parse.quote_plus(__MONGO_PASSWORD) +\
