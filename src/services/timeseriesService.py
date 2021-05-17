@@ -93,24 +93,5 @@ def getTransactionPerDayAsset(asset):
     return getLastDayCompleteTransactionByAsset(asset)
 
 
-# TODO -> not sure this is still usefull
-"""
-def analysingRecentTrades():
-    result = {
-        'buy': [],
-        'sell': []
-    }
-    events = getAllEvents()
-    for event in events:
-        trade = event['typeOfTrade']
-        if trade == 'buy':
-            result['buy'].append(event)
-        else:
-            result['sell'].append(event)
-    print('Nbr buy', len(result['buy']))
-    print('Nbr sell', len(result['sell']))
-"""
-
 if __name__ == '__main__':
     getAllUnclosedTransactionSinceMidnightByAsset('GRT')
-
