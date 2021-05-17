@@ -52,3 +52,4 @@ __INFLUX_PORT: int = 8086
 __INFLUX_USER: String = "influxroot"
 __INFLUX_PASSWORD: String = "4s&6Q@6zxNE2Yn"
 __INFLUX_DB_TRADE_EVENT: String = "ts_trade_event"
+__INFLUX_DB_MARKET_EVENT: String = "ts_market_event"

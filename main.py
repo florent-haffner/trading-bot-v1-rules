@@ -1,15 +1,17 @@
+import json
 import os
 from datetime import datetime
 from multiprocessing import Process
-from threading import Thread
 from time import sleep
 from typing import List
 
 import pymongo.errors
 from pandas import DataFrame, read_csv
+from websocket import create_connection
 
 from src.engine.analysisEngine import AnalysisEngine
 from src.helpers.params import __DEBUG, __OFFLINE, __ENVIRONMENT
+from src.repository.marketEventRepository import insertMarketEvent
 from src.repository.missionRepository import getAllMissions
 from src.services.krakenDataService import getFormattedData, get_stocks_indicators
 
@@ -42,6 +44,56 @@ def run_bot(asset, currency, interval, length_assets):
     # sleep_between_analysis: float = interval / 10
     # print('Sleeping for about', sleep_between_analysis, 'seconds.')
     # sleep(sleep_between_analysis)
+
+
+def bot_realtime_child_process():
+
+    def handle_market_event(event):
+        dto = generate_dto(event)
+        insertMarketEvent([dto])
+
+    assets = []
+    missions = getAllMissions()
+    for mission in missions:
+        for asset in mission['context']['assets']:
+            pair = asset + "/" + "EUR"
+            assets.append(pair)
+
+    websocket_data = create_connection("wss://ws.kraken.com/")
+    query = {
+        "event": "subscribe",
+        "subscription": {"name": "trade"},
+        "pair": assets
+    }
+    mid = json.dumps(query)
+    print('mid', mid, type(mid))
+
+    websocket_data.send(str(mid))
+    while True:
+        res = websocket_data.recv()
+        event = json.loads(res)
+        try:
+            event_key = event.keys()
+            print(event)
+        except AttributeError:
+            handle_market_event(event)
+
+def generate_dto(event):
+    keys = ["price", "volume", "time", "side", "orderType"]
+    dto = {
+        "asset": event[len(event) - 1],
+    }
+
+    for key in range(len(keys)):
+        dto[keys[key]] = event[1][0][key]
+
+    __MEASUREMENT_NAME = "marketEvent"
+    data_object = {
+        'measurement': __MEASUREMENT_NAME,
+        'tags': {},
+        'fields': dto
+    }
+    return data_object
 
 
 def bot_main_process():
@@ -85,6 +137,8 @@ def bot_main_process():
             sleep(10)
 
 
+# TODO -> remove this once comfortable /w Process handling
+"""
 def multiprocess():
     results = []  # Creating a Global Variable
 
@@ -118,10 +172,18 @@ def multithread():
 
     t1.join()
     t2.join()
+"""
+
+
+def start_multiprocess_bot():
+    t1 = Process(target=bot_main_process())
+    t1.start()
+    t1.join()
+
+    t2 = Process(target=bot_realtime_child_process())
+    t2.start()
+    t2.join()
 
 
 if __name__ == "__main__":
-    bot_main_process()
-
-    # multithread()
-    # multiprocess()  # Should be choose because I do I/O on network + calculation
+    start_multiprocess_bot()

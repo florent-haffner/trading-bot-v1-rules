@@ -11,3 +11,4 @@ pykrakenapi==0.1.9
 pymongo==3.11.3
 telethon==1.21.1
 stockstats==0.3.2
+websocket-client==0.59.0
