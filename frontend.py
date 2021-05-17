@@ -91,8 +91,8 @@ def calculateWInLossPerMission():
     results.append(dto)
 
     # Store data on MongoDB
-    data = createDomainObject(results)
-    # insertAnalysis(data)
+    data = createDomainObject(results, 'daily')
+    insertAnalysis(data)
 
     msg_to_send = f"""
     <p>[BOT ANALYSIS OF THE DAY]</p>

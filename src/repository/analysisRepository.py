@@ -18,9 +18,10 @@ db = __MONGO_CLIENT[db_name]
 collection = db['analysis']
 
 
-def createDomainObject(data):
+def createDomainObject(data, type_of_analysis):
     return {
         "time": datetime.now().strftime(DATE_STR),
+        "type": type_of_analysis,
         "analysis": data
     }
 
@@ -72,6 +73,6 @@ if __name__ == '__main__':
         "percent": 7.63
       }
     ]
-    data = createDomainObject(toStore)
+    data = createDomainObject(toStore, 'daily')
     insertAnalysis(data)
     print(list(getAllAnalysis()))
