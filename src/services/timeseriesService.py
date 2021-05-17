@@ -3,7 +3,7 @@ from datetime import datetime
 from src.helpers.dateHelper import DATE_UTC_TZ_STR
 from src.repository.tradeEventRepository import getRecentEventByTypeAndAsset, insertTradeEvent
 from src.repository.tradeTransactionRepository import insertTransactionEvent, getTransactionById, \
-    updateTransactionById, getLastDayTransactionByAsset
+    updateTransactionById, getLastDayCompleteTransactionByAsset, get_all_transactions_since_midnight_by_asset
 from src.services.krakenTradeService import getLastPrice
 
 
@@ -79,8 +79,18 @@ def updateTransaction(id, key, data):
         return updateTransactionById(id=id, key=key, updateTransaction=data)
 
 
+def getAllUnclosedTransactionSinceMidnightByAsset(asset):
+    to_return: list = []
+    results: list = get_all_transactions_since_midnight_by_asset(asset)
+    for item in results:
+        item_keys_length = len(list(item.keys()))
+        if item_keys_length < 3:
+            to_return.append(item)
+    return to_return
+
+
 def getTransactionPerDayAsset(asset):
-    return getLastDayTransactionByAsset(asset)
+    return getLastDayCompleteTransactionByAsset(asset)
 
 
 # TODO -> not sure this is still usefull
@@ -100,3 +110,7 @@ def analysingRecentTrades():
     print('Nbr buy', len(result['buy']))
     print('Nbr sell', len(result['sell']))
 """
+
+if __name__ == '__main__':
+    getAllUnclosedTransactionSinceMidnightByAsset('GRT')
+

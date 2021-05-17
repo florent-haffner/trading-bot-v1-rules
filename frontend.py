@@ -13,7 +13,7 @@ from src.repository.analysisRepository import createDomainObject, insertAnalysis
 from src.secret.SECRET_CONSTANT import __TELEGRAM_APP_ID, __TELEGRAM_APP_HASH, __TELEGRAM_PHONE_NBR
 from src.repository.missionRepository import getAllMissions
 from src.repository.tradeTransactionRepository import getTransactionsByAsset
-from src.services.timeseriesService import getTransactionPerDayAsset
+from src.services.timeseriesService import getTransactionPerDayAsset, getTransaction
 
 
 def calculateWinLossPerTransactions(transactions):
@@ -52,13 +52,28 @@ def calculateWinLossPerTransactions(transactions):
     return len(transactions), totalAmount, beginningAmount
 
 
+def getAllTransactions():
+    print('\n[Getting all transaction]\n')
+    missions = list(getAllMissions())
+    transactions = {}
+    for mission in missions:
+        for asset in mission['context']['assets']:
+            transactionsPerDay = list(getTransactionsByAsset(asset))
+            print('Nbr of transaction', asset, ':', len(transactionsPerDay))
+            transactions[asset] = transactionsPerDay
+    return transactions
+
+
 def getAllTransactionPerDay():
     print('\n[Getting all transaction per day]\n')
     missions = list(getAllMissions())
+    transactions = {}
     for mission in missions:
         for asset in mission['context']['assets']:
             transactionsPerDay = list(getTransactionPerDayAsset(asset))
-            print('Transaction per day', len(transactionsPerDay))
+            print('Nbr of transaction', asset, ':', len(transactionsPerDay))
+            transactions[asset] = transactionsPerDay
+    return transactions
 
 
 def calculateWInLossPerMission():
@@ -85,9 +100,11 @@ def calculateWInLossPerMission():
         amountSum = amountSum + res['beginning_amount']
         nbrTransactionSum = nbrTransactionSum + res['nbr_transactions']
         resultsSum = resultsSum + res['result']
-    totalPercent: float = resultsSum * 100 / amountSum if amountSum else 0
-    dto: Dict[str, Any] = generateDTO(asset=asset, beginning_amount=round(amountSum, 2),
-                                      nbr_transactions=nbrTransactionSum, result=resultsSum)
+
+    dto: Dict[str, Any] = generateDTO(asset=asset,
+                                      beginning_amount=round(amountSum, 2),
+                                      nbr_transactions=nbrTransactionSum,
+                                      result=resultsSum)
     results.append(dto)
 
     # Store data on MongoDB
@@ -118,11 +135,9 @@ def generateDTO(asset, beginning_amount, nbr_transactions, result):
 def sendMessage(message):
     client = TelegramClient('session', __TELEGRAM_APP_ID, __TELEGRAM_APP_HASH)
     client.connect()
-
     if not client.is_user_authorized():
         client.send_code_request(__TELEGRAM_PHONE_NBR)
         client.sign_in(__TELEGRAM_PHONE_NBR, input('Enter the code: '))
-
     try:
         contacts = client(GetContactsRequest(0))
         for contact in contacts.users:
@@ -130,16 +145,14 @@ def sendMessage(message):
                 print(contact.id, contact.access_hash)
                 print('[TELEGRAM] - Sending the following message', message)
                 client.send_message(InputPeerUser(contact.id, contact.access_hash), message, parse_mode='html')
-
     except Exception as err:
         raise err
-
     client.disconnect()
 
 
 if __name__ == '__main__':
-    # getLastEventByTypeAndAsset('GRT', 'buy')
+    # calculateWInLossPerMission()
 
-    calculateWInLossPerMission()
-
-    # getAllTransactionPerDay()
+    # print(getAllTransactionPerDay())
+    res = getAllTransactions()
+    print(res)

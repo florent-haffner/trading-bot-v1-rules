@@ -89,13 +89,21 @@ def initEnvironment():
                           updateTransaction=timeseries_sell)
 
 
+def get_all_transactions_since_midnight_by_asset(asset):
+    previousDayFromMidnight = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
+    return collection.find({
+        'buy.fields.asset': asset,
+        'buy.time': {'$gte': previousDayFromMidnight.strftime(DATE_STR)},
+    })
+
+
 def getTransactionsByAsset(asset):
     return collection.find({
         'buy.fields.asset': asset,
     })
 
 
-def getLastDayTransactionByAsset(asset):
+def getLastDayCompleteTransactionByAsset(asset):
     previousDayFromMidnight = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
     thisDayAtMidgnight = datetime.combine(datetime.today(), datetime.min.time())
 
