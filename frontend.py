@@ -78,20 +78,21 @@ def calculateWInLossPerMission():
 
     # Calculating the overall percentage
     asset: String = 'total'
-    nbrTransactionSum: int = 0
     amountSum: int = 0
+    nbrTransactionSum: int = 0
     resultsSum: int = 0
     for res in results:
         amountSum = amountSum + res['beginning_amount']
         nbrTransactionSum = nbrTransactionSum + res['nbr_transactions']
         resultsSum = resultsSum + res['result']
-    percent: float = resultsSum * 100 / amountSum if amountSum else 0
-    dto: Dict[str, Any] = generateDTO(asset, round(amountSum, 2), nbrTransactionSum, round(percent, 3))
+    totalPercent: float = resultsSum * 100 / amountSum if amountSum else 0
+    dto: Dict[str, Any] = generateDTO(asset=asset, beginning_amount=round(amountSum, 2),
+                                      nbr_transactions=nbrTransactionSum, result=resultsSum)
     results.append(dto)
 
     # Store data on MongoDB
     data = createDomainObject(results)
-    insertAnalysis(data)
+    # insertAnalysis(data)
 
     msg_to_send = f"""
     <p>[BOT ANALYSIS OF THE DAY]</p>
@@ -101,13 +102,13 @@ def calculateWInLossPerMission():
     sendMessage(msg_to_send)
 
 
-def generateDTO(asset, beginning_amount, nbr_transaction, amount_money):
+def generateDTO(asset, beginning_amount, nbr_transactions, result):
     return {
         "asset": asset,
         "beginning_amount": beginning_amount,
-        "nbr_transactions": nbr_transaction,
-        "result": amount_money,
-        "percent": round(amount_money * 100 / beginning_amount, 2) if beginning_amount else 0
+        "nbr_transactions": nbr_transactions,
+        "result": result,
+        "percent": round(result * 100 / beginning_amount, 2) if beginning_amount else 0
     }
 
 
