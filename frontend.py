@@ -85,6 +85,7 @@ def calculateWInLossPerMission():
             print('\n[', asset, '] -> Calculating win/loss pet asset')
             # transactionFromAsset = list(getTransactionsByAsset(asset))
             transactionFromAsset = list(getTransactionPerDayAsset(asset))
+            print(transactionFromAsset)
             nbrTransaction, amount, beginningAmount = calculateWinLossPerTransactions(transactionFromAsset)
 
             dto: Dict[str, Any] = generateDTO(asset, round(beginningAmount, 2), nbrTransaction, round(amount, 3))
@@ -151,8 +152,4 @@ def sendMessage(message):
 
 
 if __name__ == '__main__':
-    # calculateWInLossPerMission()
-
-    # print(getAllTransactionPerDay())
-    res = getAllTransactions()
-    print(res)
+    calculateWInLossPerMission()
