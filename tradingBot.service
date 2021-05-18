@@ -7,3 +7,6 @@ ExecStart=/home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/tradin
 Restart=always
 RestartSec=5s
 StartLimitBurst=20
+
+[Install]
+WantedBy=multi-user.target
