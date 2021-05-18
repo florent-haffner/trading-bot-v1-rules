@@ -137,51 +137,14 @@ def bot_main_process():
             sleep(10)
 
 
-# TODO -> remove this once comfortable /w Process handling
-"""
-def multiprocess():
-    results = []  # Creating a Global Variable
-
-    def calc_square(numbers):
-        global results
-        for i in numbers:
-            print('square: ', str(i * i))
-            results.append(i * i)
-            print('witnin a result: ' + str(results))
-    arr = [2, 3, 8, 9]
-    p1 = Process(target=calc_square, args=(arr,))
-    # creating one Process here p1
-    p1.start()
-    # starting Processes here parallel by using start function.
-    p1.join()    # this join() will wait until the calc_square() function is    finished.
-    print('result : '+str(results))  # this print didn't work here we have to print it within the process
-    print("Successed!")
-
-
-def multithread():
-    def child_thread():
-        while True:
-            print("Child thread here")
-            sleep(1)
-
-    t1 = Thread(target=child_thread)
-    t2 = Thread(target=bot_main_process)
-
-    t1.start()
-    t2.start()
-
-    t1.join()
-    t2.join()
-"""
-
-
 def start_multiprocess_bot():
-    t1 = Process(target=bot_main_process())
-    t1.start()
-    t1.join()
+    t1 = Process(target=bot_main_process)
+    t2 = Process(target=bot_realtime_child_process)
 
-    t2 = Process(target=bot_realtime_child_process())
+    t1.start()
     t2.start()
+
+    t1.join()
     t2.join()
 
 
