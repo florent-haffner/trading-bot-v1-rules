@@ -14,6 +14,7 @@ from src.helpers.params import __DEBUG, __OFFLINE, __ENVIRONMENT
 from src.repository.marketEventRepository import insertMarketEvent
 from src.repository.missionRepository import getAllMissions
 from src.services.krakenDataService import getFormattedData, get_stocks_indicators
+import re
 
 
 def get_last_n_percentage(df, nbr_percentage) -> DataFrame:
@@ -47,28 +48,26 @@ def run_bot(asset, currency, interval, length_assets):
 
 
 def bot_realtime_child_process():
-
     def handle_market_event(event):
         dto = generate_dto(event)
         insertMarketEvent([dto])
 
-    assets = []
+    pairs: list = []
     missions = getAllMissions()
     for mission in missions:
         for asset in mission['context']['assets']:
             pair = asset + "/" + "EUR"
-            assets.append(pair)
+            pairs.append(pair)
 
     websocket_data = create_connection("wss://ws.kraken.com/")
     query = {
         "event": "subscribe",
         "subscription": {"name": "trade"},
-        "pair": assets
+        "pair": pairs
     }
-    mid = json.dumps(query)
-    print('mid', mid, type(mid))
-
-    websocket_data.send(str(mid))
+    ws_query = json.dumps(query)
+    print('WS query', ws_query, type(ws_query))
+    websocket_data.send(str(ws_query))
     while True:
         res = websocket_data.recv()
         event = json.loads(res)
@@ -78,19 +77,33 @@ def bot_realtime_child_process():
         except AttributeError:
             handle_market_event(event)
 
-def generate_dto(event):
-    keys = ["price", "volume", "time", "side", "orderType"]
-    dto = {
-        "asset": event[len(event) - 1],
-    }
 
+def generate_dto(event) -> dict:
+    """ This function handle all the data modeling and processing before storing it on InfluxDB """
+    keys: list = ["price", "volume", "time", "side", "orderType"]
+
+    def get_asset_from_pair(pair: str) -> str:
+        """ Handle messy 'pair' string then  return a clean string with asset """
+        regex: re = re.search('([A-Z])\w+', pair)
+        return regex.group(0)
+
+    pair: str = event[len(event) - 1]
+    asset: str = get_asset_from_pair(pair)
+
+    dto = {}
     for key in range(len(keys)):
-        dto[keys[key]] = event[1][0][key]
+        try:
+            dto[keys[key]] = float(event[1][0][key])
+        except ValueError:
+            dto[keys[key]] = event[1][0][key]
+    dto['time'] = int(dto['time'])
 
-    __MEASUREMENT_NAME = "marketEvent"
-    data_object = {
+    __MEASUREMENT_NAME: str = "marketEvent"
+    data_object: dict = {
         'measurement': __MEASUREMENT_NAME,
-        'tags': {},
+        'tags': {
+            'asset': asset
+        },
         'fields': dto
     }
     return data_object
