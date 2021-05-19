@@ -102,7 +102,8 @@ def generate_dto(event) -> dict:
     data_object: dict = {
         'measurement': __MEASUREMENT_NAME,
         'tags': {
-            'asset': asset
+            'asset': asset,
+            'broker': 'kraken'
         },
         'fields': dto
     }
