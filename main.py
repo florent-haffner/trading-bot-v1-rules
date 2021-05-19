@@ -98,12 +98,19 @@ def generate_dto(event) -> dict:
             dto[keys[key]] = event[1][0][key]
     dto['time'] = int(dto['time'])
 
+    side = dto['side']
+    orderType = dto['orderType']
+    del dto['side']
+    del dto['orderType']
+
     __MEASUREMENT_NAME: str = "marketEvent"
     data_object: dict = {
         'measurement': __MEASUREMENT_NAME,
         'tags': {
             'asset': asset,
-            'broker': 'kraken'
+            'broker': 'kraken',
+            'side': side,
+            'orderType': orderType
         },
         'fields': dto
     }

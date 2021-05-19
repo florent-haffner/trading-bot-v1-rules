@@ -24,7 +24,7 @@ def buildDTO(record):
     return {
         'time': record['_time'],
         'measurement': record['_measurement'],
-        'asset': record['asset'],
+        # 'asset': record['asset'],
         'price': record['price'],
         'volume': record['volume'],
     }
@@ -99,6 +99,40 @@ def getAllEvents():
     return results
 
 
+def getLastMinuteEvents(asset):
+    print('[INFLUXDB], getAllEvents from the last two days.')
+    query = f"""
+        from (bucket:"{__CURRENT_BUCKET}")
+            |> range(start: -1m)
+            |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
+            |> filter(fn: (r) => r.asset == "{asset}")
+            |> drop(columns: ["asset", "_measurement", "broker", "orderType", "side"])
+            |> window(every: 1m)
+            |> pivot(
+                    rowKey: ["_time"],
+                    columnKey: ["_field"],
+                    valueColumn: "_value"
+            )
+    """
+    """
+            |> drop(columns: ["result", "_measurement", "asset", "broker", "orderType", "side"])
+            |> mean()
+    """
+    results = []
+    request_result = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
+    for table in request_result:
+        print(table.records[0])
+        if len(table.records) > 1:
+            for record in table.records:
+                try:
+                    dto = buildDTO(record)
+                    results.append(dto)
+                except KeyError:
+                    return []
+    print('[INFLUXDB], getLastMinuteEvents response, items length:', len(results))
+    return results
+
+
 def insertMarketEvent(event):
     print('[INFLUXDB] writing new marketEvent\n', event)
     __WRITE_API.write(__CURRENT_BUCKET, __INFLUXDB_CURRENT_ORG, event)
@@ -115,6 +149,9 @@ def cleanTradeEvents():
 
 if __name__ == "__main__":
     res = getAllEvents()
-    print(res)
+    print(res[0])
+
+
+    getLastMinuteEvents('ALGO')
 
     # cleanTradeEvents()
