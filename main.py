@@ -96,7 +96,7 @@ def generate_dto(event) -> dict:
             dto[keys[key]] = float(event[1][0][key])
         except ValueError:
             dto[keys[key]] = event[1][0][key]
-    dto['time'] = int(dto['time'])
+    # dto['time'] = int(dto['time'])  # TODO -> not sure, I'll check if necessary to keep this
 
     side = dto['side']
     orderType = dto['orderType']

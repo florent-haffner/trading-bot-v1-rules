@@ -24,7 +24,7 @@ def buildDTO(record):
     return {
         'time': record['_time'],
         'measurement': record['_measurement'],
-        # 'asset': record['asset'],
+        'asset': record['asset'],
         'price': record['price'],
         'volume': record['volume'],
     }
@@ -100,37 +100,33 @@ def getAllEvents():
 
 
 def getLastMinuteEvents(asset):
-    print('[INFLUXDB], getAllEvents from the last two days.')
+    print('[INFLUXDB], getLastMinuteEvents from the last 10 minutes.')
     query = f"""
         from (bucket:"{__CURRENT_BUCKET}")
-            |> range(start: -1m)
+            |> range(start: -5m)
             |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
             |> filter(fn: (r) => r.asset == "{asset}")
-            |> drop(columns: ["asset", "_measurement", "broker", "orderType", "side"])
-            |> window(every: 1m)
+            |> aggregateWindow(every: 1m, fn: mean)
             |> pivot(
                     rowKey: ["_time"],
                     columnKey: ["_field"],
                     valueColumn: "_value"
             )
     """
-    """
-            |> drop(columns: ["result", "_measurement", "asset", "broker", "orderType", "side"])
-            |> mean()
-    """
-    results = []
-    request_result = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
+    output_results: list = []
+    request_result: list = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
+    print('nbr of table', len(request_result))
+    print('table', request_result)
     for table in request_result:
-        print(table.records[0])
         if len(table.records) > 1:
             for record in table.records:
                 try:
                     dto = buildDTO(record)
-                    results.append(dto)
+                    output_results.append(dto)
                 except KeyError:
                     return []
-    print('[INFLUXDB], getLastMinuteEvents response, items length:', len(results))
-    return results
+    print('[INFLUXDB], getLastMinuteEvents response, items length:', len(output_results))
+    return output_results
 
 
 def insertMarketEvent(event):
@@ -148,10 +144,11 @@ def cleanTradeEvents():
 
 
 if __name__ == "__main__":
-    res = getAllEvents()
-    print(res[0])
+    results = getAllEvents()
+    print(results[0])
 
-
-    getLastMinuteEvents('ALGO')
+    results = getLastMinuteEvents('ALGO')
+    for res in results:
+        print(res)
 
     # cleanTradeEvents()
