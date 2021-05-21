@@ -10,6 +10,7 @@ from pandas import DataFrame, read_csv
 from websocket import create_connection
 
 from src.engine.analysisEngine import AnalysisEngine
+from src.engine.analysisEngineHelper import get_realtime_processed_asset
 from src.helpers.params import __DEBUG, __OFFLINE, __ENVIRONMENT
 from src.data.marketEventUtils import insertMarketEvent
 from src.data.missionMongoUtils import getAllMissions
@@ -36,8 +37,11 @@ def run_bot(asset, currency, interval, length_assets):
         print('Get CSV from ', path_csv)
         df = read_csv(path_csv)
 
-    print(df.truncate(False))
-    raise Exception('truc')
+    last_market_event = get_realtime_processed_asset('ALGO')
+    # last_market_event['timestamp'] = int(last_market_event['timestamp'])
+    df_last_timestamp = df.tail(1)['timestamp'].iloc[-1]
+    if df_last_timestamp < last_market_event['timestamp']:
+        df = df.append(last_market_event, ignore_index=True)
 
     df_with_indicators: DataFrame = get_stocks_indicators(df)
     print('DF FULL - first:', datetime.fromtimestamp(df_with_indicators.head(1)['timestamp'].iloc[0]),

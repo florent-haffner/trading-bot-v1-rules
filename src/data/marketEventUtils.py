@@ -116,18 +116,16 @@ def getLastMinuteMarketEvents(asset, length):
     """
     output_results: list = []
     request_result: list = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
-    print('nbr of table', len(request_result))
-    print('table', request_result)
     for table in request_result:
         if len(table.records) > 1:
             for record in table.records:
                 try:
                     dto = buildDTO(record)
+                    dto['close'] = dto['price']
                     output_results.append(dto)
                 except KeyError:
                     return []
     print('[INFLUXDB], getLastMinuteEvents response, items length:', len(output_results))
-    print('list', list(output_results), output_results)
     return output_results
 
 

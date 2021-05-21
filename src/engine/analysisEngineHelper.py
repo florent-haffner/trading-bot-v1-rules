@@ -39,6 +39,7 @@ def get_last_index(peaks_high, peaks_low):
 
 
 def generate_realtime_processed_dto(data_object):
+    print(data_object)
     keys_to_keep = ['timestamp', 'open', 'high', 'low', 'close', 'vwap', 'volume', 'count']
     # Generate needed keys
     for item in range(len(keys_to_keep)):
@@ -53,15 +54,10 @@ def generate_realtime_processed_dto(data_object):
     return data_object
 
 
-def get_realtime_processed_asset(asset):
-    last_minutes = getLastMinuteMarketEvents(asset, 2)
+def get_realtime_processed_asset(asset: str) -> object:
+    last_minutes: list = getLastMinuteMarketEvents(asset, 2)
     last_minutes.pop()
 
     for res in last_minutes:
         res['timestamp'] = int(datetime.timestamp(res['time']))
-
     return generate_realtime_processed_dto(last_minutes[len(last_minutes) - 1])
-
-
-if __name__ == '__main__':
-    get_realtime_processed_asset('ALGO')
