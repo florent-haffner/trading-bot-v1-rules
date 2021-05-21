@@ -13,7 +13,7 @@ from src.data.analysisMongoUtils import createDomainObject, insertAnalysis
 from src.secret.SECRET_CONSTANT import __TELEGRAM_APP_ID, __TELEGRAM_APP_HASH, __TELEGRAM_PHONE_NBR
 from src.data.missionMongoUtils import getAllMissions
 from src.data.transactionMongoUtils import getTransactionsByAsset
-from src.services.timeseriesService import getTransactionPerDayAsset, getTransaction
+from src.services.transactionService import getTransaction, getTransactionPerDayAsset
 
 
 def calculateWinLossPerTransactions(transactions):

@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from src.helpers.dateHelper import DATE_UTC_TZ_STR
 from src.data.tradeEventUtils import getRecentEventByTypeAndAsset, insertTradeEvent
-from src.data.transactionMongoUtils import insertTransactionEvent, getTransactionById, \
-    updateTransactionById, getLastDayCompleteTransactionByAsset, get_all_transactions_since_midnight_by_asset
+from src.data.transactionMongoUtils import insertTransactionEvent
+from src.helpers.dateHelper import DATE_UTC_TZ_STR
 from src.services.krakenTradeService import getLastPrice
+from src.services.transactionService import updateTransaction
 
 
 def getLastTradeEventByTypeAndAsset(asset, typeOfTrade):
@@ -63,35 +63,3 @@ def addTradeEvent(type_of_trade, volume_to_buy, asset, interval, currency, trans
             insertTradeEvent([point])
             success = True
     return success
-
-
-def getTransaction(id):
-    return getTransactionById(id)
-
-
-def updateTransaction(id, key, data):
-    document = getTransaction(id)
-    try:
-        if document['sell']:
-            print('Document', id, 'already has been updated. Abort operation.')
-            return False
-    except KeyError:
-        return updateTransactionById(id=id, key=key, updateTransaction=data)
-
-
-def getAllUnclosedTransactionSinceMidnightByAsset(asset):
-    to_return: list = []
-    results: list = get_all_transactions_since_midnight_by_asset(asset)
-    for item in results:
-        item_keys_length = len(list(item.keys()))
-        if item_keys_length < 3:
-            to_return.append(item)
-    return to_return
-
-
-def getTransactionPerDayAsset(asset):
-    return getLastDayCompleteTransactionByAsset(asset)
-
-
-if __name__ == '__main__':
-    getAllUnclosedTransactionSinceMidnightByAsset('GRT')

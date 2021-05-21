@@ -8,7 +8,8 @@ from peakdetect import peakdetect
 
 from src.engine.analysisEngineHelper import define_volume
 from src.helpers.emailSenderHelper import send_email
-from src.services.timeseriesService import addTradeEvent, getLastTradeEventByTypeAndAsset, getTransaction
+from src.services.tradeEventService import addTradeEvent, getLastTradeEventByTypeAndAsset
+from src.services.transactionService import getTransaction
 
 
 # TODO -> type this
