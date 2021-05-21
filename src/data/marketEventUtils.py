@@ -5,13 +5,13 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 
 from src.helpers.params import __ENVIRONMENT
 from src.helpers.dateHelper import DATE_STR
-from src.secret.SECRET_CONSTANT import __INFLUX_DB_MARKET_EVENT, __INFLUX_URI, __INFLUX_TOKEN
+from src.secret.SECRET_CONSTANT import __INFLUX_BUCKET_MARKET_EVENT, __INFLUX_URI, __INFLUX_TOKEN
 
 __INFLUX_CLIENT = InfluxDBClient(
     url=__INFLUX_URI,
     token=__INFLUX_TOKEN,
 )
-__CURRENT_BUCKET = __INFLUX_DB_MARKET_EVENT + '_' + __ENVIRONMENT
+__CURRENT_BUCKET = __INFLUX_BUCKET_MARKET_EVENT + '_' + __ENVIRONMENT
 __INFLUXDB_CURRENT_ORG = "florent.haffner@protonmail.com"
 __MEASUREMENT_NAME = "marketEvent"
 

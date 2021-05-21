@@ -5,12 +5,20 @@ from tokenize import String
 """
     CONTACT - EMAIL
 """
+# __EMAIL_USER: String = ""
+# __EMAIL_PASSWORD: String = ""
 __EMAIL_USER: String = "moneymakr.bot@gmail.com"
 __EMAIL_PASSWORD: String = "z5bDm#!gs^8$2Z"
+
 
 """
     CONTACT - TELEGRAM
 """
+# __TELEGRAM_PHONE_NBR: String = ""
+# __TELEGRAM_APP_ID: String = ""
+# __TELEGRAM_APP_HASH: String = ""
+# __TELEGRAM_APP_TOKEN: String = """
+# """
 __TELEGRAM_PHONE_NBR: String = "33698671845"
 __TELEGRAM_APP_ID: String = "4532406"
 __TELEGRAM_APP_HASH: String = "992dea81cfb81f6192653eb8c9011f8e"
@@ -26,9 +34,16 @@ AQIDAQAB
 -----END PUBLIC KEY-----
 """
 
+
 """
     DATABASES - MongoDB
 """
+# __MONGO_PROTOCOL: String = ""
+# __MONGO_HOST: String = ""
+# __MONGO_USER: String = ""
+# __MONGO_PASSWORD: String = ""
+# __MONGO_DB: String = ""
+
 __MONGO_PROTOCOL: String = "mongodb+srv"
 __MONGO_HOST: String = "cluster0.njz0p.mongodb.net/tradingbot?retryWrites=true&w=majority"
 __MONGO_USER: String = "mongobot"
@@ -39,6 +54,7 @@ __MONGO_URI: String = __MONGO_PROTOCOL + "://" +\
               __MONGO_USER + ":" + urllib.parse.quote_plus(__MONGO_PASSWORD) +\
               "@" + __MONGO_HOST
 
+
 """
     DATABASES - InfluxDB
 """
@@ -47,9 +63,7 @@ __MONGO_URI: String = __MONGO_PROTOCOL + "://" +\
 __INFLUX_URI: String = "https://eu-central-1-1.aws.cloud2.influxdata.com"
 __INFLUX_TOKEN: String = "a3F2tgV39YMq55Sd_V7VFZbdtqwJTPMSs_jmjmkd-ttsGr61z6jWk1q2_grZ89PZBMHGlXXlP350QYIUgGYHFw=="
 
-__INFLUX_HOST: String = "192.168.1.58"
-__INFLUX_PORT: int = 8086
-__INFLUX_USER: String = "influxroot"
-__INFLUX_PASSWORD: String = "4s&6Q@6zxNE2Yn"
-__INFLUX_DB_TRADE_EVENT: String = "ts_trade_event"
-__INFLUX_DB_MARKET_EVENT: String = "ts_market_event"
+# __INFLUX_BUCKET_TRADE_EVENT: String = ""
+# __INFLUX_BUCKET_MARKET_EVENT: String = ""
+__INFLUX_BUCKET_TRADE_EVENT: String = "ts_trade_event"
+__INFLUX_BUCKET_MARKET_EVENT: String = "ts_market_event"
