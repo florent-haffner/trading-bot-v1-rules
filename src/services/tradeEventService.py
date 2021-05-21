@@ -38,7 +38,7 @@ def generateTradeEventDTO(type_of_trade, volume_to_buy, asset, interval, price):
 
 def addTradeEvent(type_of_trade, volume_to_buy, asset, interval, currency, transaction_id):
     success = False
-    price = float(getLastPrice(asset, currency))
+    price = getLastPrice(asset, currency)
     point = generateTradeEventDTO(type_of_trade=type_of_trade, volume_to_buy=volume_to_buy,
                                   asset=asset, interval=interval, price=price)
 

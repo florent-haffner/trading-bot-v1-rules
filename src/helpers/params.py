@@ -1,4 +1,4 @@
-from src.helpers.environmentConfig import __ENVIRONMENTS
+from src.helpers.environmentEnum import __ENVIRONMENTS
 
 
 """ APP PARAMETERS """

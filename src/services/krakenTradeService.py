@@ -13,18 +13,16 @@ API = krakenex.API()
 current_file_absolute_path = os.path.dirname(os.path.realpath(__file__))
 API.load_key(current_file_absolute_path + '/../' + 'secret/kraken.key')
 
-"""
-:param asset -> the currency, ex : BTC, ETH, GRT
-"""
-def getTradeBalance(asset) -> Dict[str, Any]:
+
+def getTradeBalance(asset: str) -> Dict[str, Any]:
+    """
+    :param asset -> BTC, ETH, GRT
+    """
     try:
         return API.query_private('TradeBalance', {'asset': asset})
     except Exception as err:
         raise err
 
-"""
-:param asset -> the currency, ex : BTC, ETH, GRT
-"""
 
 def getAccountBalance() -> Dict[str, Any]:
     try:
@@ -33,10 +31,12 @@ def getAccountBalance() -> Dict[str, Any]:
         raise err
 
 
-"""
-:param asset -> the currency, ex : BTC, ETH, GRT
-"""
-def createNewOrder(asset, type, quantity): # TODO : check the return type -> if possible to get the price bought
+def createNewOrder(asset: str, type: str, quantity: float): # TODO : check the return type -> if possible to get the price bought
+    """
+    :param asset ->  BTC, ETH, GRT
+    :param type ->  buy, sell
+    :param quantity -> calculated based on wallet balance
+    """
     try:
         return API.query_private(
             'AddOrder', {
@@ -51,10 +51,11 @@ def createNewOrder(asset, type, quantity): # TODO : check the return type -> if 
         raise err
 
 
-"""
-:param asset -> the currency, ex : BTC, ETH, GRT
-"""
-def getLastPrice(asset, currency) -> Dict[str, Any]:
+def getLastPrice(asset: str, currency: str) -> float:
+    """
+    :param asset -> BTC, ETH, GRT
+    :param currency -> EU
+    """
     try:
         combo = str(asset + currency).upper()
         result = API.query_public(
@@ -62,7 +63,8 @@ def getLastPrice(asset, currency) -> Dict[str, Any]:
                 'pair': combo,
             })
         if result:
-            return result['result'][combo]['a'][0]
+            output = result['result'][combo]['a'][0]
+            return float(output)
     except Exception as err:
         raise err
 
