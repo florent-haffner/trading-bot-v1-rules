@@ -100,7 +100,7 @@ def getAllEvents():
     return request_results
 
 
-def getLastMinuteEvents(asset, length):
+def getLastMinuteMarketEvents(asset, length):
     print('[INFLUXDB], getLastMinuteEvents from the last', length, 'minutes.')
     query = f"""
         from (bucket:"{__CURRENT_BUCKET}")
@@ -146,13 +146,10 @@ def cleanTradeEvents():
 
 
 if __name__ == "__main__":
-    results = getAllEvents()
-    print(results)
+    allEvents = getAllEvents()
+    print(allEvents)
 
-    results = getLastMinuteEvents('ALGO', 5)
-    print('Last minute events', results)
-    for res in results:
-        res['datetime'] = set_timezone(res['time'])
-    print(results[0]['datetime'].hour, results[0]['datetime'].minute)
+    lastMarketEvents = getLastMinuteMarketEvents('ALGO', 5)
+    print(lastMarketEvents)
 
     # cleanTradeEvents()

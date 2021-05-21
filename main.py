@@ -36,15 +36,14 @@ def run_bot(asset, currency, interval, length_assets):
         print('Get CSV from ', path_csv)
         df = read_csv(path_csv)
 
+    print(df.truncate(False))
+    raise Exception('truc')
+
     df_with_indicators: DataFrame = get_stocks_indicators(df)
     print('DF FULL - first:', datetime.fromtimestamp(df_with_indicators.head(1)['timestamp'].iloc[0]),
           'last:', datetime.fromtimestamp(df_with_indicators.tail(1)['timestamp'].iloc[-1]))
 
     AnalysisEngine(__DEBUG, df_with_indicators, asset, currency, length_assets, interval)
-
-    # sleep_between_analysis: float = interval / 10
-    # print('Sleeping for about', sleep_between_analysis, 'seconds.')
-    # sleep(sleep_between_analysis)
 
 
 def bot_realtime_child_process():
