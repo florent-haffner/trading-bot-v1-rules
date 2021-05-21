@@ -7,7 +7,7 @@ from src.data.transactionMongoUtils import insertTransactionEvent, getTransactio
 from src.services.krakenTradeService import getLastPrice
 
 
-def getLastEventByTypeAndAsset(asset, typeOfTrade):
+def getLastTradeEventByTypeAndAsset(asset, typeOfTrade):
     print('Get las event by type', typeOfTrade, 'and asset:', asset)
     result = getRecentEventByTypeAndAsset(asset, typeOfTrade)
     most_recent = None
@@ -20,7 +20,7 @@ def getLastEventByTypeAndAsset(asset, typeOfTrade):
     return most_recent
 
 
-def generateDTO(type_of_trade, volume_to_buy, asset, interval, price):
+def generateTradeEventDTO(type_of_trade, volume_to_buy, asset, interval, price):
     return {
         'time': datetime.strftime(datetime.now(), DATE_UTC_TZ_STR),
         'measurement': 'tradeEvent',
@@ -39,8 +39,8 @@ def generateDTO(type_of_trade, volume_to_buy, asset, interval, price):
 def addTradeEvent(type_of_trade, volume_to_buy, asset, interval, currency, transaction_id):
     success = False
     price = float(getLastPrice(asset, currency))
-    point = generateDTO(type_of_trade=type_of_trade, volume_to_buy=volume_to_buy,
-                        asset=asset, interval=interval, price=price)
+    point = generateTradeEventDTO(type_of_trade=type_of_trade, volume_to_buy=volume_to_buy,
+                                  asset=asset, interval=interval, price=price)
 
     if not transaction_id:
         transaction_id = insertTransactionEvent(type_of_trade, point)

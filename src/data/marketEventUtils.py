@@ -4,7 +4,7 @@ from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 from src.helpers.params import __ENVIRONMENT
-from src.helpers.dateHelper import DATE_STR
+from src.helpers.dateHelper import DATE_STR, DATE_UTC_TZ_STR, set_timezone
 from src.secret.SECRET_CONSTANT import __INFLUX_BUCKET_MARKET_EVENT, __INFLUX_URI, __INFLUX_TOKEN
 
 __INFLUX_CLIENT = InfluxDBClient(
@@ -21,14 +21,13 @@ __QUERY_API = __INFLUX_CLIENT.query_api()
 
 
 def buildDTO(record):
+    """ Build Data Transfer object with whom I'll work /w Python """
     return {
         'time': record['_time'],
         'measurement': record['_measurement'],
         'asset': record['asset'],
         'price': record['price'],
-        'volume': record['volume'],
-        'orderType': record['orderType'],
-        'side': record['side'],
+        'volume': record['volume']
     }
 
 
@@ -87,25 +86,25 @@ def getAllEvents():
                     valueColumn: "_value"
             )
     """
-    results = []
-    request_result = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
-    for table in request_result:
+    request_results = []
+    query_results = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
+    for table in query_results:
         if len(table.records) > 1:
             for record in table.records:
                 try:
                     dto = buildDTO(record)
-                    results.append(dto)
+                    request_results.append(dto)
                 except KeyError:
                     return []
-    print('[INFLUXDB], getAllEvents response, items length:', len(results))
-    return results
+    print('[INFLUXDB], getAllEvents response, items length:', len(request_results))
+    return request_results
 
 
-def getLastMinuteEvents(asset):
-    print('[INFLUXDB], getLastMinuteEvents from the last 10 minutes.')
+def getLastMinuteEvents(asset, length):
+    print('[INFLUXDB], getLastMinuteEvents from the last', length, 'minutes.')
     query = f"""
         from (bucket:"{__CURRENT_BUCKET}")
-            |> range(start: -5m)
+            |> range(start: -{length}m)
             |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
             |> filter(fn: (r) => r.asset == "{asset}")
             |> aggregateWindow(every: 1m, fn: mean)
@@ -148,11 +147,12 @@ def cleanTradeEvents():
 
 if __name__ == "__main__":
     results = getAllEvents()
-    print(results[0])
+    print(results)
 
-    results = getLastMinuteEvents('ALGO')
+    results = getLastMinuteEvents('ALGO', 5)
     print('Last minute events', results)
     for res in results:
-        print(res)
+        res['datetime'] = set_timezone(res['time'])
+    print(results[0]['datetime'].hour, results[0]['datetime'].minute)
 
     # cleanTradeEvents()

@@ -8,7 +8,7 @@ from peakdetect import peakdetect
 
 from src.engine.analysisEngineHelper import define_volume
 from src.helpers.emailSenderHelper import send_email
-from src.services.timeseriesService import addTradeEvent, getLastEventByTypeAndAsset, getTransaction
+from src.services.timeseriesService import addTradeEvent, getLastTradeEventByTypeAndAsset, getTransaction
 
 
 # TODO -> type this
@@ -112,7 +112,7 @@ class AnalysisEngine:
 
     def calculate_volume_to_buy(self, type_of_trade: str) -> (float, str):
         if type_of_trade == 'buy':
-            previous_currency_trade = getLastEventByTypeAndAsset(self.asset, type_of_trade)
+            previous_currency_trade = getLastTradeEventByTypeAndAsset(self.asset, type_of_trade)
             # Ignore the previous trade if it has been fulfilled
             if previous_currency_trade:
                 transaction = getTransaction(previous_currency_trade['transactionId'])
@@ -131,7 +131,7 @@ class AnalysisEngine:
                 return volume, None
 
         if type_of_trade == 'sell':
-            previous_currency_trade = getLastEventByTypeAndAsset(self.asset, 'buy')
+            previous_currency_trade = getLastTradeEventByTypeAndAsset(self.asset, 'buy')
             if previous_currency_trade:
                 transaction_id: str = previous_currency_trade['transactionId']
                 transaction = getTransaction(transaction_id)
