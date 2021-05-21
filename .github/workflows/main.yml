@@ -1,4 +1,4 @@
-name: Deploy application on EC2
+name: CICD
 on:
   push:
     branches:
@@ -9,13 +9,13 @@ on:
 
 jobs:
   deploy:
-    name: Deploy application on EC2
+    name: Deploy application on AWS EC2
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the code
+      - name: Checkout codebase
         uses: actions/checkout@v1
 
-      - name: Deploy to my EC2 instance
+      - name: Deploy to EC2 instance
         uses: easingthemes/ssh-deploy@v2.1.5
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -24,7 +24,7 @@ jobs:
           REMOTE_USER: ${{ secrets.SERVER_USER }}
           TARGET: "/home/${{ secrets.SERVER_USER }}/trading-bot-interval"
 
-      - name: Refresh python env and restart application
+      - name: Refresh python env then restart application
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -37,3 +37,4 @@ jobs:
               /home/${{ secrets.SERVER_USER }}/anaconda3/bin/conda create -n trading-bot python=3.8
               /home/${{ secrets.SERVER_USER }}/anaconda3/envs/trading-bot/bin/pip3 install -r /home/${{ secrets.SERVER_USER }}/trading-bot-interval/requirement.txt
               sudo cp /home/${{ secrets.SERVER_USER }}/trading-bot-interval/tradingBot.service /lib/systemd/system/tradingBot.service && sudo systemctl restart tradingBot
+              sudo systemctl daemon-reload
