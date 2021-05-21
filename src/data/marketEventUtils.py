@@ -27,6 +27,8 @@ def buildDTO(record):
         'asset': record['asset'],
         'price': record['price'],
         'volume': record['volume'],
+        'orderType': record['orderType'],
+        'side': record['side'],
     }
 
 
@@ -126,6 +128,7 @@ def getLastMinuteEvents(asset):
                 except KeyError:
                     return []
     print('[INFLUXDB], getLastMinuteEvents response, items length:', len(output_results))
+    print('list', list(output_results), output_results)
     return output_results
 
 
@@ -148,6 +151,7 @@ if __name__ == "__main__":
     print(results[0])
 
     results = getLastMinuteEvents('ALGO')
+    print('Last minute events', results)
     for res in results:
         print(res)
 

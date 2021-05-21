@@ -1,8 +1,8 @@
 from datetime import datetime
 
 from src.helpers.dateHelper import DATE_UTC_TZ_STR
-from src.repository.tradeEventRepository import getRecentEventByTypeAndAsset, insertTradeEvent
-from src.repository.tradeTransactionRepository import insertTransactionEvent, getTransactionById, \
+from src.data.tradeEventUtils import getRecentEventByTypeAndAsset, insertTradeEvent
+from src.data.transactionMongoUtils import insertTransactionEvent, getTransactionById, \
     updateTransactionById, getLastDayCompleteTransactionByAsset, get_all_transactions_since_midnight_by_asset
 from src.services.krakenTradeService import getLastPrice
 

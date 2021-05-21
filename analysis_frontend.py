@@ -9,10 +9,10 @@ from telethon.tl.types import InputPeerUser
 
 from src.helpers.dateHelper import SIMPLE_DATE_STR
 from src.helpers.params import MAXIMUM_FEES
-from src.repository.analysisRepository import createDomainObject, insertAnalysis
+from src.data.analysisMongoUtils import createDomainObject, insertAnalysis
 from src.secret.SECRET_CONSTANT import __TELEGRAM_APP_ID, __TELEGRAM_APP_HASH, __TELEGRAM_PHONE_NBR
-from src.repository.missionRepository import getAllMissions
-from src.repository.tradeTransactionRepository import getTransactionsByAsset
+from src.data.missionMongoUtils import getAllMissions
+from src.data.transactionMongoUtils import getTransactionsByAsset
 from src.services.timeseriesService import getTransactionPerDayAsset, getTransaction
 
 
@@ -108,7 +108,7 @@ def calculateWInLossPerMission():
                                       result=resultsSum)
     results.append(dto)
 
-    # Store data on MongoDB
+    # Store mock on MongoDB
     data = createDomainObject(results, 'daily')
     insertAnalysis(data)
 

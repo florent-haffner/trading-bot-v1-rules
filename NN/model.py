@@ -107,7 +107,7 @@ def run():
         # train, test = splitDataset(df, .85)
         # X, y = getXy(dataset=train, X_key='timestamp', y_key='volume')
         #
-        # # Pre-process data to scale to 0->1
+        # # Pre-process mock to scale to 0->1
         # scaler = MinMaxScaler()
         # X_train, y_train = process_data_to_scale(scaler, X, y)
         #

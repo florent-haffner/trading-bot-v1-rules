@@ -13,7 +13,7 @@ class RequestToKrakenError(Exception): pass
 
 """
 :param asset -> the pair of currency, ex : BTCEUR, ETHEUR, ALGOUSD
-:param interval -> data interval in minutes (1, 5, 10, 60, 120, 360, 1440)
+:param interval -> mock interval in minutes (1, 5, 10, 60, 120, 360, 1440)
 """
 def getDatasFromKraken(asset, interval) -> Dict:
     URL: str = __KRAKEN_API + '?pair=' + asset + '&interval=' + interval
@@ -110,7 +110,7 @@ if __name__ == "__main__":
     train, test = splitDataset(df, .85)
     X, y = getXy(train, 'volume', 'timestamp')
 
-    # Pre-process data to scale to 0->1
+    # Pre-process mock to scale to 0->1
     scaler = MinMaxScaler()
     X_train, y_train = process_data_to_scale(scaler, X, y)
     print(X_train, y_train)

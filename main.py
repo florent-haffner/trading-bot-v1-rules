@@ -11,8 +11,8 @@ from websocket import create_connection
 
 from src.engine.analysisEngine import AnalysisEngine
 from src.helpers.params import __DEBUG, __OFFLINE, __ENVIRONMENT
-from src.repository.marketEventRepository import insertMarketEvent
-from src.repository.missionRepository import getAllMissions
+from src.data.marketEventUtils import insertMarketEvent
+from src.data.missionMongoUtils import getAllMissions
 from src.services.krakenDataService import getFormattedData, get_stocks_indicators
 import re
 
@@ -32,7 +32,7 @@ def run_bot(asset, currency, interval, length_assets):
         print('DEVELOPMENT MODE')
         type_of_trade: List[str] = ['buy', 'sell']
         chosen_type: str = type_of_trade[0]
-        path_csv: str = os.getcwd() + '/data/mock-' + asset + '-' + chosen_type + '.csv'
+        path_csv: str = os.getcwd() + '/mock/mock-' + asset + '-' + chosen_type + '.csv'
         print('Get CSV from ', path_csv)
         df = read_csv(path_csv)
 
@@ -79,7 +79,7 @@ def bot_realtime_child_process():
 
 
 def generate_dto(event) -> dict:
-    """ This function handle all the data modeling and processing before storing it on InfluxDB """
+    """ This function handle all the mock modeling and processing before storing it on InfluxDB """
     keys: list = ["price", "volume", "time", "side", "orderType"]
 
     def get_asset_from_pair(pair: str) -> str:
