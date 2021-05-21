@@ -60,4 +60,8 @@ def get_realtime_processed_asset(asset: str) -> object:
 
     for res in last_minutes:
         res['timestamp'] = int(datetime.timestamp(res['time']))
-    return generate_realtime_processed_dto(last_minutes[len(last_minutes) - 1])
+    dto = generate_realtime_processed_dto(last_minutes[len(last_minutes) - 1])
+    if dto['close'] and dto['volume']:
+        return dto
+
+    return None

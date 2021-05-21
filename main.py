@@ -39,9 +39,10 @@ def run_bot(asset, currency, interval, length_assets):
 
     last_market_event = get_realtime_processed_asset('ALGO')
     # last_market_event['timestamp'] = int(last_market_event['timestamp'])
-    df_last_timestamp = df.tail(1)['timestamp'].iloc[-1]
-    if df_last_timestamp < last_market_event['timestamp']:
-        df = df.append(last_market_event, ignore_index=True)
+    if last_market_event:
+        df_last_timestamp = df.tail(1)['timestamp'].iloc[-1]
+        if df_last_timestamp < last_market_event['timestamp']:
+            df = df.append(last_market_event, ignore_index=True)
 
     df_with_indicators: DataFrame = get_stocks_indicators(df)
     print('DF FULL - first:', datetime.fromtimestamp(df_with_indicators.head(1)['timestamp'].iloc[0]),
