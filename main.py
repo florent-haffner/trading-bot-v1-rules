@@ -80,7 +80,9 @@ def bot_realtime_child_process():
 
 def generate_dto(event) -> dict:
     """ This function handle all the mock modeling and processing before storing it on InfluxDB """
-    keys: list = ["price", "volume", "time", "side", "orderType"]
+    # TODO -> not sure to keep side + orderType - remove here
+    # keys: list = ["price", "volume", "time", "side", "orderType"]
+    keys: list = ["price", "volume", "time"]
 
     def get_asset_from_pair(pair: str) -> str:
         """ Handle messy 'pair' string then  return a clean string with asset """
@@ -96,12 +98,12 @@ def generate_dto(event) -> dict:
             dto[keys[key]] = float(event[1][0][key])
         except ValueError:
             dto[keys[key]] = event[1][0][key]
-    # dto['time'] = int(dto['time'])  # TODO -> not sure, I'll check if necessary to keep this
 
-    side = dto['side']
-    orderType = dto['orderType']
-    del dto['side']
-    del dto['orderType']
+    # TODO -> not sure to keep side + orderType - remove also here
+    # side = dto['side']
+    # orderType = dto['orderType']
+    # del dto['side']
+    # del dto['orderType']
 
     __MEASUREMENT_NAME: str = "marketEvent"
     data_object: dict = {
@@ -109,8 +111,6 @@ def generate_dto(event) -> dict:
         'tags': {
             'asset': asset,
             'broker': 'kraken',
-            'side': side,
-            'orderType': orderType
         },
         'fields': dto
     }
