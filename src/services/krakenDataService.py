@@ -8,14 +8,15 @@ from stockstats import StockDataFrame
 __KRAKEN_API = "https://api.kraken.com/0/public/OHLC"
 
 
-class RequestToKrakenError(Exception): pass
+class RequestToKrakenError(Exception):
+    super(Exception)
 
 
-"""
-:param asset -> the pair of currency, ex : BTCEUR, ETHEUR, ALGOUSD
-:param interval -> mock interval in minutes (1, 5, 10, 60, 120, 360, 1440)
-"""
 def getDatasFromKraken(asset, interval) -> Dict:
+    """
+    :param asset -> the pair of currency, ex : BTCEUR, ETHEUR, ALGOUSD
+    :param interval -> mock interval in minutes (1, 5, 10, 60, 120, 360, 1440)
+    """
     URL: str = __KRAKEN_API + '?pair=' + asset + '&interval=' + interval
     try:
         res: Response = get(URL)
@@ -26,11 +27,11 @@ def getDatasFromKraken(asset, interval) -> Dict:
         raise err
 
 
-"""
-:param apiResponse -> datas from api
-:return pandas Dataframe object
-"""
 def getDataframe(apiResponse) -> pd.DataFrame:
+    """
+    :param apiResponse -> datas from api
+    :return pandas Dataframe object
+    """
     firstMapKey = list(apiResponse['result'].keys())[0]
     schema = ['timestamp', 'open', 'high', 'low', 'close', 'vwap', 'volume', 'count']
     dataframe: pd.DataFrame = pd.DataFrame(apiResponse['result'][firstMapKey], columns=schema)
@@ -46,35 +47,15 @@ def getDataframe(apiResponse) -> pd.DataFrame:
     return dataframe
 
 
-"""
-Glue everything together
-"""
 def getFormattedData(asset, interval) -> pd.DataFrame:
+    """
+    Glue everything together
+    """
     print('\n--------------------------------------------------\n',
           '[QUERY] - Kraken - ', asset + ' on ' + interval + 'min')
     results: Dict = getDatasFromKraken(asset, interval)
     return getDataframe(results)
 
-
-# TODO -> Not used anymore
-"""
-Help split dataset
-:param full_dataset -> straight forward
-:param split_radio -> value between 0 & 1, like 0.85 for example
-:return properly splitted train_dataset and test_dataset
-def splitDataset(full_dataset, split_ratio) -> [pd.DataFrame]:
-    split_length: int = int(len(full_dataset) * split_ratio)
-    train_set = full_dataset[:split_length]
-    test_set = full_dataset[split_length:]
-    return train_set, test_set
-
-
-def getXy(dataset, X_key, y_key) -> [pd.DataFrame]:
-    try:
-        return dataset[X_key], dataset[y_key]
-    except KeyError:
-        raise KeyError('Error with the keys', X_key, ' or ', y_key)
-"""
 
 # """
 # :param get X, y

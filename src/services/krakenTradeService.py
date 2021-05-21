@@ -5,7 +5,8 @@ from typing import Dict, Any
 import krakenex
 
 
-class TradeToKrakenError(Exception): pass
+class TradeToKrakenError(Exception):
+    super(Exception)
 
 
 API = krakenex.API()

@@ -34,27 +34,8 @@ class AnalysisEngine:
         self.event_type: str = ''
         self.index_size: int = len(self.df)
 
-        # self.analyse_trends()
         self.detect_short_time_trend()
         self.make_decision()
-
-    # TODO -> this method just became useless
-    """
-    def analyse_trends(self):
-        print('\n[TREND ANALYSIS]')
-
-        # TODO -> maybe get this out of the codebase
-        # nbr_occurrences = 4
-        # macd_high, macd_low, self.pathFigMACD = find_multiple_curve_min_max(self.df,
-        #                                                                     key='macds',
-        #                                                                     nbr_occurrences=nbr_occurrences)
-        # close_high, close_low, self.pathFigClose = find_multiple_curve_min_max(self.df,
-        #                                                                        key='close',
-        #                                                                        nbr_occurrences=nbr_occurrences)
-
-        # self.index_size = len(self.df)
-        # self.detect_short_time_trend()
-    """
 
     def detect_short_time_trend(self):
         print(self.asset, '- Short time detection')
@@ -104,10 +85,10 @@ class AnalysisEngine:
                 print('Trends are currently evolving, waiting...')
 
         except Exception as err:
-            if self.debug:
-                raise err
             print('[EXCEPTION] - sending email', err)
             send_email('Exception', str(err), {})
+            if self.debug:
+                raise err
 
         print('\n[END OF ANALYSIS] ->', self.asset)
         print('\nResume to follow next action', '\n------------------\n')
@@ -125,9 +106,6 @@ class AnalysisEngine:
                                     currency=self.currency,
                                     transaction_id=transaction_id)
             if success:
-                # send_email(
-                #     '[BOT-ANALYSIS]', 'Incoming trade : [' + self.asset + '] - type: ' + type_of_trade,
-                #     attachments)
                 print(type_of_trade.upper(), 'this', volume_to_buy, 'of', self.asset)
         else:
             print('Nothing to', type_of_trade)
