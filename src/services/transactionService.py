@@ -6,14 +6,14 @@ def getTransaction(id):
     return getTransactionById(id)
 
 
-def updateTransaction(id, key, data):
+def updateToCompleteTransaction(id, key, data):
     document = getTransaction(id)
     try:
         if document['sell']:
             print('Document', id, 'already has been updated. Abort operation.')
             return False
     except KeyError:
-        return updateTransactionById(id=id, key=key, updateTransaction=data)
+        return updateTransactionById(id=id, key=key, value=data)
 
 
 def getAllUnclosedTransactionSinceMidnightByAsset(asset):
@@ -28,3 +28,12 @@ def getAllUnclosedTransactionSinceMidnightByAsset(asset):
 
 def getTransactionPerDayAsset(asset):
     return getLastDayCompleteTransactionByAsset(asset)
+
+
+if __name__ == '__main__':
+    res = getAllUnclosedTransactionSinceMidnightByAsset('ALGO')
+    print(res[0]['buy']['time'])
+    res = getAllUnclosedTransactionSinceMidnightByAsset('LINK')
+    print(res[0]['buy']['time'])
+    res = getAllUnclosedTransactionSinceMidnightByAsset('GRT')
+    print(res[0]['buy']['time'])

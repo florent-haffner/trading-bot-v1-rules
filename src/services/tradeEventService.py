@@ -4,7 +4,7 @@ from src.data.tradeEventUtils import getRecentEventByTypeAndAsset, insertTradeEv
 from src.data.transactionMongoUtils import insertTransactionEvent
 from src.helpers.dateHelper import DATE_UTC_TZ_STR
 from src.services.krakenTradeService import getLastPrice
-from src.services.transactionService import updateTransaction
+from src.services.transactionService import updateToCompleteTransaction
 
 
 def getLastTradeEventByTypeAndAsset(asset, typeOfTrade):
@@ -55,9 +55,9 @@ def addTradeEvent(type_of_trade, volume_to_buy, asset, interval, currency, trans
     # Upgrading previous transaction on MongoDB
     if type_of_trade == 'sell':
         print('Updating', transaction_id, 'to complete transaction')
-        result = updateTransaction(id=transaction_id,
-                                   key=type_of_trade,
-                                   data=point)
+        result = updateToCompleteTransaction(id=transaction_id,
+                                             key=type_of_trade,
+                                             data=point)
         if result:
             del point['time']
             insertTradeEvent([point])

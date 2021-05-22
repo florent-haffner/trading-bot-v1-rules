@@ -42,6 +42,8 @@ def run_bot(asset, currency, interval, length_assets):
     if last_market_event:
         df_last_timestamp = df.tail(1)['timestamp'].iloc[-1]
         if df_last_timestamp < last_market_event['timestamp']:
+            print('Appending last_market_events processed data to dataframe')
+            # Trick /w side-effect to append last_market_events at the end of the file
             df = df.append(last_market_event, ignore_index=True)
 
     df_with_indicators: DataFrame = get_stocks_indicators(df)

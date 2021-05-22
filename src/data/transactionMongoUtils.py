@@ -12,15 +12,18 @@ __MONGO_CLIENT = MongoClient(__MONGO_URI)
 db_name = __MONGO_DB + '_' + __ENVIRONMENT
 db = __MONGO_CLIENT[db_name]
 collection = db['tradeTransaction']
+__MODEL_VERSION: float = 1.0
 
 
 def getTransactionById(id):
     print('[MONGODB] - [GET TRANSACTIONS BY ID] ->', id)
     return collection.find_one({"_id": ObjectId(id)})
 
+
 def insertTransactionEvent(key, data):
     print('[MONGODB] - [NEW TRANSACTION] ->', data)
     data['time'] = datetime.now().strftime(DATE_STR)
+    data['version'] = __MODEL_VERSION
     transactionId = collection.insert_one({key: data})
     return transactionId.inserted_id
 
@@ -30,13 +33,14 @@ def getAllTransaction():
     return collection.find({})
 
 
-def updateTransactionById(id, key, updateTransaction):
+def updateTransactionById(id, key, value):
     print('[MONGODB] - [UPDATING TRANSACTION] ->', id)
-    values = {"$set": {key: updateTransaction}}
+    values = {"$set": {key: value}}
     return collection.update_one(
         filter=dict({'_id': ObjectId(id)}),
         update=values,
-        upsert=False)
+        upsert=False
+    )
 
 
 def cleanTransaction():
@@ -45,6 +49,8 @@ def cleanTransaction():
     print('Done. Current list of TRANSACTION:', list(collection.find({})))
 
 
+# TODO -> remove this if not needed
+"""
 def initEnvironment():
     timeseries_buy = {
         'measurement': 'tradeEvent',
@@ -86,8 +92,8 @@ def initEnvironment():
     }
     updateTransactionById(id=transactionId,
                           key=timeseries_sell['tags']['typeOfTrade'],
-                          updateTransaction=timeseries_sell)
-
+                          value=timeseries_sell)
+"""
 
 def get_all_transactions_since_midnight_by_asset(asset):
     previousDayFromMidnight = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
@@ -118,8 +124,15 @@ if __name__ == '__main__':
     # initEnvironment()
 
     transactions = list(getAllTransaction())
-    print('nbr transaction', len(transactions))
+    # print('nbr transaction', len(transactions))
+
     for transaction in transactions:
-        print(transaction)
+        id = transaction['_id']
+        # print(id, type(id))
+        updateTransactionById(id, 'version', __MODEL_VERSION)
+
+    transactions = list(getAllTransaction())
+    for transaction in transactions:
+        print(transaction.keys())
 
     # cleanTransaction()
