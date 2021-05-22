@@ -56,12 +56,13 @@ def generate_realtime_processed_dto(data_object):
 
 def get_realtime_processed_asset(asset: str) -> object:
     last_minutes: list = getLastMinuteMarketEvents(asset, 2)
-    last_minutes.pop()
+    if last_minutes:
+        last_minutes.pop()
 
-    for res in last_minutes:
-        res['timestamp'] = int(datetime.timestamp(res['time']))
-    dto = generate_realtime_processed_dto(last_minutes[len(last_minutes) - 1])
-    if dto['close'] and dto['volume']:
-        return dto
+        for res in last_minutes:
+            res['timestamp'] = int(datetime.timestamp(res['time']))
+        dto = generate_realtime_processed_dto(last_minutes[len(last_minutes) - 1])
+        if dto['close'] and dto['volume']:
+            return dto
 
     return None
