@@ -20,11 +20,14 @@ Bot dependencies :
 
     conda activate trading-bot && pip3 install -r requirements.txt
 
-## Launching service 
+## Launching services
 
     sudo cp tradingBot.service /lib/systemd/system/tradingBot.service
+    sudo cp transactionCloserAutomate.service /lib/systemd/system/transactionCloserAutomate.service
 
     systemctl start tradingBot && systemctl enable tradingBot
+
+Add automate closer to crontab.
 
 To check the logs of the process : `journalctl _PID=1077`
 
