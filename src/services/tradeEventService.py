@@ -57,7 +57,7 @@ def addTradeEvent(type_of_trade, volume_to_buy, asset, interval, currency, trans
         print('Updating', transaction_id, 'to complete transaction')
         result = updateToCompleteTransaction(id=transaction_id,
                                              key=type_of_trade,
-                                             data=point)
+                                             points=point)
         if result:
             del point['time']
             insertTradeEvent([point])

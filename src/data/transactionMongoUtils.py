@@ -124,12 +124,14 @@ if __name__ == '__main__':
     # initEnvironment()
 
     transactions = list(getAllTransaction())
-    # print('nbr transaction', len(transactions))
-
+    print('nbr transaction', len(transactions))
     for transaction in transactions:
-        id = transaction['_id']
-        # print(id, type(id))
-        updateTransactionById(id, 'version', __MODEL_VERSION)
+        try:
+            if transaction['sell']:
+                id = transaction['_id']
+                updateTransactionById(id, 'forced_closed', False)
+        except KeyError:
+            pass
 
     transactions = list(getAllTransaction())
     for transaction in transactions:

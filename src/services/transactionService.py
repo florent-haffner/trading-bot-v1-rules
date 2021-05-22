@@ -6,14 +6,16 @@ def getTransaction(id):
     return getTransactionById(id)
 
 
-def updateToCompleteTransaction(id, key, data):
+def updateToCompleteTransaction(id, key, points):
     document = getTransaction(id)
     try:
         if document['sell']:
             print('Document', id, 'already has been updated. Abort operation.')
             return False
     except KeyError:
-        return updateTransactionById(id=id, key=key, value=data)
+        updateTransactionById(id=id, key=key, value=points)
+        updateTransactionById(id=id, key='forced_closed', value=False)
+        return
 
 
 def getAllUnclosedTransactionSinceMidnightByAsset(asset):
