@@ -125,16 +125,5 @@ if __name__ == '__main__':
 
     transactions = list(getAllTransaction())
     print('nbr transaction', len(transactions))
-    for transaction in transactions:
-        try:
-            if transaction['sell']:
-                id = transaction['_id']
-                updateTransactionById(id, 'forced_closed', False)
-        except KeyError:
-            pass
-
-    transactions = list(getAllTransaction())
-    for transaction in transactions:
-        print(transaction.keys())
 
     # cleanTransaction()
