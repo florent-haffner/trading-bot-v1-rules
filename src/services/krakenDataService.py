@@ -14,8 +14,8 @@ class RequestToKrakenError(Exception):
 
 def get_data_from_kraken(asset: str, interval: str) -> Dict:
     """
-    :param asset -> the pair of currency, ex : BTCEUR, ETHEUR, ALGOUSD
-    :param interval -> mock interval in minutes (1, 5, 10, 60, 120, 360, 1440)
+    :param asset : the pair of currency -> BTCEUR, ETHEUR, ALGOUSD
+    :param interval : mock interval in minutes (1, 5, 10, 60, 120, 360, 1440)
     """
     URL: str = __KRAKEN_API + '?pair=' + asset + '&interval=' + interval
     try:

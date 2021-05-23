@@ -18,11 +18,12 @@ from src.services.transactionService import get_transaction_per_day_asset
 def calculate_win_loss_per_transactions(transactions):
     total = []
     beginningAmount = 0
+    nbr_positive_transactions = 0
     for transaction in transactions:
-        typeOfTrade = ['buy', 'sell']
+        type_of_trade = ['buy', 'sell']
         print(transaction)
         transactionAmount = []
-        for trade in typeOfTrade:
+        for trade in type_of_trade:
             try:
                 field = transaction[trade]['fields']
                 amountPerTransaction = field['quantity'] * field['price']
@@ -30,8 +31,8 @@ def calculate_win_loss_per_transactions(transactions):
                 if not beginningAmount:
                     beginningAmount = amountPerTransaction
 
-                # Fees are multiply by two because it applies twice while selling
-                fees = amountPerTransaction * (MAXIMUM_FEES * 2)
+                # Fees are applies twice : while buying AND selling
+                fees = amountPerTransaction * MAXIMUM_FEES
                 net_amount = amountPerTransaction - fees
 
                 transactionAmount.append(net_amount)
@@ -42,14 +43,16 @@ def calculate_win_loss_per_transactions(transactions):
             current = -transactionAmount[0]
             total.append(current)
         else:
-            totalPetTransaction = -transactionAmount[0] + transactionAmount[1]
-            total.append(totalPetTransaction)
+            totalPerTransaction = -transactionAmount[0] + transactionAmount[1]
+            if totalPerTransaction > 0:
+                nbr_positive_transactions = nbr_positive_transactions + 1
+            total.append(totalPerTransaction)
 
     totalAmount = 0
     for amountPerTransaction in total:
         totalAmount = totalAmount + amountPerTransaction
 
-    return len(transactions), totalAmount, beginningAmount
+    return len(transactions), totalAmount, beginningAmount, nbr_positive_transactions
 
 
 # TODO -> not sure still useful
@@ -88,12 +91,13 @@ def calculate_win_and_loss_per_mission(store_results: bool):
     missions = list(get_all_missions())
     for mission in missions:
         for asset in mission['context']['assets']:
-            print('\n[', asset, '] -> Calculating win/loss pet asset')
-            # transactionFromAsset = list(getTransactionsByAsset(asset))
-            transactionFromAsset = list(get_transaction_per_day_asset(asset))
-            nbrTransaction, amount, beginningAmount = calculate_win_loss_per_transactions(transactionFromAsset)
 
-            dto: Dict[str, Any] = generate_dto(asset, round(beginningAmount, 2), nbrTransaction, round(amount, 3))
+            print('\n[', asset, '] -> Calculating win/loss pet asset')
+            transactionFromAsset = list(get_transaction_per_day_asset(asset))
+            nbrTransaction, amount, beginningAmount, nbrPositiveTransactions = \
+                calculate_win_loss_per_transactions(transactionFromAsset)
+
+            dto: Dict[str, Any] = generate_dto(asset, round(beginningAmount, 2), nbrTransaction, nbrPositiveTransactions, round(amount, 3))
             print('Current analysis result', dto)
             results.append(dto)
 
@@ -101,15 +105,18 @@ def calculate_win_and_loss_per_mission(store_results: bool):
     asset: String = 'total'
     amountSum: int = 0
     nbrTransactionSum: int = 0
+    nbrPositiveTransactionSum: int = 0
     resultsSum: int = 0
     for res in results:
         amountSum = amountSum + res['beginning_amount']
         nbrTransactionSum = nbrTransactionSum + res['nbr_transactions']
+        nbrPositiveTransactionSum = nbrTransactionSum + res['nbr_positive_transactions']
         resultsSum = resultsSum + res['result']
 
     dto: Dict[str, Any] = generate_dto(asset=asset,
                                        beginning_amount=round(amountSum, 2),
                                        nbr_transactions=nbrTransactionSum,
+                                       nbr_positive_transactions=nbrPositiveTransactionSum,
                                        result=resultsSum)
     results.append(dto)
 
@@ -127,11 +134,12 @@ def calculate_win_and_loss_per_mission(store_results: bool):
         send_message(msg_to_send)
 
 
-def generate_dto(asset, beginning_amount, nbr_transactions, result):
+def generate_dto(asset, beginning_amount, nbr_transactions, nbr_positive_transactions, result):
     return {
         "asset": asset,
         "beginning_amount": beginning_amount,
         "nbr_transactions": nbr_transactions,
+        "nbr_positive_transactions": nbr_positive_transactions,
         "result": result,
         "percent": round(result * 100 / beginning_amount, 2) if beginning_amount else 0
     }
