@@ -30,7 +30,8 @@ def calculate_win_loss_per_transactions(transactions):
                 if not beginningAmount:
                     beginningAmount = amountPerTransaction
 
-                fees = amountPerTransaction * MAXIMUM_FEES
+                # Fees are multiply by two because it applies twice while selling
+                fees = amountPerTransaction * (MAXIMUM_FEES * 2)
                 net_amount = amountPerTransaction - fees
 
                 transactionAmount.append(net_amount)
