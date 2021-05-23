@@ -6,8 +6,9 @@ import pandas as pd
 from numpy import mean
 from peakdetect import peakdetect
 
-from src.engine.analysisEngineHelper import define_volume
+from src.engine.analysisEngineHelper import define_quantity
 from src.helpers.emailSenderHelper import send_email
+from src.services.krakenTradeService import get_last_price
 from src.services.tradeEventService import add_trade_event, get_last_trade_event_by_type_and_asset
 from src.services.transactionService import get_transaction
 
@@ -98,20 +99,23 @@ class AnalysisEngine:
         print('Calculating volume')
         volume_to_buy: float
         transaction_id: str
-        volume_to_buy, transaction_id = self.calculate_volume_to_buy(type_of_trade)
+        price = get_last_price(self.asset, self.currency)
+        volume_to_buy, transaction_id = self.calculate_volume_to_buy(type_of_trade, price)
         if volume_to_buy:
+
             success = add_trade_event(type_of_trade=type_of_trade,
                                       volume_to_buy=volume_to_buy,
                                       asset=self.asset,
                                       interval=self.interval,
                                       currency=self.currency,
-                                      transaction_id=transaction_id)
+                                      transaction_id=transaction_id,
+                                      price=price)
             if success:
                 print(type_of_trade.upper(), 'this', volume_to_buy, 'of', self.asset)
         else:
             print('Nothing to', type_of_trade)
 
-    def calculate_volume_to_buy(self, type_of_trade: str) -> (float, str):
+    def calculate_volume_to_buy(self, type_of_trade: str, price: float) -> (float, str):
         if type_of_trade == 'buy':
             previous_currency_trade = get_last_trade_event_by_type_and_asset(self.asset, type_of_trade)
             print(self)
@@ -126,11 +130,10 @@ class AnalysisEngine:
 
             # If there is no previous trade, define quantity
             if not previous_currency_trade:
-                volume: float = define_volume(df=self.df,
-                                              type_of_trade=type_of_trade,
-                                              nbr_asset_on_trade=self.length_assets,
-                                              index_max=self.index_size - 1)
-                return volume, None
+                quantity: float = define_quantity(type_of_trade=type_of_trade,
+                                                  nbr_asset_on_trade=self.length_assets,
+                                                  price=price)
+                return quantity, None
 
         if type_of_trade == 'sell':
             previous_currency_trade = get_last_trade_event_by_type_and_asset(self.asset, 'buy')

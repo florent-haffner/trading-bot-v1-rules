@@ -12,20 +12,18 @@ class NothingToTrade(Exception):
     super(Exception)
 
 
-def define_volume(df: pd.DataFrame, type_of_trade: str, nbr_asset_on_trade: float, index_max: int) -> float:
+def define_quantity(type_of_trade: str, nbr_asset_on_trade: float, price) -> float:
     print('\n[VOLUME TRADING QUANTITY]')
     print('Type of trade:', type_of_trade)
-    volume_to_buy: float
-
+    quantity_to_buy: float
     try:
         balance_euro: float = float(get_account_balance()['result']['ZEUR'])
     except Exception as err:
         raise err
 
     money_available: float = (balance_euro / float(nbr_asset_on_trade)) * MAXIMUM_PERCENTAGE_EUR
-    volume_to_buy = money_available / df['close'][index_max]
-
-    return volume_to_buy
+    quantity_to_buy = money_available / price
+    return quantity_to_buy
 
 
 def build_dto(df, measures, index) -> Dict:

@@ -44,5 +44,5 @@ def get_complete_transaction_from_last_hours_per_asset(asset):
 """
 
 
-def get_transaction_per_day_asset(asset):
+def get_complete_transaction_per_day_asset(asset):
     return get_complete_transaction_from_last_day_by_asset(asset)

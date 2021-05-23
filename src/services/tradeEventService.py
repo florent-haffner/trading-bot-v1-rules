@@ -36,9 +36,8 @@ def generate_trade_event_dto(type_of_trade, volume_to_buy, asset, interval, pric
     }
 
 
-def add_trade_event(type_of_trade, volume_to_buy, asset, interval, currency, transaction_id):
+def add_trade_event(type_of_trade, volume_to_buy, asset, interval, currency, transaction_id, price):
     success = False
-    price = get_last_price(asset, currency)
     point = generate_trade_event_dto(type_of_trade=type_of_trade, volume_to_buy=volume_to_buy,
                                      asset=asset, interval=interval, price=price)
 

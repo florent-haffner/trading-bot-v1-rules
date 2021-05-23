@@ -12,7 +12,7 @@ from src.helpers.params import MAXIMUM_FEES
 from src.data.analysisMongoUtils import create_domain_object, insert_analysis
 from src.secret.SECRET_CONSTANT import __TELEGRAM_APP_ID, __TELEGRAM_APP_HASH, __TELEGRAM_PHONE_NBR
 from src.data.missionMongoUtils import get_all_missions
-from src.services.transactionService import get_transaction_per_day_asset
+from src.services.transactionService import get_complete_transaction_per_day_asset
 
 
 def calculate_win_loss_per_transactions(transactions):
@@ -93,7 +93,7 @@ def calculate_win_and_loss_per_mission(store_results: bool):
         for asset in mission['context']['assets']:
 
             print('\n[', asset, '] -> Calculating win/loss pet asset')
-            transactionFromAsset = list(get_transaction_per_day_asset(asset))
+            transactionFromAsset = list(get_complete_transaction_per_day_asset(asset))
             nbrTransaction, amount, beginningAmount, nbrPositiveTransactions = \
                 calculate_win_loss_per_transactions(transactionFromAsset)
 
@@ -169,4 +169,4 @@ def send_message(message):
 
 
 if __name__ == '__main__':
-    calculate_win_and_loss_per_mission(store_results=True)
+    calculate_win_and_loss_per_mission(store_results=False)
