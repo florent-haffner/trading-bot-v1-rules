@@ -18,7 +18,7 @@ db = __MONGO_CLIENT[db_name]
 collection = db['analysis']
 
 
-def createDomainObject(data, type_of_analysis):
+def create_domain_object(data, type_of_analysis):
     return {
         "time": datetime.now().strftime(DATE_STR),
         "type": type_of_analysis,
@@ -26,17 +26,17 @@ def createDomainObject(data, type_of_analysis):
     }
 
 
-def insertAnalysis(data):
+def insert_analysis(data):
     print('[MONGODB] - [NEW ANALYSIS] ->', data)
     collection.insert_one(data)
 
 
-def getAllAnalysis():
+def get_all_analysis():
     print('[MONGODB] - [GET ALL ANALYSIS]')
     return collection.find({})
 
 
-def cleanAnalysis():
+def clean_analysis():
     print('[MONGODB] - [REMOVING ALL ANALYSIS]')
     collection.delete_many({})
     print('Done. Current list of analysis:', list(collection.find({})))
@@ -73,6 +73,6 @@ if __name__ == '__main__':
         "percent": 7.63
       }
     ]
-    data = createDomainObject(toStore, 'daily')
-    insertAnalysis(data)
-    print(list(getAllAnalysis()))
+    data = create_domain_object(toStore, 'daily')
+    insert_analysis(data)
+    print(list(get_all_analysis()))

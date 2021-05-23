@@ -29,11 +29,11 @@ def close_everything():
         print('No transactions to closed')
         return
 
-    previous_hour = datetime.now() - timedelta(hours=1)
+    four_hours_before = datetime.now() - timedelta(hours=4)
     for transaction in transactions_to_closed:
         transactionId = transaction['_id']
         time = datetime.strptime(transaction['buy']['time'], DATE_STR)
-        if time < previous_hour:
+        if time < four_hours_before:
             print('Closing', transactionId)
             last_price = getLastPrice(transaction['buy']['fields']['asset'], 'EUR')
             volume = transaction['buy']['fields']['quantity']

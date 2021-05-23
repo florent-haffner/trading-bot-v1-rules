@@ -95,7 +95,9 @@ def initEnvironment():
                           value=timeseries_sell)
 """
 
+
 def get_all_transactions_since_midnight_by_asset(asset):
+    """ Return all transaction since midnight for a specific asset """
     previousDayFromMidnight = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
     return collection.find({
         'buy.fields.asset': asset,
@@ -103,20 +105,32 @@ def get_all_transactions_since_midnight_by_asset(asset):
     })
 
 
-def getTransactionsByAsset(asset):
+def get_transactions_by_asset(asset):
+    """ Return all transaction for a specific asset """
     return collection.find({
         'buy.fields.asset': asset,
     })
 
 
-def getLastDayCompleteTransactionByAsset(asset):
-    previousDayFromMidnight = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
-    thisDayAtMidgnight = datetime.combine(datetime.today(), datetime.min.time())
-
+def get_complete_transaction_from_the_last_24h_by_asset(asset):
+    """ Return all complete transaction the last 24 hours for a specific asset """
+    now = datetime.now()
+    twenty_four_hours_before = now - timedelta(days=1)
     return collection.find({
         'buy.fields.asset': asset,
-        'buy.time': {'$gte': previousDayFromMidnight.strftime(DATE_STR)},
-        'sell.time': {'$lte': thisDayAtMidgnight.strftime(DATE_STR)},
+        'buy.time': {'$gte': twenty_four_hours_before.strftime(DATE_STR)},
+        'sell.time': {'$lte': now.strftime(DATE_STR)},
+    })
+
+
+def get_complete_transaction_from_last_day_by_asset(asset):
+    """ Return all complete transaction since midnight for a specific asset """
+    previous_day_at_midnight = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
+    this_day_at_midnight = datetime.combine(datetime.today(), datetime.min.time())
+    return collection.find({
+        'buy.fields.asset': asset,
+        'buy.time': {'$gte': previous_day_at_midnight.strftime(DATE_STR)},
+        'sell.time': {'$lte': this_day_at_midnight.strftime(DATE_STR)},
     })
 
 
@@ -125,5 +139,8 @@ if __name__ == '__main__':
 
     transactions = list(getAllTransaction())
     print('nbr transaction', len(transactions))
+
+    res = list(get_complete_transaction_from_the_last_24h_by_asset('ALGO'))
+    print('nbr transaction', len(res))
 
     # cleanTransaction()

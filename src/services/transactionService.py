@@ -1,5 +1,5 @@
 from src.data.transactionMongoUtils import getTransactionById, updateTransactionById, \
-    get_all_transactions_since_midnight_by_asset, getLastDayCompleteTransactionByAsset
+    get_all_transactions_since_midnight_by_asset, get_complete_transaction_from_last_day_by_asset
 
 
 def getTransaction(id):
@@ -28,8 +28,12 @@ def getAllUnclosedTransactionSinceMidnightByAsset(asset):
     return to_return
 
 
+def get_complete_transaction_from_last_hours_per_asset(asset):
+    return get_complete_transaction_from_last_day_by_asset(asset)
+
+
 def getTransactionPerDayAsset(asset):
-    return getLastDayCompleteTransactionByAsset(asset)
+    return get_complete_transaction_from_last_day_by_asset(asset)
 
 
 if __name__ == '__main__':
