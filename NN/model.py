@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 from tensorflow import keras
 from tensorflow.keras.layers import Dense, Dropout, LSTM
 
-from src.services.krakenDataService import getFormattedData
+from src.services.krakenDataService import get_formatted_data
 
 
 class Model:
@@ -97,7 +97,7 @@ def run():
     asset = 'ETHEUR'
     interval = '60'
 
-    df = getFormattedData(asset, interval)
+    df = get_formatted_data(asset, interval)
     df.plot('timestamp', 'volume')
     plt.title('timestamp vs volume')
     plt.show()

@@ -7,9 +7,9 @@ from src.services.krakenTradeService import get_last_price
 from src.services.transactionService import update_to_complete_transaction
 
 
-def getLastTradeEventByTypeAndAsset(asset, typeOfTrade):
-    print('Get las event by type', typeOfTrade, 'and asset:', asset)
-    result = get_recent_event_by_type_and_asset(asset, typeOfTrade)
+def get_last_trade_event_by_type_and_asset(asset, type_of_trade):
+    print('Get last event by type', type_of_trade, 'and asset:', asset)
+    result = get_recent_event_by_type_and_asset(asset, type_of_trade)
     most_recent = None
     for item in result:
         if not most_recent:
@@ -20,7 +20,7 @@ def getLastTradeEventByTypeAndAsset(asset, typeOfTrade):
     return most_recent
 
 
-def generateTradeEventDTO(type_of_trade, volume_to_buy, asset, interval, price):
+def generate_trade_event_dto(type_of_trade, volume_to_buy, asset, interval, price):
     return {
         'time': datetime.strftime(datetime.now(), DATE_UTC_TZ_STR),
         'measurement': 'tradeEvent',
@@ -36,11 +36,11 @@ def generateTradeEventDTO(type_of_trade, volume_to_buy, asset, interval, price):
     }
 
 
-def addTradeEvent(type_of_trade, volume_to_buy, asset, interval, currency, transaction_id):
+def add_trade_event(type_of_trade, volume_to_buy, asset, interval, currency, transaction_id):
     success = False
     price = get_last_price(asset, currency)
-    point = generateTradeEventDTO(type_of_trade=type_of_trade, volume_to_buy=volume_to_buy,
-                                  asset=asset, interval=interval, price=price)
+    point = generate_trade_event_dto(type_of_trade=type_of_trade, volume_to_buy=volume_to_buy,
+                                     asset=asset, interval=interval, price=price)
 
     if not transaction_id:
         transaction_id = insert_transaction_event(type_of_trade, point)

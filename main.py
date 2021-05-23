@@ -14,7 +14,7 @@ from src.engine.analysisEngineHelper import get_realtime_processed_asset
 from src.helpers.params import __DEBUG, __OFFLINE, __ENVIRONMENT
 from src.data.marketEventUtils import insert_market_event
 from src.data.missionMongoUtils import get_all_missions
-from src.services.krakenDataService import getFormattedData, get_stocks_indicators
+from src.services.krakenDataService import get_formatted_data, get_stocks_indicators
 import re
 
 
@@ -26,8 +26,8 @@ def get_last_n_percentage(df, nbr_percentage) -> DataFrame:
     return tmp_df
 
 
-def run_bot(asset, currency, interval, length_assets):
-    df: DataFrame = getFormattedData(asset + currency, str(interval))
+def run_bot(asset: str, currency: str, interval: int, length_assets: int):
+    df: DataFrame = get_formatted_data(asset + currency, str(interval))
 
     if __OFFLINE:
         print('DEVELOPMENT MODE')
@@ -38,7 +38,6 @@ def run_bot(asset, currency, interval, length_assets):
         df = read_csv(path_csv)
 
     last_market_event = get_realtime_processed_asset('ALGO')
-    # last_market_event['timestamp'] = int(last_market_event['timestamp'])
     if last_market_event:
         df_last_timestamp = df.tail(1)['timestamp'].iloc[-1]
         if df_last_timestamp < last_market_event['timestamp']:
@@ -142,10 +141,13 @@ def bot_main_process():
                 print('[ASSETS TO QUERY] :', assets)
                 for asset in assets:
                     currency: str = 'EUR'
-                    startBotAnalysis = datetime.now()
-                    run_bot(asset, currency, interval, len(assets))
-                    endBotAnalysis = datetime.now()
-                    time_diff: int = int((endBotAnalysis - startBotAnalysis).total_seconds() * 1000)
+                    start_bot_analysis = datetime.now()
+                    run_bot(asset=asset,
+                            currency=currency,
+                            interval=int(interval),
+                            length_assets=len(mission['context']['assets']))
+                    end_bot_analysis = datetime.now()
+                    time_diff: int = int((end_bot_analysis - start_bot_analysis).total_seconds() * 1000)
                     print('Executed bot analysis in', time_diff, 'ms')
 
                 time_to_sleep: float = interval * 10

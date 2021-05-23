@@ -16,12 +16,15 @@ def define_volume(df: pd.DataFrame, type_of_trade: str, nbr_asset_on_trade: floa
     print('\n[VOLUME TRADING QUANTITY]')
     print('Type of trade:', type_of_trade)
     volume_to_buy: float
+
     try:
         balance_euro: float = float(get_account_balance()['result']['ZEUR'])
-        money_available: float = (balance_euro / float(nbr_asset_on_trade)) * MAXIMUM_PERCENTAGE_EUR
-        volume_to_buy: float = money_available / df['close'][index_max]
     except Exception as err:
         raise err
+
+    money_available: float = (balance_euro / float(nbr_asset_on_trade)) * MAXIMUM_PERCENTAGE_EUR
+    volume_to_buy = money_available / df['close'][index_max]
+
     return volume_to_buy
 
 

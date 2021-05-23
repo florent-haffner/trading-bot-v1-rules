@@ -5,7 +5,7 @@ from src.data.tradeEventUtils import insert_trade_event
 from src.data.transactionMongoUtils import update_transaction_by_id, get_all_transactions_since_midnight
 from src.helpers.dateHelper import DATE_STR
 from src.services.krakenTradeService import get_last_price
-from src.services.tradeEventService import generateTradeEventDTO
+from src.services.tradeEventService import generate_trade_event_dto
 from src.services.transactionService import update_to_complete_transaction
 
 
@@ -25,6 +25,7 @@ def close_everything():
 
     nbr_transactions_not_closed = len(transactions_to_closed)
     print('Nbr of transactions not closed', nbr_transactions_not_closed)
+
     if nbr_transactions_not_closed == 0:
         print('No transactions to closed')
         return
@@ -33,22 +34,24 @@ def close_everything():
     for transaction in transactions_to_closed:
         transactionId = transaction['_id']
         time = datetime.strptime(transaction['buy']['time'], DATE_STR)
+
         if time < tree_hours_before:
             print('Closing', transactionId)
             last_price = get_last_price(transaction['buy']['fields']['asset'], 'EUR')
             volume = transaction['buy']['fields']['quantity']
-            # print('volume', volume, 'price', last_price, 'in euro:', last_price * volume)
             type_of_trade = 'sell'
-            point = generateTradeEventDTO(type_of_trade=type_of_trade,
-                                          volume_to_buy=volume,
-                                          asset=transaction['buy']['fields']['asset'],
-                                          interval=interval,
-                                          price=last_price)
+
+            point = generate_trade_event_dto(type_of_trade=type_of_trade,
+                                             volume_to_buy=volume,
+                                             asset=transaction['buy']['fields']['asset'],
+                                             interval=interval,
+                                             price=last_price)
 
             print('Updating', transactionId, 'to complete transaction')
             result = update_to_complete_transaction(_id=transactionId,
                                                     key=type_of_trade,
                                                     points=point)
+
             if result:
                 del point['time']
                 insert_trade_event([point])

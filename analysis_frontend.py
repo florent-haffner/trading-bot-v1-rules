@@ -91,7 +91,6 @@ def calculate_win_and_loss_per_mission(store_results: bool):
             print('\n[', asset, '] -> Calculating win/loss pet asset')
             # transactionFromAsset = list(getTransactionsByAsset(asset))
             transactionFromAsset = list(get_transaction_per_day_asset(asset))
-            print(transactionFromAsset)
             nbrTransaction, amount, beginningAmount = calculate_win_loss_per_transactions(transactionFromAsset)
 
             dto: Dict[str, Any] = generate_dto(asset, round(beginningAmount, 2), nbrTransaction, round(amount, 3))
@@ -162,4 +161,4 @@ def send_message(message):
 
 
 if __name__ == '__main__':
-    calculate_win_and_loss_per_mission(store_results=True)
+    calculate_win_and_loss_per_mission(store_results=False)

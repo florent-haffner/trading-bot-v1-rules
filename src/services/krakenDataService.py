@@ -1,4 +1,4 @@
-from typing import Any, Union, Dict
+from typing import Dict
 
 import pandas as pd
 from requests import get, Response
@@ -12,7 +12,7 @@ class RequestToKrakenError(Exception):
     super(Exception)
 
 
-def getDatasFromKraken(asset, interval) -> Dict:
+def get_data_from_kraken(asset: str, interval: str) -> Dict:
     """
     :param asset -> the pair of currency, ex : BTCEUR, ETHEUR, ALGOUSD
     :param interval -> mock interval in minutes (1, 5, 10, 60, 120, 360, 1440)
@@ -27,14 +27,14 @@ def getDatasFromKraken(asset, interval) -> Dict:
         raise err
 
 
-def getDataframe(apiResponse) -> pd.DataFrame:
+def get_dataframe(api_response: dict) -> pd.DataFrame:
     """
-    :param apiResponse -> datas from api
+    :param api_response -> datas from api
     :return pandas Dataframe object
     """
-    firstMapKey = list(apiResponse['result'].keys())[0]
+    firstMapKey = list(api_response['result'].keys())[0]
     schema = ['timestamp', 'open', 'high', 'low', 'close', 'vwap', 'volume', 'count']
-    dataframe: pd.DataFrame = pd.DataFrame(apiResponse['result'][firstMapKey], columns=schema)
+    dataframe: pd.DataFrame = pd.DataFrame(api_response['result'][firstMapKey], columns=schema)
     dataframe.sort_values(by=['timestamp'])
 
     dataframe['open'] = dataframe['open'].astype(float)
@@ -47,14 +47,17 @@ def getDataframe(apiResponse) -> pd.DataFrame:
     return dataframe
 
 
-def getFormattedData(asset, interval) -> pd.DataFrame:
+def get_formatted_data(asset, interval) -> pd.DataFrame:
     """
     Glue everything together
+    :param asset:
+    :param interval:
+    :return:
     """
     print('\n--------------------------------------------------\n',
           '[QUERY] - Kraken - ', asset + ' on ' + interval + 'min')
-    results: Dict = getDatasFromKraken(asset, interval)
-    return getDataframe(results)
+    results: Dict = get_data_from_kraken(asset, interval)
+    return get_dataframe(results)
 
 
 # """
@@ -83,7 +86,7 @@ def get_stocks_indicators(dataframe: pd.DataFrame) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    df = getFormattedData('BTCEUR', '60')
+    df = get_formatted_data('BTCEUR', '60')
     df.plot('timestamp', 'volume')
     # plt.show()
 

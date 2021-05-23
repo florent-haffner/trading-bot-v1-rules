@@ -8,7 +8,7 @@ from peakdetect import peakdetect
 
 from src.engine.analysisEngineHelper import define_volume
 from src.helpers.emailSenderHelper import send_email
-from src.services.tradeEventService import addTradeEvent, getLastTradeEventByTypeAndAsset
+from src.services.tradeEventService import add_trade_event, get_last_trade_event_by_type_and_asset
 from src.services.transactionService import get_transaction
 
 
@@ -100,12 +100,12 @@ class AnalysisEngine:
         transaction_id: str
         volume_to_buy, transaction_id = self.calculate_volume_to_buy(type_of_trade)
         if volume_to_buy:
-            success = addTradeEvent(type_of_trade=type_of_trade,
-                                    volume_to_buy=volume_to_buy,
-                                    asset=self.asset,
-                                    interval=self.interval,
-                                    currency=self.currency,
-                                    transaction_id=transaction_id)
+            success = add_trade_event(type_of_trade=type_of_trade,
+                                      volume_to_buy=volume_to_buy,
+                                      asset=self.asset,
+                                      interval=self.interval,
+                                      currency=self.currency,
+                                      transaction_id=transaction_id)
             if success:
                 print(type_of_trade.upper(), 'this', volume_to_buy, 'of', self.asset)
         else:
@@ -113,7 +113,8 @@ class AnalysisEngine:
 
     def calculate_volume_to_buy(self, type_of_trade: str) -> (float, str):
         if type_of_trade == 'buy':
-            previous_currency_trade = getLastTradeEventByTypeAndAsset(self.asset, type_of_trade)
+            previous_currency_trade = get_last_trade_event_by_type_and_asset(self.asset, type_of_trade)
+            print(self)
             # Ignore the previous trade if it has been fulfilled
             if previous_currency_trade:
                 transaction = get_transaction(previous_currency_trade['transactionId'])
@@ -132,7 +133,7 @@ class AnalysisEngine:
                 return volume, None
 
         if type_of_trade == 'sell':
-            previous_currency_trade = getLastTradeEventByTypeAndAsset(self.asset, 'buy')
+            previous_currency_trade = get_last_trade_event_by_type_and_asset(self.asset, 'buy')
             if previous_currency_trade:
                 transaction_id: str = previous_currency_trade['transactionId']
                 transaction = get_transaction(transaction_id)
