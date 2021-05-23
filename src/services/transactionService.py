@@ -1,9 +1,9 @@
-from src.data.transactionMongoUtils import getTransactionById, updateTransactionById, \
-    get_all_transactions_since_midnight_by_asset, get_complete_transaction_from_last_day_by_asset
+from src.data.transactionMongoUtils import get_transaction_by_id, update_transaction_by_id, \
+    get_all_transactions_since_last_week_by_asset, get_complete_transaction_from_last_day_by_asset
 
 
 def getTransaction(id):
-    return getTransactionById(id)
+    return get_transaction_by_id(id)
 
 
 def updateToCompleteTransaction(id, key, points):
@@ -13,14 +13,14 @@ def updateToCompleteTransaction(id, key, points):
             print('Document', id, 'already has been updated. Abort operation.')
             return False
     except KeyError:
-        updateTransactionById(id=id, key=key, value=points)
-        updateTransactionById(id=id, key='forced_closed', value=False)
+        update_transaction_by_id(_id=id, key=key, value=points)
+        update_transaction_by_id(_id=id, key='forced_closed', value=False)
         return
 
 
 def getAllUnclosedTransactionSinceMidnightByAsset(asset):
     to_return: list = []
-    results: list = get_all_transactions_since_midnight_by_asset(asset)
+    results: list = get_all_transactions_since_last_week_by_asset(asset)
     for item in results:
         item_keys_length = len(list(item.keys()))
         if item_keys_length < 3:

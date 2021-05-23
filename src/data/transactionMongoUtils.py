@@ -15,88 +15,72 @@ collection = db['tradeTransaction']
 __MODEL_VERSION: float = 1.0
 
 
-def getTransactionById(id):
-    print('[MONGODB] - [GET TRANSACTIONS BY ID] ->', id)
+def get_transaction_by_id(id: str):
+    """
+    [MONGODB] - [GET TRANSACTIONS BY ID] ->', id)
+    :param id
+    :return:
+    """
     return collection.find_one({"_id": ObjectId(id)})
 
 
-def insertTransactionEvent(key, data):
-    print('[MONGODB] - [NEW TRANSACTION] ->', data)
+def insert_transaction_event(key: str, data: dict):
+    """
+    [MONGODB] - [NEW TRANSACTION] ->', data)
+    :param key:
+    :param data:
+    :return:
+    """
     data['time'] = datetime.now().strftime(DATE_STR)
     data['version'] = __MODEL_VERSION
     transactionId = collection.insert_one({key: data})
     return transactionId.inserted_id
 
 
-def getAllTransaction():
-    print('[MONGODB] - [GET ALL TRANSACTIONS]')
+def get_all_transaction():
+    """
+    [MONGODB] - [GET ALL TRANSACTIONS]
+    :param: None
+    :return: mongodb cursor
+    """
     return collection.find({})
 
 
-def updateTransactionById(id, key, value):
-    print('[MONGODB] - [UPDATING TRANSACTION] ->', id)
+def update_transaction_by_id(_id: str, key: str, value: object):
+    """
+    [MONGODB] - [UPDATING TRANSACTION]
+    :param _id: str
+    :param key: object key (time, buy, sell, version, forced_closed)
+    :param value: the value to update
+    :return:
+    """
     values = {"$set": {key: value}}
     return collection.update_one(
-        filter=dict({'_id': ObjectId(id)}),
+        filter=dict({'_id': ObjectId(_id)}),
         update=values,
         upsert=False
     )
 
 
-def cleanTransaction():
-    print('[MONGODB] - [REMOVING ALL TRANSACTION]')
+def clean_transaction():
+    """
+    [MONGODB] - [REMOVING ALL TRANSACTION]
+    :return: None
+    """
     collection.delete_many({})
     print('Done. Current list of TRANSACTION:', list(collection.find({})))
 
 
-# TODO -> remove this if not needed
-"""
-def initEnvironment():
-    timeseries_buy = {
-        'measurement': 'tradeEvent',
-        'time': datetime.now().strftime(DATE_STR),
-        'tags': {
-            'typeOfTrade': 'buy',
-            'interval': '5'
-        },
-        'fields': {
-            'asset': 'ETH',
-            'quantity': 200,
-            'price': 200,
-            'acknowledge': False
-        }
-    }
-
-    transactions = list(getAllTransaction())
-    if not transactions:
-        insertTransactionEvent(
-            key=timeseries_buy['tags']['typeOfTrade'],
-            data=timeseries_buy)
-        transactions = list(getAllTransaction())
-    print(transactions)
-
-    transactionId = transactions[0]['_id']
-    timeseries_sell = {
-        'measurement': 'tradeEvent',
-        'time': datetime.now().strftime(DATE_STR),
-        'tags': {
-            'typeOfTrade': 'sell',
-            'interval': '5'
-        },
-        'fields': {
-            'asset': 'ETH',
-            'quantity': 200,
-            'price': 200,
-            'acknowledge': False
-        }
-    }
-    updateTransactionById(id=transactionId,
-                          key=timeseries_sell['tags']['typeOfTrade'],
-                          value=timeseries_sell)
-"""
+def get_all_transactions_since_midnight_by_asset():
+    """ Return all transaction since midnight for a specific asset """
+    last_week = datetime.combine(datetime.today() - timedelta(weeks=1), datetime.min.time())
+    return collection.find({
+        'buy.time': {'$gte': last_week.strftime(DATE_STR)},
+    })
 
 
-def get_all_transactions_since_midnight_by_asset(asset):
+
+def get_all_transactions_since_last_week_by_asset(asset):
     """ Return all transaction since midnight for a specific asset """
     previousDayFromMidnight = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
     return collection.find({
@@ -137,7 +121,7 @@ def get_complete_transaction_from_last_day_by_asset(asset):
 if __name__ == '__main__':
     # initEnvironment()
 
-    transactions = list(getAllTransaction())
+    transactions = list(get_all_transaction())
     print('nbr transaction', len(transactions))
 
     res = list(get_complete_transaction_from_the_last_24h_by_asset('ALGO'))

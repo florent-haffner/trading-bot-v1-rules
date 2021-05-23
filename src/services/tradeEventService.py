@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from src.data.tradeEventUtils import getRecentEventByTypeAndAsset, insertTradeEvent
-from src.data.transactionMongoUtils import insertTransactionEvent
+from src.data.transactionMongoUtils import insert_transaction_event
 from src.helpers.dateHelper import DATE_UTC_TZ_STR
 from src.services.krakenTradeService import getLastPrice
 from src.services.transactionService import updateToCompleteTransaction
@@ -43,7 +43,7 @@ def addTradeEvent(type_of_trade, volume_to_buy, asset, interval, currency, trans
                                   asset=asset, interval=interval, price=price)
 
     if not transaction_id:
-        transaction_id = insertTransactionEvent(type_of_trade, point)
+        transaction_id = insert_transaction_event(type_of_trade, point)
     point['fields']['transactionId'] = str(transaction_id)
 
     if type_of_trade == 'buy':

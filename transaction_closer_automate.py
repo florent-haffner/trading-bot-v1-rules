@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from src.data.missionMongoUtils import getAllMissions
 from src.data.tradeEventUtils import insertTradeEvent
-from src.data.transactionMongoUtils import getAllTransaction, updateTransactionById
+from src.data.transactionMongoUtils import update_transaction_by_id, get_all_transactions_since_midnight_by_asset
 from src.helpers.dateHelper import DATE_STR
 from src.services.krakenTradeService import getLastPrice
 from src.services.tradeEventService import generateTradeEventDTO
@@ -12,7 +12,7 @@ from src.services.transactionService import updateToCompleteTransaction
 def close_everything():
     missions = getAllMissions()
     interval = missions[0]['context']['interval']
-    transactions = list(getAllTransaction())
+    transactions = list(get_all_transactions_since_midnight_by_asset())
     print('nbr transaction', len(transactions))
 
     transactions_to_closed: list = []
@@ -54,7 +54,7 @@ def close_everything():
                 insertTradeEvent([point])
 
             # Finally update to make sure the transaction is closed
-            updateTransactionById(transactionId, 'forced_closed', True)
+            update_transaction_by_id(transactionId, 'forced_closed', True)
 
 
 if __name__ == '__main__':
