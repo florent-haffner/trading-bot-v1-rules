@@ -161,4 +161,4 @@ def send_message(message):
 
 
 if __name__ == '__main__':
-    calculate_win_and_loss_per_mission(store_results=False)
+    calculate_win_and_loss_per_mission(store_results=True)

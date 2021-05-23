@@ -18,7 +18,7 @@ Bot dependencies :
 
     conda create -n trading-bot python=3.8
 
-    conda activate trading-bot && pip3 install -r requirements.txt
+    conda activate trading-bot && pip3 install -r requirement.txt
 
 ## Launching services
 
