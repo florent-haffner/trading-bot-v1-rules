@@ -19,9 +19,12 @@ __WRITE_API = __INFLUX_CLIENT.write_api(write_options=SYNCHRONOUS)
 __QUERY_API = __INFLUX_CLIENT.query_api()
 
 
-
-def buildDTO(record):
-    result = {
+def build_dto(record: dict):
+    """
+    :param record: raw results of InfluxDB
+    :return: a properly formatted object to interact with
+    """
+    return {
         'time': record['_time'],
         'measurement': record['_measurement'],
         'typeOfTrade': record['typeOfTrade'],
@@ -30,15 +33,20 @@ def buildDTO(record):
         'quantity': record['quantity'],
         'transactionId': record['transactionId']
     }
-    return result
 
 
-def getRecentEventByTypeAndAsset(asset, typeOfTrade):
+def get_recent_event_by_type_and_asset(asset: str, type_of_trade: str):
+    """
+    [INFLUXDB], querying the last recent tradeEvents
+    :param asset:
+    :param type_of_trade:
+    :return: a list of properly formatted objects
+    """
     query = f"""
         from (bucket:"{__CURRENT_BUCKET}")
         |> range(start: -1d)
         |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
-        |> filter(fn: (r) => r.typeOfTrade == "{typeOfTrade}")
+        |> filter(fn: (r) => r.typeOfTrade == "{type_of_trade}")
         |> pivot(
             rowKey: ["_time"],
             columnKey: ["_field"],
@@ -50,13 +58,16 @@ def getRecentEventByTypeAndAsset(asset, typeOfTrade):
     results = []
     for table in request_result:
         for record in table.records:
-            result = buildDTO(record)
+            result = build_dto(record)
             results.append(result)
-    print('[INFLUXDB], querying the last recent tradeEvents ->', asset, typeOfTrade, '\n', results)
+    print('[INFLUXDB], querying the last recent tradeEvents ->', asset, type_of_trade, '\n', results)
     return results
 
 
-def countAllEvents():
+def count_all_events_from_last_seven_days():
+    """
+    :return: The number of events from now until 1 week ago
+    """
     print('[INFLUXDB], count event from the last seven days.')
     query = f"""
         from (bucket:"{__CURRENT_BUCKET}")
@@ -67,7 +78,6 @@ def countAllEvents():
                 valueColumn: "_value"
             )
     """
-
     countEvents = 0
     request_result = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
     for table in request_result:
@@ -76,8 +86,10 @@ def countAllEvents():
     return countEvents
 
 
-def getAllEvents():
-    print('[INFLUXDB], getAllEvents from the last two days.')
+def get_all_trade_events():
+    """
+    :return: all events from the last two days.
+    """
     query = f"""
         from (bucket:"{__CURRENT_BUCKET}")
             |> range(start: -2d)
@@ -94,7 +106,7 @@ def getAllEvents():
         if len(table.records) > 1:
             for record in table.records:
                 try:
-                    dto = buildDTO(record)
+                    dto = build_dto(record)
                     results.append(dto)
                 except KeyError:
                     return []
@@ -102,20 +114,31 @@ def getAllEvents():
     return results
 
 
-def insertTradeEvent(event):
+def insert_trade_event(event: dict):
+    """
+    Writing a new event
+    :param event: dictionary to store
+    :return:
+    """
     print('[INFLUXDB] writing new tradeEvent\n', event)
     __WRITE_API.write(__CURRENT_BUCKET, __INFLUXDB_CURRENT_ORG, event)
 
 
-def cleanTradeEvents():
+def clean_trade_events():
+    """
+    Clean the current bucket
+    :return: None
+    """
     print('\nRemoving everything')
     delete_api = __INFLUX_CLIENT.delete_api()
     delete_api.delete('1970-01-01T00:00:00Z', datetime.today().strftime(DATE_STR),
                       '_measurement=' + __MEASUREMENT_NAME,
                       bucket=__CURRENT_BUCKET, org=__INFLUXDB_CURRENT_ORG)
-    print('Results', getAllEvents())
+    print('Results', get_all_trade_events())
 
 
+# TODO -> not sure it's still useful
+"""
 def initEnvironment():
     from time import sleep
     print('INIT ENV - test and documentation purpose\n')
@@ -163,13 +186,14 @@ def initEnvironment():
     countAllEvents()
     getRecentEventByTypeAndAsset(asset='GRT', typeOfTrade='buy')
 
-    cleanTradeEvents()
+    clean_trade_events()
+"""
 
 
 if __name__ == "__main__":
     # initEnvironment()
 
-    getRecentEventByTypeAndAsset('GRT', 'buy')
-    getAllEvents()
+    get_recent_event_by_type_and_asset('GRT', 'buy')
+    get_all_trade_events()
 
-    # cleanTradeEvents()
+    # clean_trade_events()

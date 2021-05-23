@@ -11,10 +11,8 @@ from src.helpers.dateHelper import SIMPLE_DATE_STR
 from src.helpers.params import MAXIMUM_FEES
 from src.data.analysisMongoUtils import create_domain_object, insert_analysis
 from src.secret.SECRET_CONSTANT import __TELEGRAM_APP_ID, __TELEGRAM_APP_HASH, __TELEGRAM_PHONE_NBR
-from src.data.missionMongoUtils import getAllMissions
-from src.data.transactionMongoUtils import get_transactions_by_asset
-from src.services.transactionService import getTransactionPerDayAsset, \
-    get_complete_transaction_from_last_hours_per_asset
+from src.data.missionMongoUtils import get_all_missions
+from src.services.transactionService import get_transaction_per_day_asset
 
 
 def calculate_win_loss_per_transactions(transactions):
@@ -53,7 +51,7 @@ def calculate_win_loss_per_transactions(transactions):
     return len(transactions), totalAmount, beginningAmount
 
 
-# TODO -> not sure still usefull
+# TODO -> not sure still useful
 """
 def get_all_transactions():
     print('\n[Getting all transaction]\n')
@@ -68,7 +66,7 @@ def get_all_transactions():
 """
 
 
-# TODO -> not sure still usefull
+# TODO -> not sure still useful
 """
 def get_all_transaction_per_day():
     print('\n[Getting all transaction per day]\n')
@@ -86,12 +84,12 @@ def get_all_transaction_per_day():
 def calculate_win_and_loss_per_mission(store_results: bool):
     print('\n[CALCULATING WIN/LOSS]\n')
     results: List = []
-    missions = list(getAllMissions())
+    missions = list(get_all_missions())
     for mission in missions:
         for asset in mission['context']['assets']:
             print('\n[', asset, '] -> Calculating win/loss pet asset')
             # transactionFromAsset = list(getTransactionsByAsset(asset))
-            transactionFromAsset = list(getTransactionPerDayAsset(asset))
+            transactionFromAsset = list(get_transaction_per_day_asset(asset))
             print(transactionFromAsset)
             nbrTransaction, amount, beginningAmount = calculate_win_loss_per_transactions(transactionFromAsset)
 
@@ -141,7 +139,9 @@ def generate_dto(asset, beginning_amount, nbr_transactions, result):
 
 def send_message(message):
     """
-        Use telegram to handle message send encrypted report to myself
+    Use telegram to handle message send encrypted report to myself
+    :param message: the message to send
+    :return: None
     """
     client = TelegramClient('session', __TELEGRAM_APP_ID, __TELEGRAM_APP_HASH)
     client.connect()

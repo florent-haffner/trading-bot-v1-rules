@@ -72,16 +72,21 @@ def clean_transaction():
 
 
 def get_all_transactions_since_midnight_by_asset():
-    """ Return all transaction since midnight for a specific asset """
+    """
+    Return all transaction since midnight for a specific asset
+    :return: None
+    """
     last_week = datetime.combine(datetime.today() - timedelta(weeks=1), datetime.min.time())
     return collection.find({
         'buy.time': {'$gte': last_week.strftime(DATE_STR)},
     })
 
 
-
 def get_all_transactions_since_last_week_by_asset(asset):
-    """ Return all transaction since midnight for a specific asset """
+    """
+    :param: asset to query
+    :return: cursor with all transaction since midnight for a specific asset
+    """
     previousDayFromMidnight = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
     return collection.find({
         'buy.fields.asset': asset,
@@ -90,14 +95,19 @@ def get_all_transactions_since_last_week_by_asset(asset):
 
 
 def get_transactions_by_asset(asset):
-    """ Return all transaction for a specific asset """
+    """
+    :param: asset to query
+    :return: all transaction for a specific asset
+    """
     return collection.find({
         'buy.fields.asset': asset,
     })
 
 
 def get_complete_transaction_from_the_last_24h_by_asset(asset):
-    """ Return all complete transaction the last 24 hours for a specific asset """
+    """
+    :param: asset to query
+    :return: all complete transaction the last 24 hours for a specific asset """
     now = datetime.now()
     twenty_four_hours_before = now - timedelta(days=1)
     return collection.find({
@@ -108,7 +118,10 @@ def get_complete_transaction_from_the_last_24h_by_asset(asset):
 
 
 def get_complete_transaction_from_last_day_by_asset(asset):
-    """ Return all complete transaction since midnight for a specific asset """
+    """
+    :param: asset to query
+    :return: all complete transaction since midnight for a specific asset
+    """
     previous_day_at_midnight = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
     this_day_at_midnight = datetime.combine(datetime.today(), datetime.min.time())
     return collection.find({

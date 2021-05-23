@@ -9,7 +9,7 @@ from peakdetect import peakdetect
 from src.engine.analysisEngineHelper import define_volume
 from src.helpers.emailSenderHelper import send_email
 from src.services.tradeEventService import addTradeEvent, getLastTradeEventByTypeAndAsset
-from src.services.transactionService import getTransaction
+from src.services.transactionService import get_transaction
 
 
 # TODO -> type this
@@ -116,7 +116,7 @@ class AnalysisEngine:
             previous_currency_trade = getLastTradeEventByTypeAndAsset(self.asset, type_of_trade)
             # Ignore the previous trade if it has been fulfilled
             if previous_currency_trade:
-                transaction = getTransaction(previous_currency_trade['transactionId'])
+                transaction = get_transaction(previous_currency_trade['transactionId'])
                 try:
                     if transaction['sell']:
                         previous_currency_trade = None
@@ -135,7 +135,7 @@ class AnalysisEngine:
             previous_currency_trade = getLastTradeEventByTypeAndAsset(self.asset, 'buy')
             if previous_currency_trade:
                 transaction_id: str = previous_currency_trade['transactionId']
-                transaction = getTransaction(transaction_id)
+                transaction = get_transaction(transaction_id)
                 return transaction['buy']['fields']['quantity'], transaction_id
 
         return None, None

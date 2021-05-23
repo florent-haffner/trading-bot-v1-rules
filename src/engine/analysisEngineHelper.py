@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Dict, Any
 import pandas as pd
 
-from src.data.marketEventUtils import getLastMinuteMarketEvents
+from src.data.marketEventUtils import get_last_minute_market_events
 from src.helpers.dateHelper import set_timezone
 from src.helpers.params import MAXIMUM_PERCENTAGE_EUR
 from src.services.krakenTradeService import getAccountBalance
@@ -55,7 +55,7 @@ def generate_realtime_processed_dto(data_object):
 
 
 def get_realtime_processed_asset(asset: str) -> object:
-    last_minutes: list = getLastMinuteMarketEvents(asset, 2)
+    last_minutes: list = get_last_minute_market_events(asset, 2)
     if last_minutes:
         last_minutes.pop()
 

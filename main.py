@@ -12,8 +12,8 @@ from websocket import create_connection
 from src.engine.analysisEngine import AnalysisEngine
 from src.engine.analysisEngineHelper import get_realtime_processed_asset
 from src.helpers.params import __DEBUG, __OFFLINE, __ENVIRONMENT
-from src.data.marketEventUtils import insertMarketEvent
-from src.data.missionMongoUtils import getAllMissions
+from src.data.marketEventUtils import insert_market_event
+from src.data.missionMongoUtils import get_all_missions
 from src.services.krakenDataService import getFormattedData, get_stocks_indicators
 import re
 
@@ -56,10 +56,10 @@ def run_bot(asset, currency, interval, length_assets):
 def bot_realtime_child_process():
     def handle_market_event(event):
         dto = generate_dto(event)
-        insertMarketEvent([dto])
+        insert_market_event([dto])
 
     pairs: list = []
-    missions = getAllMissions()
+    missions = get_all_missions()
     for mission in missions:
         for asset in mission['context']['assets']:
             pair = asset + "/" + "EUR"
@@ -134,7 +134,7 @@ def bot_main_process():
     while True:
         try:
             startMissionQuery = datetime.now()
-            missions: list = list(getAllMissions())
+            missions: list = list(get_all_missions())
             endMissionQuery = datetime.now()
 
             time_diff: int = int((endMissionQuery - startMissionQuery).total_seconds() * 1000)

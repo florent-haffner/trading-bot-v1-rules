@@ -15,33 +15,39 @@ db = __MONGO_CLIENT[db_name]
 collection = db['mission']
 
 
-def createMission(data):
+def create_mission(data: dict):
     print('[MONGODB] - [NEW MISSION] ->', data)
     collection.insert_one(data)
 
 
-def getAllMissions():
+def get_all_missions():
     print('[MONGODB] - [GET ALL MISSIONS]')
     return collection.find({})
 
 
-def updateMission(id, updatedMission):
-    print('[MONGODB] - [UPDATE MISSION] ->', updatedMission)
+def update_mission(id: str, data: dict):
+    """
+    :param id: identifier
+    :param data: dictionary /w the knowledge
+    :return: None
+    """
     query = dict(_id=id)
-    values = {"$set": {"context": updatedMission}}
-
+    values = {"$set": {"context": data}}
     collection.update_one(query, values)
-    print('Updated', updatedMission)
+    print('Updated', id, 'with', data)
 
 
 def cleanMission():
-    print('[MONGODB] - [REMOVING ALL MISSIONS]')
+    """
+    [MONGODB] - [REMOVING ALL MISSIONS]
+    :return: None
+    """
     collection.delete_many({})
     print('Done. Current list of missions:', list(collection.find({})))
 
 
 if __name__ == '__main__':
-    missions = list(getAllMissions())
+    missions = list(get_all_missions())
     if not missions:
         missionData = {
             "context": {
@@ -52,8 +58,8 @@ if __name__ == '__main__':
                 ]
             }
         }
-        createMission(missionData)
-        missions = list(getAllMissions())
+        create_mission(missionData)
+        missions = list(get_all_missions())
 
     print(missions)
 
@@ -65,6 +71,6 @@ if __name__ == '__main__':
             "GRT", "LINK", "ALGO"
         ]
     }
-    updateMission(missionId, missionData)
+    update_mission(missionId, missionData)
 
-    print(list(getAllMissions()))
+    print(list(get_all_missions()))

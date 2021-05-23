@@ -1,15 +1,15 @@
 from datetime import datetime
 
-from src.data.tradeEventUtils import getRecentEventByTypeAndAsset, insertTradeEvent
+from src.data.tradeEventUtils import get_recent_event_by_type_and_asset, insert_trade_event
 from src.data.transactionMongoUtils import insert_transaction_event
 from src.helpers.dateHelper import DATE_UTC_TZ_STR
 from src.services.krakenTradeService import getLastPrice
-from src.services.transactionService import updateToCompleteTransaction
+from src.services.transactionService import update_to_complete_transaction
 
 
 def getLastTradeEventByTypeAndAsset(asset, typeOfTrade):
     print('Get las event by type', typeOfTrade, 'and asset:', asset)
-    result = getRecentEventByTypeAndAsset(asset, typeOfTrade)
+    result = get_recent_event_by_type_and_asset(asset, typeOfTrade)
     most_recent = None
     for item in result:
         if not most_recent:
@@ -49,17 +49,17 @@ def addTradeEvent(type_of_trade, volume_to_buy, asset, interval, currency, trans
     if type_of_trade == 'buy':
         # Adding new tradeEvent on InfluxDB
         del point['time']
-        insertTradeEvent([point])
+        insert_trade_event([point])
         success = True
 
     # Upgrading previous transaction on MongoDB
     if type_of_trade == 'sell':
         print('Updating', transaction_id, 'to complete transaction')
-        result = updateToCompleteTransaction(id=transaction_id,
-                                             key=type_of_trade,
-                                             points=point)
+        result = update_to_complete_transaction(_id=transaction_id,
+                                                key=type_of_trade,
+                                                points=point)
         if result:
             del point['time']
-            insertTradeEvent([point])
+            insert_trade_event([point])
             success = True
     return success

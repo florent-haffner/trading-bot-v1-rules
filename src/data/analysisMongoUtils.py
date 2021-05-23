@@ -18,7 +18,12 @@ db = __MONGO_CLIENT[db_name]
 collection = db['analysis']
 
 
-def create_domain_object(data, type_of_analysis):
+def create_domain_object(data: list, type_of_analysis: str):
+    """
+    :param data: the list of analysis
+    :param type_of_analysis: daily/weekly
+    :return: a dictionary to store on MongoDB
+    """
     return {
         "time": datetime.now().strftime(DATE_STR),
         "type": type_of_analysis,
@@ -27,52 +32,24 @@ def create_domain_object(data, type_of_analysis):
 
 
 def insert_analysis(data):
-    print('[MONGODB] - [NEW ANALYSIS] ->', data)
+    """
+    :param data: the analysis to store
+    :return: cursor
+    """
     collection.insert_one(data)
 
 
 def get_all_analysis():
-    print('[MONGODB] - [GET ALL ANALYSIS]')
+    """
+    :return: all the analysis known
+    """
     return collection.find({})
 
 
 def clean_analysis():
-    print('[MONGODB] - [REMOVING ALL ANALYSIS]')
+    """
+    Remove all the stored analysis
+    :return: None
+    """
     collection.delete_many({})
     print('Done. Current list of analysis:', list(collection.find({})))
-
-
-if __name__ == '__main__':
-    toStore = [
-      {
-        "asset": "GRT",
-        "beginning_amount": 0,
-        "nbr_transactions": 0,
-        "result": 0,
-        "percent": 0
-      },
-      {
-        "asset": "LINK",
-        "beginning_amount": 21.49,
-        "nbr_transactions": 3,
-        "result": 0.48,
-        "percent": 2.23
-      },
-      {
-        "asset": "ALGO",
-        "beginning_amount": 21.52,
-        "nbr_transactions": 16,
-        "result": 0.932,
-        "percent": 4.33
-      },
-      {
-        "asset": "total",
-        "beginning_amount": 43.01,
-        "nbr_transactions": 19,
-        "result": 3.283,
-        "percent": 7.63
-      }
-    ]
-    data = create_domain_object(toStore, 'daily')
-    insert_analysis(data)
-    print(list(get_all_analysis()))
