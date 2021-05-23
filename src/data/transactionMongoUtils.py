@@ -71,9 +71,8 @@ def clean_transaction():
     print('Done. Current list of TRANSACTION:', list(collection.find({})))
 
 
-def get_all_transactions_since_midnight_by_asset():
+def get_all_transactions_since_midnight():
     """
-    Return all transaction since midnight for a specific asset
     :return: None
     """
     last_week = datetime.combine(datetime.today() - timedelta(weeks=1), datetime.min.time())
@@ -140,4 +139,4 @@ if __name__ == '__main__':
     res = list(get_complete_transaction_from_the_last_24h_by_asset('ALGO'))
     print('nbr transaction', len(res))
 
-    # cleanTransaction()
+    # clean_transaction()

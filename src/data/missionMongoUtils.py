@@ -14,6 +14,8 @@ db_name = __MONGO_DB + '_' + __ENVIRONMENT
 db = __MONGO_CLIENT[db_name]
 collection = db['mission']
 
+__VERSION = 1.0
+
 
 def create_mission(data: dict):
     print('[MONGODB] - [NEW MISSION] ->', data)
@@ -50,6 +52,7 @@ if __name__ == '__main__':
     missions = list(get_all_missions())
     if not missions:
         missionData = {
+            "version": __VERSION,
             "context": {
                 "interval": 1,
                 "interval_unit": 'm',

@@ -54,8 +54,8 @@ def run_bot(asset, currency, interval, length_assets):
 
 
 def bot_realtime_child_process():
-    def handle_market_event(event):
-        dto = generate_dto(event)
+    def handle_market_event(ws_event: dict):
+        dto = generate_dto(ws_event)
         insert_market_event([dto])
 
     pairs: list = []
@@ -74,25 +74,27 @@ def bot_realtime_child_process():
     ws_query = json.dumps(query)
     print('WS query', ws_query, type(ws_query))
     websocket_data.send(str(ws_query))
+
     while True:
         res = websocket_data.recv()
         event = json.loads(res)
         try:
             event_key = event.keys()
-            print(event)
         except AttributeError:
             handle_market_event(event)
 
 
-def generate_dto(event) -> dict:
-    """ This function handle all the mock modeling and processing before storing it on InfluxDB """
-    # TODO -> not sure to keep side + orderType - remove here
-    # keys: list = ["price", "volume", "time", "side", "orderType"]
+def generate_dto(event: dict) -> dict:
+    """
+    This function handle all the mock modeling and processing before storing it on InfluxDB
+    :param event:
+    :return:
+    """
     keys: list = ["price", "volume", "time"]
 
-    def get_asset_from_pair(pair: str) -> str:
+    def get_asset_from_pair(asset_currency_pair: str) -> str:
         """ Handle messy 'pair' string then  return a clean string with asset """
-        regex: re = re.search('([A-Z])\w+', pair)
+        regex: re = re.search('([A-Z])\w+', asset_currency_pair)
         return regex.group(0)
 
     pair: str = event[len(event) - 1]
@@ -104,12 +106,6 @@ def generate_dto(event) -> dict:
             dto[keys[key]] = float(event[1][0][key])
         except ValueError:
             dto[keys[key]] = event[1][0][key]
-
-    # TODO -> not sure to keep side + orderType - remove also here
-    # side = dto['side']
-    # orderType = dto['orderType']
-    # del dto['side']
-    # del dto['orderType']
 
     __MEASUREMENT_NAME: str = "marketEvent"
     data_object: dict = {

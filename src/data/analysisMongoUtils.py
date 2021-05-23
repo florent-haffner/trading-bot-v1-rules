@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from bson import ObjectId
 from pymongo import MongoClient
 
 from src.helpers.dateHelper import DATE_STR
@@ -17,6 +18,8 @@ db_name = __MONGO_DB + '_' + __ENVIRONMENT
 db = __MONGO_CLIENT[db_name]
 collection = db['analysis']
 
+__VERSION = 1.0
+
 
 def create_domain_object(data: list, type_of_analysis: str):
     """
@@ -26,6 +29,7 @@ def create_domain_object(data: list, type_of_analysis: str):
     """
     return {
         "time": datetime.now().strftime(DATE_STR),
+        "version": __VERSION,
         "type": type_of_analysis,
         "analysis": data
     }
@@ -44,6 +48,22 @@ def get_all_analysis():
     :return: all the analysis known
     """
     return collection.find({})
+
+
+def update_analysis_by_id(_id: str, key: str, value: object):
+    """
+    [MONGODB] - [UPDATING ANALYSIS]
+    :param _id: str
+    :param key: object key -> version, type, analysis array
+    :param value: the value to update
+    :return:
+    """
+    values = {"$set": {key: value}}
+    return collection.update_one(
+        filter=dict({'_id': ObjectId(_id)}),
+        update=values,
+        upsert=False
+    )
 
 
 def clean_analysis():

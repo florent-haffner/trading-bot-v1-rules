@@ -96,7 +96,7 @@ def get_last_minute_market_events(asset: str, length: int):
     return output_results
 
 
-def insert_market_event(event: dict):
+def insert_market_event(event: list):
     """
     :param event: the data to write
     :return:

@@ -114,7 +114,7 @@ def get_all_trade_events():
     return results
 
 
-def insert_trade_event(event: dict):
+def insert_trade_event(event: list):
     """
     Writing a new event
     :param event: dictionary to store
