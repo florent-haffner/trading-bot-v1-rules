@@ -5,7 +5,7 @@ import pandas as pd
 from src.data.marketEventUtils import get_last_minute_market_events
 from src.helpers.dateHelper import set_timezone
 from src.helpers.params import MAXIMUM_PERCENTAGE_EUR
-from src.services.krakenTradeService import getAccountBalance
+from src.services.krakenTradeService import get_account_balance
 
 
 class NothingToTrade(Exception):
@@ -17,7 +17,7 @@ def define_volume(df: pd.DataFrame, type_of_trade: str, nbr_asset_on_trade: floa
     print('Type of trade:', type_of_trade)
     volume_to_buy: float
     try:
-        balance_euro: float = float(getAccountBalance()['result']['ZEUR'])
+        balance_euro: float = float(get_account_balance()['result']['ZEUR'])
         money_available: float = (balance_euro / float(nbr_asset_on_trade)) * MAXIMUM_PERCENTAGE_EUR
         volume_to_buy: float = money_available / df['close'][index_max]
     except Exception as err:

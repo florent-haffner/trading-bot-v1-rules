@@ -4,7 +4,7 @@ from src.data.missionMongoUtils import get_all_missions
 from src.data.tradeEventUtils import insert_trade_event
 from src.data.transactionMongoUtils import update_transaction_by_id, get_all_transactions_since_midnight
 from src.helpers.dateHelper import DATE_STR
-from src.services.krakenTradeService import getLastPrice
+from src.services.krakenTradeService import get_last_price
 from src.services.tradeEventService import generateTradeEventDTO
 from src.services.transactionService import update_to_complete_transaction
 
@@ -35,7 +35,7 @@ def close_everything():
         time = datetime.strptime(transaction['buy']['time'], DATE_STR)
         if time < tree_hours_before:
             print('Closing', transactionId)
-            last_price = getLastPrice(transaction['buy']['fields']['asset'], 'EUR')
+            last_price = get_last_price(transaction['buy']['fields']['asset'], 'EUR')
             volume = transaction['buy']['fields']['quantity']
             # print('volume', volume, 'price', last_price, 'in euro:', last_price * volume)
             type_of_trade = 'sell'

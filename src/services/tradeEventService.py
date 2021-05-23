@@ -3,7 +3,7 @@ from datetime import datetime
 from src.data.tradeEventUtils import get_recent_event_by_type_and_asset, insert_trade_event
 from src.data.transactionMongoUtils import insert_transaction_event
 from src.helpers.dateHelper import DATE_UTC_TZ_STR
-from src.services.krakenTradeService import getLastPrice
+from src.services.krakenTradeService import get_last_price
 from src.services.transactionService import update_to_complete_transaction
 
 
@@ -38,7 +38,7 @@ def generateTradeEventDTO(type_of_trade, volume_to_buy, asset, interval, price):
 
 def addTradeEvent(type_of_trade, volume_to_buy, asset, interval, currency, transaction_id):
     success = False
-    price = getLastPrice(asset, currency)
+    price = get_last_price(asset, currency)
     point = generateTradeEventDTO(type_of_trade=type_of_trade, volume_to_buy=volume_to_buy,
                                   asset=asset, interval=interval, price=price)
 
