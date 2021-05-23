@@ -11,4 +11,4 @@ __ENVIRONMENT = __ENVIRONMENTS.DEV.value  # Get the value of the Env enum, chang
     COMPUTATION
 """
 MAXIMUM_PERCENTAGE_EUR: float = .99
-MAXIMUM_FEES: float = .05
+MAXIMUM_FEES: float = .1

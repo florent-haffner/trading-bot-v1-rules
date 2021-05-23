@@ -88,8 +88,9 @@ if __name__ == "__main__":
     print('init', tradeBalance)
 
     trade_type = 'buy'
-    orderBuy = create_new_order(asset + currency, trade_type, volume_to_buy)
-    print(trade_type, orderBuy)
+    order_buy = create_new_order(asset + currency, trade_type, volume_to_buy)
+    price = get_last_price(asset, currency)
+    print(trade_type, order_buy, '@', price)
 
     wait_time = 10
     print('Wait for', wait_time, 's')
@@ -100,7 +101,8 @@ if __name__ == "__main__":
 
     trade_type = 'sell'
     order_sell = create_new_order(asset + currency, trade_type, volume_to_buy)
-    print(trade_type, order_sell)
+    price = get_last_price(asset, currency)
+    print(trade_type, order_sell, '@', price)
 
     print('Wait for', wait_time, 's')
     sleep(wait_time)
