@@ -16,7 +16,7 @@ else:
 
 db_name = __MONGO_DB + '_' + __ENVIRONMENT
 db = __MONGO_CLIENT[db_name]
-collection = db['analysis']
+collection = db['transactions_analysis']
 
 __VERSION = 1.0
 

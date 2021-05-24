@@ -11,7 +11,7 @@ __MONGO_CLIENT = MongoClient(__MONGO_URI)
 
 db_name = __MONGO_DB + '_' + __ENVIRONMENT
 db = __MONGO_CLIENT[db_name]
-collection = db['tradeTransaction']
+collection = db['trade_transactions']
 __MODEL_VERSION: float = 1.0
 
 

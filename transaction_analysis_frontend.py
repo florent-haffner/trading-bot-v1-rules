@@ -9,7 +9,7 @@ from telethon.tl.types import InputPeerUser
 
 from src.helpers.dateHelper import SIMPLE_DATE_STR
 from src.helpers.params import MAXIMUM_FEES
-from src.data.analysisMongoUtils import create_domain_object, insert_analysis
+from src.data.transactionAnalysisMongoUtils import create_domain_object, insert_analysis
 from src.secret.SECRET_CONSTANT import __TELEGRAM_APP_ID, __TELEGRAM_APP_HASH, __TELEGRAM_PHONE_NBR
 from src.data.missionMongoUtils import get_all_missions
 from src.services.transactionService import get_complete_transaction_per_day_asset
