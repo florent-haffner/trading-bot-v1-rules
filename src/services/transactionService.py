@@ -28,6 +28,7 @@ def update_to_complete_transaction(_id: str, key: str, points: dict):
     except KeyError:
         update_transaction_by_id(_id=_id, key=key, value=points)
         update_transaction_by_id(_id=_id, key='forced_closed', value=False)
+        update_transaction_by_id(_id=_id, key='lastUpdate', value=datetime.now().strftime(DATE_STR))
         return
 
 
@@ -59,7 +60,8 @@ def insert_transaction_event(key: str, data: dict):
     :return:
     """
     dto = {
-        'time': datetime.now().strftime(DATE_STR),
+        'dateOfCreation': datetime.now().strftime(DATE_STR),
+        'lastUpdate': datetime.now().strftime(DATE_STR),
         'version': __MODEL_VERSION,
         key: data
     }

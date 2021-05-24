@@ -57,7 +57,8 @@ def close_everything(nbr_hours_before_closing_transaction: int):
                 insert_trade_event([point])
 
             # Finally update to make sure the transaction is closed
-            update_transaction_by_id(transactionId, 'forced_closed', True)
+            update_transaction_by_id(transactionId, key='forced_closed', value=True)
+            update_transaction_by_id(transactionId, key='lastUpdate', value=datetime.now().strftime(DATE_STR))
 
 
 if __name__ == '__main__':
