@@ -9,7 +9,7 @@ from src.services.tradeEventService import generate_trade_event_dto
 from src.services.transactionService import update_to_complete_transaction
 
 
-def close_everything():
+def close_everything(nbr_hours_before_closing_transaction: int):
     missions = get_all_missions()
     interval = missions[0]['context']['interval']
     transactions = list(get_all_transactions_since_midnight())
@@ -30,7 +30,7 @@ def close_everything():
         print('No transactions to closed')
         return
 
-    tree_hours_before = datetime.now() - timedelta(hours=3)
+    tree_hours_before = datetime.now() - timedelta(hours=nbr_hours_before_closing_transaction)
     for transaction in transactions_to_closed:
         transactionId = transaction['_id']
         time = datetime.strptime(transaction['buy']['time'], DATE_STR)
@@ -61,4 +61,4 @@ def close_everything():
 
 
 if __name__ == '__main__':
-    close_everything()
+    close_everything(nbr_hours_before_closing_transaction=2)
