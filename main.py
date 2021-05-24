@@ -82,7 +82,7 @@ def bot_main_process():
                     time_diff: int = int((end_bot_analysis - start_bot_analysis).total_seconds() * 1000)
                     print('Executed bot analysis in', time_diff, 'ms')
 
-                time_to_sleep: float = interval * 10
+                time_to_sleep: float = interval * 5
                 endPipeline = datetime.now()
                 time_diff: int = int((endPipeline - startMissionQuery).total_seconds() * 1000)
                 print('Executed full pipeline in', time_diff, 'ms')

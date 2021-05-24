@@ -21,7 +21,7 @@ def calculate_win_loss_per_transactions(transactions):
     nbr_positive_transactions = 0
     for transaction in transactions:
         type_of_trade = ['buy', 'sell']
-        print(transaction)
+        print(transaction['buy'], '->', transaction['sell'])
         transactionAmount = []
         for trade in type_of_trade:
             try:
@@ -53,21 +53,6 @@ def calculate_win_loss_per_transactions(transactions):
         totalAmount = totalAmount + amountPerTransaction
 
     return len(transactions), totalAmount, beginningAmount, nbr_positive_transactions
-
-
-# TODO -> not sure still useful
-"""
-def get_all_transactions():
-    print('\n[Getting all transaction]\n')
-    missions = list(getAllMissions())
-    transactions = {}
-    for mission in missions:
-        for asset in mission['context']['assets']:
-            transactionsPerDay = list(get_transactions_by_asset(asset))
-            print('Nbr of transaction', asset, ':', len(transactionsPerDay))
-            transactions[asset] = transactionsPerDay
-    return transactions
-"""
 
 
 # TODO -> not sure still useful
