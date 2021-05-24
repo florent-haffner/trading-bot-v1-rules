@@ -3,13 +3,15 @@ from datetime import datetime, timedelta
 from src.data.missionMongoUtils import get_all_missions
 from src.data.tradeEventUtils import insert_trade_event
 from src.data.transactionMongoUtils import update_transaction_by_id, get_all_transactions_since_midnight
-from src.helpers.dateHelper import DATE_STR
+from src.helpers.dateHelper import DATE_STR, DATE_UTC_TZ_STR
 from src.services.krakenTradeService import get_last_price
 from src.services.tradeEventService import generate_trade_event_dto
 from src.services.transactionService import update_to_complete_transaction
 
 
-def close_everything(nbr_hours_before_closing_transaction: int):
+def lambda_handler(event, context):
+    nbr_hours_before_closing_transaction: int
+    nbr_hours_before_closing_transaction = event['nbr_hour']
     missions = get_all_missions()
     interval = missions[0]['context']['interval']
     transactions = list(get_all_transactions_since_midnight())
@@ -33,7 +35,7 @@ def close_everything(nbr_hours_before_closing_transaction: int):
     tree_hours_before = datetime.now() - timedelta(hours=nbr_hours_before_closing_transaction)
     for transaction in transactions_to_closed:
         transactionId = transaction['_id']
-        time = datetime.strptime(transaction['buy']['time'], DATE_STR)
+        time = datetime.strptime(transaction['buy']['time'], DATE_UTC_TZ_STR)
 
         if time < tree_hours_before:
             print('Closing', transactionId)
@@ -48,11 +50,8 @@ def close_everything(nbr_hours_before_closing_transaction: int):
                                              price=last_price)
 
             print('Updating', transactionId, 'to complete transaction')
-            result = update_to_complete_transaction(_id=transactionId,
-                                                    key=type_of_trade,
-                                                    points=point)
-
-            if result:
+            transaction = update_to_complete_transaction(_id=transactionId, key=type_of_trade, points=point)
+            if transaction:
                 del point['time']
                 insert_trade_event([point])
 
@@ -62,4 +61,5 @@ def close_everything(nbr_hours_before_closing_transaction: int):
 
 
 if __name__ == '__main__':
-    close_everything(nbr_hours_before_closing_transaction=2)
+    event = {"nbr_hour": 2}
+    lambda_handler(event, {})
