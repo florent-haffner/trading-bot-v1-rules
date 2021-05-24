@@ -64,14 +64,14 @@ def get_last_price(asset: str, currency: str) -> float:
     :return: the last price in float
     """
     try:
-        combo = str(asset + currency).upper()
-        result = API.query_public(
+        results = API.query_public(
             'Ticker', {
-                'pair': combo,
+                'pair': str(asset + currency).upper(),
             })
-        if result:
-            output = result['result'][combo]['a'][0]
-            return float(output)
+        if results:
+            result_asset_key = list(results['result'].keys())[0]
+            output_price = results['result'][result_asset_key]['a'][0]
+            return float(output_price)
     except Exception as err:
         raise err
 

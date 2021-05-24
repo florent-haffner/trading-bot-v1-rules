@@ -1,28 +1,12 @@
 from datetime import datetime
-from typing import List
 
-import numpy as np
 import pandas as pd
-from numpy import mean
-from peakdetect import peakdetect
 
-from src.engine.analysisEngineHelper import define_quantity
+from src.engine.analysisEngineHelper import define_quantity, compute_mean_peaks
 from src.helpers.emailSenderHelper import send_email
 from src.services.krakenTradeService import get_last_price
 from src.services.tradeEventService import add_trade_event, get_last_trade_event_by_type_and_asset
 from src.services.transactionService import get_transaction
-
-
-# TODO -> type this
-def compute_mean_peaks(df: pd.DataFrame, margin: int):
-    peaks = peakdetect(df['close'], lookahead=margin)
-    higher_peaks = np.array(peaks[0])
-    lower_peaks = np.array(peaks[1])
-
-    last_event = df['close'][len(df) - 1]
-    high_mean: float = float(mean(higher_peaks[:, 1]))
-    low_mean: float = float(mean(lower_peaks[:, 1]))
-    return high_mean, low_mean, higher_peaks, lower_peaks, last_event
 
 
 class AnalysisEngine:
@@ -73,15 +57,13 @@ class AnalysisEngine:
 
     def make_decision(self):
         print('\n[DECISION MAKING]')
-        # attachments = [self.pathFigClose]
-        attachments: List = []
         try:
             print('Type of trade:', self.event_type)
             if self.event_type == 'buy':
-                self.generate_trade_event(self.event_type, attachments=attachments)
+                self.generate_trade_event(self.event_type)
 
             elif self.event_type == 'sell':
-                self.generate_trade_event(self.event_type, attachments=attachments)
+                self.generate_trade_event(self.event_type)
 
             else:
                 print('Trends are currently evolving, waiting...')
@@ -95,12 +77,12 @@ class AnalysisEngine:
         print('\n[END OF ANALYSIS] ->', self.asset)
         print('\nResume to follow next action', '\n------------------\n')
 
-    def generate_trade_event(self, type_of_trade: str, attachments: List):
+    def generate_trade_event(self, type_of_trade: str):
         print('Calculating volume')
         volume_to_buy: float
         transaction_id: str
-        price = get_last_price(self.asset, self.currency)
-        volume_to_buy, transaction_id = self.calculate_volume_to_buy(type_of_trade, price)
+        last_price = get_last_price(self.asset, self.currency)
+        volume_to_buy, transaction_id = self.calculate_volume_to_buy(type_of_trade, last_price)
         if volume_to_buy:
 
             success = add_trade_event(type_of_trade=type_of_trade,
@@ -109,7 +91,7 @@ class AnalysisEngine:
                                       interval=self.interval,
                                       currency=self.currency,
                                       transaction_id=transaction_id,
-                                      price=price)
+                                      price=last_price)
             if success:
                 print(type_of_trade.upper(), 'this', volume_to_buy, 'of', self.asset)
         else:
@@ -118,7 +100,6 @@ class AnalysisEngine:
     def calculate_volume_to_buy(self, type_of_trade: str, price: float) -> (float, str):
         if type_of_trade == 'buy':
             previous_currency_trade = get_last_trade_event_by_type_and_asset(self.asset, type_of_trade)
-            print(self)
             # Ignore the previous trade if it has been fulfilled
             if previous_currency_trade:
                 transaction = get_transaction(previous_currency_trade['transactionId'])

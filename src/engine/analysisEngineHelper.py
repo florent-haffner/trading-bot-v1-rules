@@ -1,9 +1,12 @@
 from datetime import datetime
 from typing import Dict, Any
+
+import numpy as np
 import pandas as pd
+from numpy import ndarray, mean
+from peakdetect import peakdetect
 
 from src.data.marketEventUtils import get_last_minute_market_events
-from src.helpers.dateHelper import set_timezone
 from src.helpers.params import MAXIMUM_PERCENTAGE_EUR
 from src.services.krakenTradeService import get_account_balance
 
@@ -55,15 +58,30 @@ def generate_realtime_processed_dto(data_object):
     return data_object
 
 
-def get_realtime_processed_asset(asset: str) -> object:
+def query_realtime_processed_by_asset(asset: str) -> object:
     last_minutes: list = get_last_minute_market_events(asset, 2)
     if last_minutes:
         last_minutes.pop()
-
         for res in last_minutes:
             res['timestamp'] = int(datetime.timestamp(res['time']))
         dto = generate_realtime_processed_dto(last_minutes[len(last_minutes) - 1])
         if dto['close'] and dto['volume']:
             return dto
-
     return None
+
+
+def compute_mean_peaks(df: pd.DataFrame, margin: int):
+    """
+    Handle the peak calculation to compute statistics over trend
+    :param df: input data
+    :param margin: the number of point it needs to calculate a peak
+    :return:
+    """
+    peaks = peakdetect(df['close'], lookahead=margin)
+    higher_peaks: ndarray = np.array(peaks[0])
+    lower_peaks: ndarray = np.array(peaks[1])
+
+    last_event: float = df['close'][len(df) - 1]
+    high_mean: float = float(mean(higher_peaks[:, 1]))
+    low_mean: float = float(mean(lower_peaks[:, 1]))
+    return high_mean, low_mean, higher_peaks, lower_peaks, last_event
