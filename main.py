@@ -68,8 +68,7 @@ def bot_main_process():
             print('Executed MongoDB in', time_diff, 'ms')
 
             for mission in missions:
-                # assets: list = mission['context']['assets']
-                assets: list = ['ETH']
+                assets: list = mission['context']['assets']
                 interval: int = mission['context']['interval']
                 print('[ASSETS TO QUERY] :', assets)
                 for asset in assets:
