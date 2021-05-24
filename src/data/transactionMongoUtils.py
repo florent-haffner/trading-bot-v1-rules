@@ -33,8 +33,8 @@ def insert_transaction_event(key: str, data: dict):
     """
     data['time'] = datetime.now().strftime(DATE_STR)
     data['version'] = __MODEL_VERSION
-    transactionId = collection.insert_one({key: data})
-    return transactionId.inserted_id
+    transaction_stored = collection.insert_one({key: data})
+    return transaction_stored.inserted_id
 
 
 def get_all_transaction():
@@ -75,25 +75,25 @@ def get_all_transactions_since_midnight():
     """
     :return: None
     """
-    last_week = datetime.combine(datetime.today() - timedelta(weeks=1), datetime.min.time())
+    last_week: datetime = datetime.combine(datetime.today() - timedelta(weeks=1), datetime.min.time())
     return collection.find({
         'buy.time': {'$gte': last_week.strftime(DATE_STR)},
     })
 
 
-def get_all_transactions_since_last_week_by_asset(asset):
+def get_all_transactions_since_last_week_by_asset(asset: str):
     """
     :param: asset to query
     :return: cursor with all transaction since midnight for a specific asset
     """
-    previousDayFromMidnight = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
+    previousDayFromMidnight: datetime = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
     return collection.find({
         'buy.fields.asset': asset,
         'buy.time': {'$gte': previousDayFromMidnight.strftime(DATE_STR)},
     })
 
 
-def get_transactions_by_asset(asset):
+def get_transactions_by_asset(asset: str):
     """
     :param: asset to query
     :return: all transaction for a specific asset
@@ -103,12 +103,12 @@ def get_transactions_by_asset(asset):
     })
 
 
-def get_complete_transaction_from_the_last_24h_by_asset(asset):
+def get_complete_transaction_from_the_last_24h_by_asset(asset: str):
     """
     :param: asset to query
     :return: all complete transaction the last 24 hours for a specific asset """
-    now = datetime.now()
-    twenty_four_hours_before = now - timedelta(days=1)
+    now: datetime = datetime.now()
+    twenty_four_hours_before: datetime = now - timedelta(days=1)
     return collection.find({
         'buy.fields.asset': asset,
         'buy.time': {'$gte': twenty_four_hours_before.strftime(DATE_STR)},
@@ -116,13 +116,13 @@ def get_complete_transaction_from_the_last_24h_by_asset(asset):
     })
 
 
-def get_complete_transaction_from_last_day_by_asset(asset):
+def get_complete_transaction_from_last_day_by_asset(asset: str):
     """
     :param: asset to query
     :return: all complete transaction since midnight for a specific asset
     """
-    previous_day_at_midnight = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
-    this_day_at_midnight = datetime.combine(datetime.today(), datetime.min.time())
+    previous_day_at_midnight: datetime = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
+    this_day_at_midnight: datetime = datetime.combine(datetime.today(), datetime.min.time())
     return collection.find({
         'buy.fields.asset': asset,
         'buy.time': {'$gte': previous_day_at_midnight.strftime(DATE_STR)},

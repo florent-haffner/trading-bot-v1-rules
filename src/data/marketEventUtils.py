@@ -36,7 +36,9 @@ def build_dto(record: dict):
 
 def get_all_market_events():
     """
-    :return: all events from the last two days.
+    Get all realtime events
+    :param: None
+    :return: all realtime market events from the last two days.
     """
     query = f"""
         from (bucket:"{__CURRENT_BUCKET}")

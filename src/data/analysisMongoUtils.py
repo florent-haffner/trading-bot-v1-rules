@@ -35,7 +35,7 @@ def create_domain_object(data: list, type_of_analysis: str):
     }
 
 
-def insert_analysis(data):
+def insert_analysis(data: dict):
     """
     :param data: the analysis to store
     :return: cursor

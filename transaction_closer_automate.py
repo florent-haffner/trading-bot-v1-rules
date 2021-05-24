@@ -42,7 +42,7 @@ def close_everything():
             type_of_trade = 'sell'
 
             point = generate_trade_event_dto(type_of_trade=type_of_trade,
-                                             volume_to_buy=volume,
+                                             quantity=volume,
                                              asset=transaction['buy']['fields']['asset'],
                                              interval=interval,
                                              price=last_price)

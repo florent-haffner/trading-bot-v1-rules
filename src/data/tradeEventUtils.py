@@ -88,7 +88,9 @@ def count_all_events_from_last_seven_days():
 
 def get_all_trade_events():
     """
-    :return: all events from the last two days.
+    Get all trade events
+    :param: None
+    :return: all trade market events from the last two days.
     """
     query = f"""
         from (bucket:"{__CURRENT_BUCKET}")

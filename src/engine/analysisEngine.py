@@ -21,7 +21,7 @@ class AnalysisEngine:
         self.index_size: int = len(self.df)
 
         self.detect_short_time_trend()
-        self.make_decision()
+        self.decision_wrapper()
 
     def detect_short_time_trend(self):
         print(self.asset, '- Short time detection')
@@ -55,16 +55,15 @@ class AnalysisEngine:
         else:
             self.event_type = 'wait'
 
-    def make_decision(self):
+    def decision_wrapper(self):
         print('\n[DECISION MAKING]')
         try:
             print('Type of trade:', self.event_type)
             if self.event_type == 'buy':
-                self.generate_trade_event(self.event_type)
+                self.check_volume_to_buy_then_make_decision(self.event_type)
 
             elif self.event_type == 'sell':
-                self.generate_trade_event(self.event_type)
-
+                self.check_volume_to_buy_then_make_decision(self.event_type)
             else:
                 print('Trends are currently evolving, waiting...')
 
@@ -77,23 +76,21 @@ class AnalysisEngine:
         print('\n[END OF ANALYSIS] ->', self.asset)
         print('\nResume to follow next action', '\n------------------\n')
 
-    def generate_trade_event(self, type_of_trade: str):
+    def check_volume_to_buy_then_make_decision(self, type_of_trade: str):
         print('Calculating volume')
-        volume_to_buy: float
+        quantity: float
         transaction_id: str
         last_price = get_last_price(self.asset, self.currency)
-        volume_to_buy, transaction_id = self.calculate_volume_to_buy(type_of_trade, last_price)
-        if volume_to_buy:
-
+        quantity, transaction_id = self.calculate_volume_to_buy(type_of_trade, last_price)
+        if quantity:
             success = add_trade_event(type_of_trade=type_of_trade,
-                                      volume_to_buy=volume_to_buy,
+                                      quantity=quantity,
                                       asset=self.asset,
                                       interval=self.interval,
-                                      currency=self.currency,
                                       transaction_id=transaction_id,
                                       price=last_price)
             if success:
-                print(type_of_trade.upper(), 'this', volume_to_buy, 'of', self.asset)
+                print(type_of_trade.upper(), 'this', quantity, 'of', self.asset)
         else:
             print('Nothing to', type_of_trade)
 
@@ -111,9 +108,7 @@ class AnalysisEngine:
 
             # If there is no previous trade, define quantity
             if not previous_currency_trade:
-                quantity: float = define_quantity(type_of_trade=type_of_trade,
-                                                  nbr_asset_on_trade=self.length_assets,
-                                                  price=price)
+                quantity: float = define_quantity(nbr_asset_on_trade=self.length_assets, last_asset_price=price)
                 return quantity, None
 
         if type_of_trade == 'sell':
