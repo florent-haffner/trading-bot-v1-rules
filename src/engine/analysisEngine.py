@@ -94,7 +94,7 @@ class AnalysisEngine:
         else:
             print('Nothing to', type_of_trade)
 
-    def calculate_volume_to_buy(self, type_of_trade: str, price: float) -> (float, str):
+    def calculate_volume_to_buy(self, type_of_trade: str, last_price: float) -> (float, str):
         if type_of_trade == 'buy':
             previous_currency_trade = get_last_trade_event_by_type_and_asset(self.asset, type_of_trade)
             # Ignore the previous trade if it has been fulfilled
@@ -108,12 +108,13 @@ class AnalysisEngine:
 
             # If there is no previous trade, define quantity
             if not previous_currency_trade:
-                quantity: float = define_quantity(nbr_asset_on_trade=self.length_assets, last_asset_price=price)
+                quantity: float = define_quantity(nbr_asset_on_trade=self.length_assets, last_asset_price=last_price)
                 return quantity, None
 
         if type_of_trade == 'sell':
             previous_currency_trade = get_last_trade_event_by_type_and_asset(self.asset, 'buy')
-            if previous_currency_trade:
+            # if previous_currency_trade:  # TODO -> let's try if this helps make better results
+            if previous_currency_trade and last_price > previous_currency_trade['price']:
                 transaction_id: str = previous_currency_trade['transactionId']
                 transaction = get_transaction(transaction_id)
                 return transaction['buy']['fields']['quantity'], transaction_id
