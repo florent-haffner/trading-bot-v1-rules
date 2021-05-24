@@ -1,9 +1,8 @@
 from datetime import datetime
 
 from src.data.tradeEventUtils import get_recent_event_by_type_and_asset, insert_trade_event
-from src.data.transactionMongoUtils import insert_transaction_event
 from src.helpers.dateHelper import DATE_UTC_TZ_STR
-from src.services.transactionService import update_to_complete_transaction
+from src.services.transactionService import update_to_complete_transaction, insert_transaction_event
 
 
 def get_last_trade_event_by_type_and_asset(asset, type_of_trade):

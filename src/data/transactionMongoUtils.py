@@ -24,19 +24,6 @@ def get_transaction_by_id(id: str):
     return collection.find_one({"_id": ObjectId(id)})
 
 
-def insert_transaction_event(key: str, data: dict):
-    """
-    [MONGODB] - [NEW TRANSACTION] ->', data)
-    :param key:
-    :param data:
-    :return:
-    """
-    data['time'] = datetime.now().strftime(DATE_STR)
-    data['version'] = __MODEL_VERSION
-    transaction_stored = collection.insert_one({key: data})
-    return transaction_stored.inserted_id
-
-
 def get_all_transaction():
     """
     [MONGODB] - [GET ALL TRANSACTIONS]
@@ -128,6 +115,10 @@ def get_complete_transaction_from_last_day_by_asset(asset: str):
         'buy.time': {'$gte': previous_day_at_midnight.strftime(DATE_STR)},
         'sell.time': {'$lte': this_day_at_midnight.strftime(DATE_STR)},
     })
+
+
+def insert_transaction(data: dict):
+    return collection.insert_one(data)
 
 
 if __name__ == '__main__':

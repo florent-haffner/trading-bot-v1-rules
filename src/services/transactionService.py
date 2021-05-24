@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from src.data.transactionMongoUtils import get_transaction_by_id, update_transaction_by_id, \
-    get_complete_transaction_from_last_day_by_asset
+    get_complete_transaction_from_last_day_by_asset, __MODEL_VERSION, collection, insert_transaction
+from src.helpers.dateHelper import DATE_STR
 
 
 def get_transaction(_id: str):
@@ -46,3 +49,19 @@ def get_complete_transaction_from_last_hours_per_asset(asset):
 
 def get_complete_transaction_per_day_asset(asset):
     return get_complete_transaction_from_last_day_by_asset(asset)
+
+
+def insert_transaction_event(key: str, data: dict):
+    """
+    [MONGODB] - [NEW TRANSACTION] ->', data)
+    :param key: type of trade
+    :param data: the data stored on influxDB
+    :return:
+    """
+    dto = {
+        'time': datetime.now().strftime(DATE_STR),
+        'version': __MODEL_VERSION,
+        key: data
+    }
+    transaction_stored = insert_transaction(dto)
+    return transaction_stored.inserted_id
