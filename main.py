@@ -9,11 +9,17 @@ from pandas import DataFrame, read_csv
 
 from src.engine.analysisEngine import AnalysisEngine
 from src.engine.analysisEngineHelper import query_realtime_processed_by_asset
+from src.helpers.emailSenderHelper import send_email
 from src.helpers.params import __DEBUG, __OFFLINE, __ENVIRONMENT
 from src.data.missionMongoUtils import get_all_missions
 from src.services.krakenDataService import get_formatted_data, get_stocks_indicators
 
 from src.services.krakenRealtimeMarketService import bot_realtime_child_process
+
+
+class UnableToConnectMongoDBInstanceException(Exception):
+    """ Failed to connect to Mongo so raise an error """
+    super(Exception)
 
 
 def get_last_n_percentage(df, nbr_percentage) -> DataFrame:
@@ -59,6 +65,7 @@ def bot_main_process():
     sleep(1)
 
     while True:
+        nbr_mongo_try: int = 0
         try:
             startMissionQuery = datetime.now()
             missions: list = list(get_all_missions())
@@ -91,18 +98,28 @@ def bot_main_process():
                 sleep(time_to_sleep)
 
         except pymongo.errors.ServerSelectionTimeoutError:
+            nbr_mongo_try = nbr_mongo_try + 1
+            if nbr_mongo_try > 5:
+                raise UnableToConnectMongoDBInstanceException("Try to connect Mongo instance multiple times "
+                                                              "but unable to make a connection")
             sleep(10)
 
 
 def start_multiprocess_bot():
-    t1 = Process(target=bot_main_process)
-    t2 = Process(target=bot_realtime_child_process)
+    try:
+        t1 = Process(target=bot_main_process)
+        t2 = Process(target=bot_realtime_child_process)
 
-    t1.start()
-    t2.start()
+        t1.start()
+        t2.start()
 
-    t1.join()
-    t2.join()
+        t1.join()
+        t2.join()
+
+    except Exception as err:
+        print('[EXCEPTION] - CORE - sending email', err)
+        send_email('Exception', str(err), {})
+        raise err
 
 
 if __name__ == "__main__":

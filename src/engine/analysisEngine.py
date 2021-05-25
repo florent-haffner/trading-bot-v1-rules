@@ -68,7 +68,7 @@ class AnalysisEngine:
                 print('Trends are currently evolving, waiting...')
 
         except Exception as err:
-            print('[EXCEPTION] - sending email', err)
+            print('[EXCEPTION] - ANALYSIS ENGINE - sending email', err)
             send_email('Exception', str(err), {})
             if self.debug:
                 raise err
