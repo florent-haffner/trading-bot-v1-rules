@@ -1,5 +1,3 @@
-from typing import Dict
-
 import pandas as pd
 from requests import get, Response
 
@@ -12,7 +10,7 @@ class RequestToKrakenError(Exception):
     super(Exception)
 
 
-def get_data_from_kraken(asset: str, interval: str) -> Dict:
+def get_data_from_kraken(asset: str, interval: str) -> dict:
     """
     :param asset : the pair of currency -> BTCEUR, ETHEUR, ALGOUSD
     :param interval : mock interval in minutes (1, 5, 10, 60, 120, 360, 1440)
@@ -56,7 +54,7 @@ def get_formatted_data(asset, interval) -> pd.DataFrame:
     """
     print('\n--------------------------------------------------\n',
           '[QUERY] - Kraken - ', asset + ' on ' + interval + 'min')
-    results: Dict = get_data_from_kraken(asset, interval)
+    results: dict = get_data_from_kraken(asset, interval)
     return get_dataframe(results)
 
 

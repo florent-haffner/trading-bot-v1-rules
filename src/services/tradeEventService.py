@@ -2,6 +2,7 @@ from datetime import datetime
 
 from src.data.tradeEventUtils import get_recent_event_by_type_and_asset, insert_trade_event
 from src.helpers.dateHelper import DATE_UTC_TZ_STR
+from src.services.krakenPrivateTradeService import create_new_order
 from src.services.transactionService import update_to_complete_transaction, insert_transaction_event
 
 
@@ -47,7 +48,8 @@ def generate_trade_event_dto(type_of_trade, quantity, asset, interval, price):
     }
 
 
-def add_trade_event(type_of_trade, quantity, asset, interval, transaction_id, price):
+def add_trade_event(type_of_trade: str, quantity: float, asset: str,
+                    interval: int, transaction_id: str, price: float, currency: str):
     """
     Link everything together and add a transaction before storing the tradeEvent on InfluxDB
     :param type_of_trade: 
@@ -55,7 +57,8 @@ def add_trade_event(type_of_trade, quantity, asset, interval, transaction_id, pr
     :param asset: 
     :param interval: 
     :param transaction_id: 
-    :param price: 
+    :param price:
+    :param currency:
     :return: a bool to know if the transaction is a success
     """
     success = False
@@ -70,6 +73,7 @@ def add_trade_event(type_of_trade, quantity, asset, interval, transaction_id, pr
         # Adding new tradeEvent on InfluxDB
         del point['time']
         insert_trade_event([point])
+        create_new_order(asset + currency, type_of_trade, quantity)
         success = True
 
     # Upgrading previous transaction on MongoDB
@@ -81,5 +85,6 @@ def add_trade_event(type_of_trade, quantity, asset, interval, transaction_id, pr
         if result:
             del point['time']
             insert_trade_event([point])
+            create_new_order(asset + currency, type_of_trade, quantity)
             success = True
     return success

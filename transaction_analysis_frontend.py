@@ -1,5 +1,4 @@
 from tokenize import String
-from typing import Dict, Any, List
 from datetime import datetime
 from json import dumps
 
@@ -72,7 +71,7 @@ def get_all_transaction_per_day():
 
 def calculate_win_and_loss_per_mission(store_results: bool):
     print('\n[CALCULATING WIN/LOSS]\n')
-    results: List = []
+    results: list = []
     missions = list(get_all_missions())
     for mission in missions:
         for asset in mission['context']['assets']:
@@ -82,7 +81,7 @@ def calculate_win_and_loss_per_mission(store_results: bool):
             nbrTransaction, amount, beginningAmount, nbrPositiveTransactions = \
                 calculate_win_loss_per_transactions(transactionFromAsset)
 
-            dto: Dict[str, Any] = generate_dto(asset, round(beginningAmount, 2), nbrTransaction, nbrPositiveTransactions, round(amount, 3))
+            dto: dict = generate_dto(asset, round(beginningAmount, 2), nbrTransaction, nbrPositiveTransactions, round(amount, 3))
             print('Current analysis result', dto)
             results.append(dto)
 
@@ -98,11 +97,11 @@ def calculate_win_and_loss_per_mission(store_results: bool):
         nbrPositiveTransactionSum = nbrTransactionSum + res['nbr_positive_transactions']
         resultsSum = resultsSum + res['result']
 
-    dto: Dict[str, Any] = generate_dto(asset=asset,
-                                       beginning_amount=round(amountSum, 2),
-                                       nbr_transactions=nbrTransactionSum,
-                                       nbr_positive_transactions=nbrPositiveTransactionSum,
-                                       result=resultsSum)
+    dto: dict = generate_dto(asset=asset,
+                             beginning_amount=round(amountSum, 2),
+                             nbr_transactions=nbrTransactionSum,
+                             nbr_positive_transactions=nbrPositiveTransactionSum,
+                             result=resultsSum)
     results.append(dto)
 
     # Store mock on MongoDB

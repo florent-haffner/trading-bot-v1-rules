@@ -4,7 +4,7 @@ from src.data.missionMongoUtils import get_all_missions
 from src.data.tradeEventUtils import insert_trade_event
 from src.data.transactionMongoUtils import update_transaction_by_id, get_all_transactions_since_midnight
 from src.helpers.dateHelper import DATE_STR, DATE_UTC_TZ_STR
-from src.services.krakenPrivateTradeService import get_last_price
+from src.services.krakenPrivateTradeService import get_last_price, create_new_order
 from src.services.tradeEventService import generate_trade_event_dto
 from src.services.transactionService import update_to_complete_transaction
 
@@ -40,11 +40,11 @@ def lambda_handler(event, context):
         if time < tree_hours_before:
             print('Closing', transactionId)
             last_price = get_last_price(transaction['buy']['fields']['asset'], 'EUR')
-            volume = transaction['buy']['fields']['quantity']
+            quantity = transaction['buy']['fields']['quantity']
             type_of_trade = 'sell'
 
             point = generate_trade_event_dto(type_of_trade=type_of_trade,
-                                             quantity=volume,
+                                             quantity=quantity,
                                              asset=transaction['buy']['fields']['asset'],
                                              interval=interval,
                                              price=last_price)
@@ -54,6 +54,7 @@ def lambda_handler(event, context):
             if transaction:
                 del point['time']
                 insert_trade_event([point])
+                create_new_order(transaction['buy']['fields']['asset'] + 'EUR', type_of_trade, quantity)
 
             # Finally update to make sure the transaction is closed
             update_transaction_by_id(transactionId, key='forced_closed', value=True)

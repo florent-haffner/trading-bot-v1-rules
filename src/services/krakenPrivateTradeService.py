@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 from time import sleep
-from typing import Dict, Any
 
 import krakenex
 
@@ -15,7 +14,7 @@ current_file_absolute_path = os.path.dirname(os.path.realpath(__file__))
 API.load_key(current_file_absolute_path + '/../' + 'secret/kraken.key')
 
 
-def get_trade_balance(asset: str) -> Dict[str, Any]:
+def get_trade_balance(asset: str) -> dict:
     """
     :param asset -> BTC, ETH, GRT
     :return: a dictionary of the account balance based using the asset price and stuff
@@ -26,7 +25,7 @@ def get_trade_balance(asset: str) -> Dict[str, Any]:
         raise err
 
 
-def get_account_balance() -> Dict[str, Any]:
+def get_account_balance() -> dict:
     """
     :return: a JSON object of the current balance of the kraken account
     """
@@ -36,7 +35,7 @@ def get_account_balance() -> Dict[str, Any]:
         raise err
 
 
-def create_new_order(asset: str, type: str, quantity: float) -> Dict[str, Any]:
+def create_new_order(asset: str, type: str, quantity: float) -> dict:
     """
     :param asset ->  BTC, ETH, GRT
     :param type ->  buy, sell

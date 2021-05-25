@@ -88,7 +88,8 @@ class AnalysisEngine:
                                       asset=self.asset,
                                       interval=self.interval,
                                       transaction_id=transaction_id,
-                                      price=last_price)
+                                      price=last_price,
+                                      currency=self.currency)
             if success:
                 print(type_of_trade.upper(), 'this', quantity, 'of', self.asset)
         else:

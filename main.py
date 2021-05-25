@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 from multiprocessing import Process
 from time import sleep
-from typing import List
 
 import pymongo.errors
 from pandas import DataFrame, read_csv
@@ -35,7 +34,7 @@ def run_bot(asset: str, currency: str, interval: int, length_assets: int):
 
     if __OFFLINE:
         print('DEVELOPMENT MODE')
-        type_of_trade: List[str] = ['buy', 'sell']
+        type_of_trade: list = ['buy', 'sell']
         chosen_type: str = type_of_trade[0]
         path_csv: str = os.getcwd() + '/src/mock/mock-' + asset + '-' + chosen_type + '.csv'
         print('Get CSV from ', path_csv)
