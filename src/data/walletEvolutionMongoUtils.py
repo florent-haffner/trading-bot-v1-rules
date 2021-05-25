@@ -21,12 +21,12 @@ __VERSION = 1.0
 
 
 def create_wallet_evolution(data: dict):
-    print('[MONGODB] - [NEW MISSION] ->', data)
+    print('[MONGODB] - [NEW WALLET EVOLUTION] ->', data)
     return collection.insert_one(data)
 
 
 def get_all_wallet_evolution():
-    print('[MONGODB] - [GET ALL MISSIONS]')
+    print('[MONGODB] - [GET ALL WALLET EVOLUTION]')
     return collection.find({})
 
 
@@ -36,7 +36,7 @@ def clean_wallet_evolution():
     :return: None
     """
     collection.delete_many({})
-    print('Done. Current list of missions:', list(collection.find({})))
+    print('Done. Current list of evolutions:', list(collection.find({})))
 
 
 def generate_wallet_evolution_dto(event: dict, account_balance: float):
