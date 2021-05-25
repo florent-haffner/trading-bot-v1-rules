@@ -35,17 +35,20 @@ def get_account_balance() -> dict:
         raise err
 
 
-def create_new_order(asset: str, type: str, quantity: float) -> dict:
+def create_new_order(pair: str, type: str, quantity: float) -> dict:
     """
-    :param asset ->  BTC, ETH, GRT
+    :param pair ->  BTC, ETH, GRT
     :param type ->  buy, sell
     :param quantity -> calculated based on wallet balance
     :return: a JSON object of the trade transaction with order details and "txid"
     """
+    print('[KRAKEN TRADE PLATFORM]')
+    print('New trade on Kraken', 'type:', type, 'pair:', pair, 'quantity:', quantity)
+    print('-----------------------')
     try:
         return API.query_private(
             'AddOrder', {
-                'pair': asset,
+                'pair': pair,
                 'type': type,
                 'ordertype': 'market',
                 'oflags': 'fciq',
