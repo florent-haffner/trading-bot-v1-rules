@@ -126,8 +126,10 @@ if __name__ == '__main__':
 
     transactions = list(get_all_transaction())
     print('nbr transaction', len(transactions))
+    for transaction in transactions:
+        print(transaction)
 
-    res = list(get_complete_transaction_from_the_last_24h_by_asset('ALGO'))
-    print('nbr transaction', len(res))
+    # res = list(get_complete_transaction_from_the_last_24h_by_asset('ALGO'))
+    # print('nbr transaction', len(res))
 
     # clean_transaction()
