@@ -85,7 +85,6 @@ if __name__ == "__main__":
 
     accountBalance = get_account_balance()
     print('account balance', accountBalance)
-
     tradeBalance = get_trade_balance(asset)
     print('init', tradeBalance)
 
@@ -93,11 +92,8 @@ if __name__ == "__main__":
     order_buy = create_new_order(asset + currency, trade_type, volume_to_buy)
     price = get_last_price(asset, currency)
     print(trade_type, order_buy, '@', price)
-
-    wait_time = 10
-    print('Wait for', wait_time, 's')
-    sleep(wait_time)
-
+    accountBalance = get_account_balance()
+    print('account balance', accountBalance)
     tradeBalance = get_trade_balance(asset)
     print('with', asset, tradeBalance)
 
@@ -105,12 +101,7 @@ if __name__ == "__main__":
     order_sell = create_new_order(asset + currency, trade_type, volume_to_buy)
     price = get_last_price(asset, currency)
     print(trade_type, order_sell, '@', price)
-
-    print('Wait for', wait_time, 's')
-    sleep(wait_time)
-
     tradeBalance = get_trade_balance(asset)
     print('trade balance', tradeBalance)
-
     accountBalance = get_account_balance()
     print('account balance', accountBalance)

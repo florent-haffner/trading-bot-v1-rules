@@ -73,7 +73,8 @@ def add_trade_event(type_of_trade: str, quantity: float, asset: str,
         # Adding new tradeEvent on InfluxDB
         del point['time']
         insert_trade_event([point])
-        create_new_order(asset + currency, 'buy', quantity)
+        # # TODO -> Check if error ?
+        # res = create_new_order(asset + currency, 'buy', quantity)
         success = True
 
     # Upgrading previous transaction on MongoDB
@@ -85,6 +86,7 @@ def add_trade_event(type_of_trade: str, quantity: float, asset: str,
         if result:
             del point['time']
             insert_trade_event([point])
-            create_new_order(asset + currency, 'sell', quantity)
+            # # TODO -> Check if error ?
+            # res = create_new_order(asset + currency, 'sell', quantity)
             success = True
     return success
