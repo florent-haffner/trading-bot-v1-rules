@@ -12,7 +12,7 @@ from src.engine.analysisEngineHelper import query_realtime_processed_by_asset
 from src.helpers.emailSenderHelper import send_email
 from src.helpers.params import __DEBUG, __OFFLINE, __ENVIRONMENT
 from src.data.missionMongoUtils import get_all_missions
-from src.services.krakenDataService import get_formatted_data, get_stocks_indicators
+from src.services.krakenPublicDataService import get_formatted_data, get_stocks_indicators
 
 from src.services.krakenRealtimeMarketService import bot_realtime_child_process
 

@@ -6,7 +6,7 @@ from typing import Dict, Any
 import krakenex
 
 
-class TradeToKrakenError(Exception):
+class KrakenTradeError(Exception):
     super(Exception)
 
 

@@ -5,7 +5,6 @@ from pymongo import MongoClient
 from src.helpers.dateHelper import DATE_STR
 from src.helpers.params import __ENVIRONMENT
 from src.secret.SECRET_CONSTANT import __MONGO_HOST, __MONGO_USER, __MONGO_PASSWORD, __MONGO_URI, __MONGO_DB
-from src.services.krakenTradeService import get_account_balance
 
 __MONGO_CLIENT = None
 
@@ -23,7 +22,7 @@ __VERSION = 1.0
 
 def create_wallet_evolution(data: dict):
     print('[MONGODB] - [NEW MISSION] ->', data)
-    collection.insert_one(data)
+    return collection.insert_one(data)
 
 
 def get_all_wallet_evolution():
@@ -47,16 +46,3 @@ def generate_wallet_evolution_dto(event: dict, account_balance: float):
         "event": event,
         "account_balance": account_balance
     }
-
-
-if __name__ == '__main__':
-    evolutions = list(get_all_wallet_evolution())
-    print(evolutions)
-
-    event = {}
-    account_balance: float = float(get_account_balance()['result']['ZEUR'])
-    wallet_evolution = generate_wallet_evolution_dto(event, account_balance)
-    create_wallet_evolution(wallet_evolution)
-
-    evolutions = list(get_all_wallet_evolution())
-    print(evolutions)

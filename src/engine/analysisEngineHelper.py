@@ -7,7 +7,7 @@ from peakdetect import peakdetect
 
 from src.data.marketEventUtils import get_last_minute_market_events
 from src.helpers.params import MAXIMUM_PERCENTAGE_EUR
-from src.services.krakenTradeService import get_account_balance
+from src.services.krakenPrivateTradeService import get_account_balance
 
 
 class NothingToTrade(Exception):
