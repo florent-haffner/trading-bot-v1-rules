@@ -22,8 +22,7 @@ Bot dependencies :
 
 ## Launching services
 
-    sudo cp tradingBot.service /lib/systemd/system/tradingBot.service
-    sudo cp transactionCloserAutomate.service /lib/systemd/system/transactionCloserAutomate.service
+    sudo cp *.service /lib/systemd/system/
 
     systemctl start tradingBot && systemctl enable tradingBot
 

@@ -3,7 +3,7 @@ Description=Automate that generate transaction analysis for trading bot
 
 [Service]
 Type=simple
-ExecStart=/home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/src/lambda/transaction_analysis_frontend.py
+ExecStart=/home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/transaction_analysis_frontend.py
 Restart=always
 RestartSec=5s
 StartLimitBurst=20
