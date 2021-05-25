@@ -1,0 +1,12 @@
+[Unit]
+Description=Automate that generate wallet evolution for trading bot
+
+[Service]
+Type=simple
+ExecStart=/home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/src/services/walletEvolutionService.py
+Restart=always
+RestartSec=5s
+StartLimitBurst=20
+
+[Install]
+WantedBy=multi-user.target

@@ -1,9 +1,9 @@
 [Unit]
-Description=Automate for trading bot
+Description=Automate that close transaction for trading bot
 
 [Service]
 Type=simple
-ExecStart=/home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/transaction_closer_automate.py
+ExecStart=/home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/src/lambda/transaction_closer_automate.py
 Restart=always
 RestartSec=5s
 StartLimitBurst=20
