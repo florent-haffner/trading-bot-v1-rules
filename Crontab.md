@@ -19,5 +19,5 @@
     0 19 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/transaction_closer_automate.py
     0 21 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/transaction_closer_automate.py
     0 23 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/transaction_closer_automate.py
-    0 23 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python3 /home/ubuntu/trading-bot-interval/src/services/walletEvolutionService.py
+    0 23 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python3 /home/ubuntu/trading-bot-interval/walletEvolutionService.py
     0 23 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python3 /home/ubuntu/trading-bot-interval/transaction_analysis_frontend.py
