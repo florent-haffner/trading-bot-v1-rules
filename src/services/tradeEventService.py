@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from src.data.tradeEventUtils import get_recent_event_by_type_and_asset, insert_trade_event
-from src.helpers.dateHelper import DATE_UTC_TZ_STR
+from src.helpers.dateHelper import DATE_UTC_TZ_STR, SIMPLE_DATE_STR
 from src.services.krakenPrivateTradeService import create_new_order
 from src.services.slackEventService import send_trade_event_to_slack, create_trade_event_message
 from src.services.transactionService import update_to_complete_transaction, insert_transaction_event
@@ -49,6 +49,20 @@ def generate_trade_event_dto(type_of_trade, quantity, asset, interval, price):
     }
 
 
+def handle_trade_data_and_logic(point: dict, asset: str, currency: str, type_of_trade: str, quantity: float):
+    del point['time']
+    order_params = asset + currency, type_of_trade, quantity
+    order_response = create_new_order(pair=order_params[0], type=order_params[1], quantity=order_params[2])
+    print('Kraken response', order_response)
+    title = 'New trade event - ' + order_params[1] + ' ' + str(datetime.now().strftime(SIMPLE_DATE_STR))
+    msg = create_trade_event_message(title=title,
+                                     input_params=str(order_params),
+                                     results=order_response)
+    send_trade_event_to_slack(msg)
+    insert_trade_event([point])
+    return True
+
+
 def add_trade_event(type_of_trade: str, quantity: float, asset: str,
                     interval: int, transaction_id: str, price: float, currency: str):
     """
@@ -71,31 +85,12 @@ def add_trade_event(type_of_trade: str, quantity: float, asset: str,
     point['fields']['transactionId'] = str(transaction_id)
 
     if type_of_trade == 'buy':
-        # Adding new tradeEvent on InfluxDB
-        del point['time']
-        insert_trade_event([point])
-        order_params = asset + currency, 'buy', quantity
-        order_response = create_new_order(pair=order_params[0], type=order_params[1], quantity=order_params[2])
-        print('Kraken response', order_response)
-        msg = create_trade_event_message(title='New trade event - ' + order_params[1],
-                                         input_params=str(order_params),
-                                         results=order_response)
-        send_trade_event_to_slack(msg)
-        success = True
+        success = handle_trade_data_and_logic(asset, currency, type_of_trade, quantity)
 
     # Upgrading previous transaction on MongoDB
     if type_of_trade == 'sell':
         print('Updating', transaction_id, 'to complete transaction')
         result = update_to_complete_transaction(_id=transaction_id, key=type_of_trade, points=point)
         if result:
-            del point['time']
-            order_params = asset + currency, 'sell', quantity
-            order_response = create_new_order(pair=order_params[0], type=order_params[1], quantity=order_params[2])
-            print('Kraken response', order_response)
-            msg = create_trade_event_message(title='New trade event - ' + order_params[1],
-                                             input_params=str(order_params),
-                                             results=order_response)
-            send_trade_event_to_slack(msg)
-            insert_trade_event([point])
-            success = True
+            success = handle_trade_data_and_logic(asset, currency, type_of_trade, quantity)
     return success
