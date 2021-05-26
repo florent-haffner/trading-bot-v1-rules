@@ -70,7 +70,7 @@ class AnalysisEngine:
 
         except Exception as err:
             print('[EXCEPTION] - ANALYSIS ENGINE - sending email', err)
-            send_message('<p>Exception - ANALYSIS ENGINE</p>', str(err))
+            send_message('<p>Exception - ANALYSIS ENGINE</p>' + '<p>' + str(err) + '</p>')
             # send_email('Exception', str(err), {})
             if self.debug:
                 raise err

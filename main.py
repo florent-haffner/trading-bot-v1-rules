@@ -118,7 +118,7 @@ def start_multiprocess_bot():
 
     except Exception as err:
         print('[EXCEPTION] - CORE - sending email', err)
-        send_message('<p>Exception - CORE</p>', str(err))
+        send_message('<p>Exception - CORE</p>' + '<p>' + str(err) + '</p>')
         # send_email('Exception', str(err), {})
         raise err
 
