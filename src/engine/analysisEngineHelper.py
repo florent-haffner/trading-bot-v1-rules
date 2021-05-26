@@ -35,15 +35,6 @@ def define_quantity(nbr_asset_on_trade: float, last_asset_price) -> float:
     return quantity_to_buy
 
 
-# TODO -> not sure it's still useful
-"""
-def get_last_index(peaks_high: ndarray, peaks_low: ndarray):
-    last_high_index = peaks_high[:, 0][len(peaks_high[:, 1]) - 1]
-    last_low_index = peaks_low[:, 0][len(peaks_low[:, 1]) - 1]
-    return last_high_index, last_low_index
-"""
-
-
 def generate_realtime_processed_dto_to_build_dataframe(data_object: dict) -> dict:
     """
     Get a dictionary, remove the unnecessary part then return the dictionary to add this data on a dataframe

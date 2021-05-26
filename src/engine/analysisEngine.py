@@ -29,11 +29,15 @@ class AnalysisEngine:
         tree_hour_in_minute: int = 60 * 3
         shorter_df: pd.DataFrame = self.df[tree_hour_in_minute:]
         shorter_df.reset_index(inplace=True)
+
+        # TODO -> not sure to keep this
         # print('SHORT TIME DF - first:', datetime.fromtimestamp(shorter_df.head(1)['timestamp'].iloc[0]),
         #       'last:', datetime.fromtimestamp(shorter_df.tail(1)['timestamp'].iloc[-1]))
 
         high_mean_short, low_mean_short, higher_peaks_short, lower_peaks_short, last_close = \
             compute_mean_peaks(shorter_df, 1)
+
+        # TODO -> not sure to keep this
         # print('last', round(last_close, 4),
         #       'high_mean', round(high_mean_short, 4),
         #       'low_mean', round(low_mean_short, 4))
@@ -44,6 +48,8 @@ class AnalysisEngine:
 
         high_mean_shorter, low_mean_shorter, higher_peaks_shorter, lower_peaks_shorter, _ = \
             compute_mean_peaks(last_hour_df, 1)
+
+        # TODO -> not sure to keep this
         # print('last', round(last_close, 4),
         #       'high_mean', round(high_mean_shorter, 4),
         #       'low_mean', round(low_mean_shorter, 4))
@@ -71,7 +77,6 @@ class AnalysisEngine:
             message: str = '[EXCEPTION] - ANALYSIS ENGINE - ' + str(err)
             print(message)
             send_exception_to_slack(message)
-            # if self.debug:  # TODO -> not sure to keep this
             raise err
 
         print('\n[END OF ANALYSIS] ->', self.asset)
