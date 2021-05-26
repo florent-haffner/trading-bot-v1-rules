@@ -71,7 +71,7 @@ def get_last_price(asset: str, currency: str) -> float:
                 'pair': str(asset + currency).upper(),
             })
         if results:
-            result_asset_key = list(results['result'].key())[0]
+            result_asset_key = list(results['result'].keys())[0]
             output_price = results['result'][result_asset_key]['a'][0]
             return float(output_price)
     except Exception as err:
