@@ -3,6 +3,7 @@ from datetime import datetime
 from src.data.tradeEventUtils import get_recent_event_by_type_and_asset, insert_trade_event
 from src.helpers.dateHelper import DATE_UTC_TZ_STR
 from src.services.krakenPrivateTradeService import create_new_order
+from src.services.telegramMessageService import send_message
 from src.services.transactionService import update_to_complete_transaction, insert_transaction_event
 
 
@@ -75,6 +76,7 @@ def add_trade_event(type_of_trade: str, quantity: float, asset: str,
         insert_trade_event([point])
         # # TODO -> Check if error ?
         # res = create_new_order(asset + currency, 'buy', quantity)
+        # send_message(res)
         success = True
 
     # Upgrading previous transaction on MongoDB
@@ -88,5 +90,6 @@ def add_trade_event(type_of_trade: str, quantity: float, asset: str,
             insert_trade_event([point])
             # # TODO -> Check if error ?
             # res = create_new_order(asset + currency, 'sell', quantity)
+            # send_message(res)
             success = True
     return success
