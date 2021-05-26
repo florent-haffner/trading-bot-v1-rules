@@ -5,6 +5,7 @@ import pandas as pd
 from src.engine.analysisEngineHelper import define_quantity, compute_mean_peaks
 from src.helpers.emailSenderHelper import send_email
 from src.services.krakenPrivateTradeService import get_last_price
+from src.services.telegramMessageService import send_message
 from src.services.tradeEventService import add_trade_event, get_last_trade_event_by_type_and_asset
 from src.services.transactionService import get_transaction
 
@@ -69,7 +70,8 @@ class AnalysisEngine:
 
         except Exception as err:
             print('[EXCEPTION] - ANALYSIS ENGINE - sending email', err)
-            send_email('Exception', str(err), {})
+            send_message('<p>Exception</p>', str(err))
+            # send_email('Exception', str(err), {})
             if self.debug:
                 raise err
 

@@ -14,6 +14,7 @@ from src.data.missionMongoUtils import get_all_missions
 from src.services.krakenPublicDataService import get_formatted_data, get_stocks_indicators
 
 from src.services.krakenRealtimeMarketService import bot_realtime_child_process
+from src.services.telegramMessageService import send_message
 
 
 class UnableToConnectMongoDBInstanceException(Exception):
@@ -117,7 +118,8 @@ def start_multiprocess_bot():
 
     except Exception as err:
         print('[EXCEPTION] - CORE - sending email', err)
-        send_email('Exception', str(err), {})
+        send_message('<p>Exception</p>', str(err))
+        # send_email('Exception', str(err), {})
         raise err
 
 
