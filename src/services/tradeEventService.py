@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from src.data.tradeEventUtils import get_recent_event_by_type_and_asset, insert_trade_event
-from src.helpers.dateHelper import DATE_UTC_TZ_STR, SIMPLE_DATE_STR
+from src.helpers.dateHelper import DATE_UTC_TZ_STR
 from src.services.krakenPrivateTradeService import create_new_order
 from src.services.slackEventService import send_trade_event_to_slack, create_trade_event_message
 from src.services.transactionService import update_to_complete_transaction, insert_transaction_event
@@ -50,15 +50,26 @@ def generate_trade_event_dto(type_of_trade, quantity, asset, interval, price):
 
 
 def handle_trade_data_and_logic(point: dict, asset: str, currency: str, type_of_trade: str, quantity: float):
+    """
+    Wrap interaction with Kraken API, Slack API and InfluxDB
+    :param point: InfluxDB dictionary
+    :param asset: crypto-asset
+    :param currency: EUR
+    :param type_of_trade: buy/sell
+    :param quantity: the number of asset to buy
+    :return: success of the operation
+    """
+    # TODO -> must add error handling to structured even more this part of the code
     del point['time']
     order_params = asset + currency, type_of_trade, quantity
     order_response = create_new_order(pair=order_params[0], type=order_params[1], quantity=order_params[2])
     print('Kraken response', order_response)
-    title = 'New trade event - ' + order_params[1] + ' ' + str(datetime.now().strftime(SIMPLE_DATE_STR))
-    msg = create_trade_event_message(title=title,
+
+    msg = create_trade_event_message(title='New trade event - ' + order_params[1],
                                      input_params=str(order_params),
                                      results=order_response)
     send_trade_event_to_slack(msg)
+
     insert_trade_event([point])
     return True
 

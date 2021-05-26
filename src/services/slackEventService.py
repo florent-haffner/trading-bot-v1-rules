@@ -1,6 +1,9 @@
+from datetime import datetime
 from enum import Enum
 
 import requests
+
+from src.helpers.dateHelper import SIMPLE_DATE_STR
 
 
 class SlackChannelsEnum(Enum):
@@ -37,7 +40,7 @@ def send_transaction_complete_to_slack(event):
 
 def create_trade_event_message(title, input_params, results):
     return f"""
-        {title}
+        {title} - {str(datetime.now().strftime(SIMPLE_DATE_STR))}
         Input params -> {input_params}
         API results -> {results}
     """
