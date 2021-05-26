@@ -63,6 +63,7 @@ def lambda_handler(event, context):
             update_transaction_by_id(transactionId, key='forced_closed', value=True)
             update_transaction_by_id(transactionId, key='lastUpdate', value=datetime.now().strftime(DATE_STR))
             transaction = get_transaction_by_id(transactionId)
+            transaction['_id'] = str(transaction['_id'])
             print('Transaction closed', transaction)
             send_transaction_complete_to_slack(json.dumps(transaction, indent=2))
 

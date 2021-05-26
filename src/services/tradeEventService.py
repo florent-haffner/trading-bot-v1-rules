@@ -96,12 +96,14 @@ def add_trade_event(type_of_trade: str, quantity: float, asset: str,
     point['fields']['transactionId'] = str(transaction_id)
 
     if type_of_trade == 'buy':
-        success = handle_trade_data_and_logic(asset, currency, type_of_trade, quantity)
+        success = handle_trade_data_and_logic(point=point, asset=asset, currency=currency,
+                                              type_of_trade=type_of_trade, quantity=quantity)
 
     # Upgrading previous transaction on MongoDB
     if type_of_trade == 'sell':
         print('Updating', transaction_id, 'to complete transaction')
         result = update_to_complete_transaction(_id=transaction_id, key=type_of_trade, points=point)
         if result:
-            success = handle_trade_data_and_logic(asset, currency, type_of_trade, quantity)
+            success = handle_trade_data_and_logic(point=point, asset=asset, currency=currency,
+                                                  type_of_trade=type_of_trade, quantity=quantity)
     return success
