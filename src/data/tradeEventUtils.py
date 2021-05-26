@@ -104,6 +104,8 @@ def get_all_trade_events():
     """
     results = []
     request_result = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
+    print('[INFLUXDB] - GET ALL TRADE EVENTS')
+    # print('table', len(request_result), 'records', len(request_result[0].records))
     for table in request_result:
         if len(table.records) > 1:
             for record in table.records:
@@ -195,7 +197,7 @@ def initEnvironment():
 if __name__ == "__main__":
     # initEnvironment()
 
-    get_recent_event_by_type_and_asset('GRT', 'buy')
+    get_recent_event_by_type_and_asset('LINK', 'buy')
     get_all_trade_events()
 
     # clean_trade_events()
