@@ -6,7 +6,7 @@ from src.helpers.dateHelper import SIMPLE_DATE_STR
 from src.helpers.params import MAXIMUM_FEES
 from src.data.transactionAnalysisMongoUtils import create_domain_object, insert_analysis
 from src.data.missionMongoUtils import get_all_missions
-from src.services.telegramMessageService import send_message
+from src.services.slackEventService import send_transaction_analysis_to_slack
 from src.services.transactionService import get_complete_transaction_per_day_asset
 
 
@@ -111,7 +111,8 @@ def calculate_win_and_loss_per_mission(store_results: bool):
         <p>{datetime.now().strftime(SIMPLE_DATE_STR)}</p>
         <p>{ str(dumps(results, indent=2)) }</p>
         """
-        send_message(msg_to_send)
+        send_transaction_analysis_to_slack(msg_to_send)
+        # send_message(msg_to_send) # TODO -> not sure to keep this
 
 
 def generate_dto(asset, beginning_amount, nbr_transactions, nbr_positive_transactions, result):

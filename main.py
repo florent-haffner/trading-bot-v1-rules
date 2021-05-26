@@ -8,13 +8,12 @@ from pandas import DataFrame, read_csv
 
 from src.engine.analysisEngine import AnalysisEngine
 from src.engine.analysisEngineHelper import query_realtime_processed_by_asset
-from src.helpers.emailSenderHelper import send_email
 from src.helpers.params import __DEBUG, __OFFLINE, __ENVIRONMENT
 from src.data.missionMongoUtils import get_all_missions
 from src.services.krakenPublicDataService import get_formatted_data, get_stocks_indicators
 
 from src.services.krakenRealtimeMarketService import bot_realtime_child_process
-from src.services.telegramMessageService import send_message
+from src.services.slackEventService import send_exception_to_slack
 
 
 class UnableToConnectMongoDBInstanceException(Exception):
@@ -117,9 +116,9 @@ def start_multiprocess_bot():
         t2.join()
 
     except Exception as err:
-        print('[EXCEPTION] - CORE - sending email', err)
-        send_message('<p>Exception - CORE</p>' + '<p>' + str(err) + '</p>')
-        # send_email('Exception', str(err), {})
+        message: str = '[EXCEPTION] - CORE - ' + str(err)
+        print(message)
+        send_exception_to_slack(message)
         raise err
 
 

@@ -33,3 +33,11 @@ if __name__ == '__main__':
     send_exception_to_slack('Exception -> terrible exception')
     send_trade_event_to_slack('Trade event -> new event')
     send_transaction_analysis_to_slack('New trade analysis')
+
+
+def create_trade_event_message(title, input_params, results):
+    return f"""
+    <p>{title}</p>
+    <p>input_params:{input_params}</p>
+    <p>results:{results}</p>
+    """

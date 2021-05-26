@@ -3,9 +3,8 @@ from datetime import datetime
 import pandas as pd
 
 from src.engine.analysisEngineHelper import define_quantity, compute_mean_peaks
-from src.helpers.emailSenderHelper import send_email
 from src.services.krakenPrivateTradeService import get_last_price
-from src.services.telegramMessageService import send_message
+from src.services.slackEventService import send_exception_to_slack
 from src.services.tradeEventService import add_trade_event, get_last_trade_event_by_type_and_asset
 from src.services.transactionService import get_transaction
 
@@ -69,11 +68,11 @@ class AnalysisEngine:
                 print('Trends are currently evolving, waiting...')
 
         except Exception as err:
-            print('[EXCEPTION] - ANALYSIS ENGINE - sending email', err)
-            send_message('<p>Exception - ANALYSIS ENGINE</p>' + '<p>' + str(err) + '</p>')
-            # send_email('Exception', str(err), {})
-            if self.debug:
-                raise err
+            message: str = '[EXCEPTION] - ANALYSIS ENGINE - ' + str(err)
+            print(message)
+            send_exception_to_slack(message)
+            # if self.debug:  # TODO -> not sure to keep this
+            raise err
 
         print('\n[END OF ANALYSIS] ->', self.asset)
         print('\nResume to follow next action', '\n------------------\n')

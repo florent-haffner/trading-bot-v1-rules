@@ -3,7 +3,7 @@ from datetime import datetime
 from src.data.tradeEventUtils import get_recent_event_by_type_and_asset, insert_trade_event
 from src.helpers.dateHelper import DATE_UTC_TZ_STR
 from src.services.krakenPrivateTradeService import create_new_order
-from src.services.telegramMessageService import send_message, create_order_message
+from src.services.slackEventService import send_trade_event_to_slack, create_trade_event_message
 from src.services.transactionService import update_to_complete_transaction, insert_transaction_event
 
 
@@ -76,8 +76,8 @@ def add_trade_event(type_of_trade: str, quantity: float, asset: str,
         insert_trade_event([point])
         order_params = asset + currency, 'buy', quantity
         order_response = create_new_order(pair=order_params[0], type=order_params[1], quantity=order_params[2])
-        msg = create_order_message(title='New trade event', input_params=str(order_params), results=order_response)
-        send_message(msg)
+        msg = create_trade_event_message(title='New trade event', input_params=str(order_params), results=order_response)
+        send_trade_event_to_slack(msg)
         success = True
 
     # Upgrading previous transaction on MongoDB
@@ -90,8 +90,8 @@ def add_trade_event(type_of_trade: str, quantity: float, asset: str,
             del point['time']
             order_params = asset + currency, 'sell', quantity
             order_response = create_new_order(pair=order_params[0], type=order_params[1], quantity=order_params[2])
-            msg = create_order_message(title='New trade event', input_params=str(order_params), results=order_response)
-            send_message(msg)
+            msg = create_trade_event_message(title='New trade event', input_params=str(order_params), results=order_response)
+            send_trade_event_to_slack(msg)
             insert_trade_event([point])
             success = True
     return success

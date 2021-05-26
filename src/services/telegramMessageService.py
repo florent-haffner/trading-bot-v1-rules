@@ -1,16 +1,8 @@
-from telethon import TelegramClient, sync # DO NOT REMOVE SYNC
+from telethon import TelegramClient, sync  # DO NOT REMOVE SYNC
 from telethon.tl.functions.contacts import GetContactsRequest
 from telethon.tl.types import InputPeerUser
 
 from src.secret.SECRET_CONSTANT import __TELEGRAM_APP_ID, __TELEGRAM_APP_HASH, __TELEGRAM_PHONE_NBR
-
-
-def create_order_message(title, input_params, results):
-    return f"""
-    <p>{title}</p>
-    <p>input_params:{input_params}</p>
-    <p>results:{results}</p>
-    """
 
 
 def send_message(message):
