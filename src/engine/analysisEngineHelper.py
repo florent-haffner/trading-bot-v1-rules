@@ -7,7 +7,7 @@ from peakdetect import peakdetect
 
 from src.data.marketEventUtils import get_last_minute_market_events
 from src.helpers.params import MAXIMUM_PERCENTAGE_EUR
-from src.services.krakenPrivateTradeService import get_account_balance
+from src.services.krakenPrivateTradeService import get_account_balance, calculate_current_nbr_asset_possessed
 
 
 class NothingToTrade(Exception):
@@ -25,10 +25,12 @@ def define_quantity(nbr_asset_on_trade: float, last_asset_price) -> float:
     quantity_to_buy: float
     try:
         balance_euro: float = float(get_account_balance()['result']['ZEUR'])
+        current_asset_possessed: int = calculate_current_nbr_asset_possessed()
     except Exception as err:
         raise err
 
-    money_available: float = (balance_euro / float(nbr_asset_on_trade)) * MAXIMUM_PERCENTAGE_EUR
+    nbr_asset_possible_to_buy = float(nbr_asset_on_trade - current_asset_possessed)
+    money_available: float = (balance_euro / nbr_asset_possible_to_buy) * MAXIMUM_PERCENTAGE_EUR
     quantity_to_buy = money_available / last_asset_price
     return quantity_to_buy
 

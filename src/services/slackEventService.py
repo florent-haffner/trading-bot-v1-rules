@@ -29,15 +29,15 @@ def send_transaction_analysis_to_slack(event):
     send_message_via_slack(channel, event)
 
 
+def create_trade_event_message(title, input_params, results):
+    return f"""
+        {title}
+        Input params -> {input_params}
+        API results -> {results}
+    """
+
+
 if __name__ == '__main__':
     send_exception_to_slack('Exception -> terrible exception')
     send_trade_event_to_slack('Trade event -> new event')
     send_transaction_analysis_to_slack('New trade analysis')
-
-
-def create_trade_event_message(title, input_params, results):
-    return f"""
-    {title}
-    Input params -> {input_params}
-    API results -> {results}
-    """

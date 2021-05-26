@@ -71,14 +71,16 @@ def get_last_price(asset: str, currency: str) -> float:
                 'pair': str(asset + currency).upper(),
             })
         if results:
-            result_asset_key = list(results['result'].keys())[0]
+            result_asset_key = list(results['result'].key())[0]
             output_price = results['result'][result_asset_key]['a'][0]
             return float(output_price)
     except Exception as err:
         raise err
 
 
-if __name__ == "__main__":
+# TODO -> remove this while make sure it's not necessary
+"""
+def demo_buy_sell():
     asset = 'GRT'
     currency = 'EUR'
     volume_to_buy = 30
@@ -105,3 +107,14 @@ if __name__ == "__main__":
     print('trade balance', tradeBalance)
     accountBalance = get_account_balance()
     print('account balance', accountBalance)
+"""
+
+
+def calculate_current_nbr_asset_possessed() -> int:
+    """ Get the account balance then calculate the current number of asset possessed """
+    balance = get_account_balance()
+    nbr_asset_possessed: int = 0
+    for key in balance['result']:
+        if float(balance['result'][key]) > 0:
+            nbr_asset_possessed = nbr_asset_possessed + 1
+    return nbr_asset_possessed
