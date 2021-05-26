@@ -1,8 +1,10 @@
+import json
 from datetime import datetime
 
 from src.data.transactionMongoUtils import get_transaction_by_id, update_transaction_by_id, \
     get_complete_transaction_from_last_day_by_asset, __MODEL_VERSION, collection, insert_transaction
 from src.helpers.dateHelper import DATE_STR
+from src.services.slackEventService import send_transaction_complete_to_slack
 
 
 def get_transaction(_id: str):
@@ -29,6 +31,8 @@ def update_to_complete_transaction(_id: str, key: str, points: dict):
         update_transaction_by_id(_id=_id, key=key, value=points)
         update_transaction_by_id(_id=_id, key='forced_closed', value=False)
         update_transaction_by_id(_id=_id, key='lastUpdate', value=datetime.now().strftime(DATE_STR))
+        transaction = get_transaction_by_id(_id)
+        send_transaction_complete_to_slack(json.dumps(transaction, indent=2))
         return True
 
 

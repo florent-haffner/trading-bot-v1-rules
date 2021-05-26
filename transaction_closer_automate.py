@@ -1,10 +1,13 @@
+import json
 from datetime import datetime, timedelta
 
 from src.data.missionMongoUtils import get_all_missions
 from src.data.tradeEventUtils import insert_trade_event
-from src.data.transactionMongoUtils import update_transaction_by_id, get_all_transactions_since_midnight
+from src.data.transactionMongoUtils import update_transaction_by_id, get_all_transactions_since_midnight, \
+    get_transaction_by_id
 from src.helpers.dateHelper import DATE_STR, DATE_UTC_TZ_STR
 from src.services.krakenPrivateTradeService import get_last_price, create_new_order
+from src.services.slackEventService import send_transaction_complete_to_slack
 from src.services.tradeEventService import generate_trade_event_dto
 from src.services.transactionService import update_to_complete_transaction
 
@@ -59,6 +62,9 @@ def lambda_handler(event, context):
             # Finally update to make sure the transaction is closed
             update_transaction_by_id(transactionId, key='forced_closed', value=True)
             update_transaction_by_id(transactionId, key='lastUpdate', value=datetime.now().strftime(DATE_STR))
+            transaction = get_transaction_by_id(transactionId)
+            print('Transaction closed', transaction)
+            send_transaction_complete_to_slack(json.dumps(transaction, indent=2))
 
 
 if __name__ == '__main__':

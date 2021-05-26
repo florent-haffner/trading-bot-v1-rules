@@ -7,7 +7,6 @@
     0 4 * * * sudo journalctl --vacuum-time=1d -u tradingBot
     0 4 * * * sudo systemctl restart tradingBot
     0 16 * * * sudo systemctl restart tradingBot
-    0 1 * * * sudo journalctl --vacuum-time=1d -u transactionCloserAutomate
     0 1 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/transaction_closer_automate.py
     0 3 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/transaction_closer_automate.py
     0 5 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/transaction_closer_automate.py
@@ -20,5 +19,5 @@
     0 19 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/transaction_closer_automate.py
     0 21 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/transaction_closer_automate.py
     0 23 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/transaction_closer_automate.py
-    #0 23 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python3 /home/ubuntu/trading-bot-interval/src/services/walletEvolutionService.py
+    0 23 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python3 /home/ubuntu/trading-bot-interval/src/services/walletEvolutionService.py
     0 23 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python3 /home/ubuntu/trading-bot-interval/transaction_analysis_frontend.py

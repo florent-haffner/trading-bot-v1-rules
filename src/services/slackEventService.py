@@ -7,6 +7,7 @@ class SlackChannelsEnum(Enum):
     Exception = "https://hooks.slack.com/services/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"
     TradeEvent = "https://hooks.slack.com/services/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"
     TransactionAnalysis = "https://hooks.slack.com/services/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"
+    TransactionComplete = "https://hooks.slack.com/services/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"
 
 
 def send_message_via_slack(url: str, message: str):
@@ -26,6 +27,11 @@ def send_trade_event_to_slack(event):
 
 def send_transaction_analysis_to_slack(event):
     channel = SlackChannelsEnum.TransactionAnalysis.value
+    send_message_via_slack(channel, event)
+
+
+def send_transaction_complete_to_slack(event):
+    channel = SlackChannelsEnum.TransactionComplete.value
     send_message_via_slack(channel, event)
 
 
