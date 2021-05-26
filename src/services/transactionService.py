@@ -29,7 +29,7 @@ def update_to_complete_transaction(_id: str, key: str, points: dict):
         update_transaction_by_id(_id=_id, key=key, value=points)
         update_transaction_by_id(_id=_id, key='forced_closed', value=False)
         update_transaction_by_id(_id=_id, key='lastUpdate', value=datetime.now().strftime(DATE_STR))
-        return
+        return True
 
 
 # TODO -> not sure it's still useful

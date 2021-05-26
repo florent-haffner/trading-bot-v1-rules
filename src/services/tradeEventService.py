@@ -77,22 +77,24 @@ def add_trade_event(type_of_trade: str, quantity: float, asset: str,
         order_params = asset + currency, 'buy', quantity
         order_response = create_new_order(pair=order_params[0], type=order_params[1], quantity=order_params[2])
         print('Kraken response', order_response)
-        msg = create_trade_event_message(title='New trade event', input_params=str(order_params), results=order_response)
+        msg = create_trade_event_message(title='New trade event -' + order_params[1],
+                                         input_params=str(order_params),
+                                         results=order_response)
         send_trade_event_to_slack(msg)
         success = True
 
     # Upgrading previous transaction on MongoDB
     if type_of_trade == 'sell':
         print('Updating', transaction_id, 'to complete transaction')
-        result = update_to_complete_transaction(_id=transaction_id,
-                                                key=type_of_trade,
-                                                points=point)
+        result = update_to_complete_transaction(_id=transaction_id, key=type_of_trade, points=point)
         if result:
             del point['time']
             order_params = asset + currency, 'sell', quantity
             order_response = create_new_order(pair=order_params[0], type=order_params[1], quantity=order_params[2])
             print('Kraken response', order_response)
-            msg = create_trade_event_message(title='New trade event', input_params=str(order_params), results=order_response)
+            msg = create_trade_event_message(title='New trade event -' + order_params[1],
+                                             input_params=str(order_params),
+                                             results=order_response)
             send_trade_event_to_slack(msg)
             insert_trade_event([point])
             success = True
