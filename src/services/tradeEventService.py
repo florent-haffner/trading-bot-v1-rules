@@ -76,6 +76,7 @@ def add_trade_event(type_of_trade: str, quantity: float, asset: str,
         insert_trade_event([point])
         order_params = asset + currency, 'buy', quantity
         order_response = create_new_order(pair=order_params[0], type=order_params[1], quantity=order_params[2])
+        print('Kraken response', order_response)
         msg = create_trade_event_message(title='New trade event', input_params=str(order_params), results=order_response)
         send_trade_event_to_slack(msg)
         success = True
@@ -90,6 +91,7 @@ def add_trade_event(type_of_trade: str, quantity: float, asset: str,
             del point['time']
             order_params = asset + currency, 'sell', quantity
             order_response = create_new_order(pair=order_params[0], type=order_params[1], quantity=order_params[2])
+            print('Kraken response', order_response)
             msg = create_trade_event_message(title='New trade event', input_params=str(order_params), results=order_response)
             send_trade_event_to_slack(msg)
             insert_trade_event([point])

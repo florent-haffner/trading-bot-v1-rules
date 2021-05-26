@@ -103,7 +103,6 @@ def insert_market_event(event: list):
     :param event: the data to write
     :return:
     """
-    print('[INFLUXDB] writing new marketEvent\n', event)
     __WRITE_API.write(__CURRENT_BUCKET, __INFLUXDB_CURRENT_ORG, event)
 
 

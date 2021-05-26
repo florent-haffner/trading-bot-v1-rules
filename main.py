@@ -24,8 +24,8 @@ class UnableToConnectMongoDBInstanceException(Exception):
 def get_last_n_percentage(df, nbr_percentage) -> DataFrame:
     calculated_length: int = (len(df) * nbr_percentage) / 100
     tmp_df: DataFrame = df[int(calculated_length):]
-    print('DF last -', nbr_percentage, '% - first:', datetime.fromtimestamp(tmp_df.head(1)['timestamp'].iloc[0]),
-          'last:', datetime.fromtimestamp(tmp_df.tail(1)['timestamp'].iloc[-1]))
+    # print('DF last -', nbr_percentage, '% - first:', datetime.fromtimestamp(tmp_df.head(1)['timestamp'].iloc[0]),
+    #       'last:', datetime.fromtimestamp(tmp_df.tail(1)['timestamp'].iloc[-1]))
     return tmp_df
 
 
@@ -49,8 +49,8 @@ def run_bot(asset: str, currency: str, interval: int, length_assets: int):
             df = df.append(last_market_event, ignore_index=True)
 
     df_with_indicators: DataFrame = get_stocks_indicators(df)
-    print('DF FULL - first:', datetime.fromtimestamp(df_with_indicators.head(1)['timestamp'].iloc[0]),
-          'last:', datetime.fromtimestamp(df_with_indicators.tail(1)['timestamp'].iloc[-1]))
+    # print('DF FULL - first:', datetime.fromtimestamp(df_with_indicators.head(1)['timestamp'].iloc[0]),
+    #       'last:', datetime.fromtimestamp(df_with_indicators.tail(1)['timestamp'].iloc[-1]))
 
     AnalysisEngine(__DEBUG, df_with_indicators, asset, currency, length_assets, interval)
 

@@ -200,4 +200,4 @@ if __name__ == "__main__":
     get_recent_event_by_type_and_asset('LINK', 'buy')
     get_all_trade_events()
 
-    # clean_trade_events()
+    clean_trade_events()
