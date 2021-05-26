@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
 def create_trade_event_message(title, input_params, results):
     return f"""
-    <p>{title}</p>
-    <p>input_params:{input_params}</p>
-    <p>results:{results}</p>
+    {title}
+    Input params -> {input_params}
+    API results -> {results}
     """
