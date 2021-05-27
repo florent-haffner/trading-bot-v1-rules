@@ -44,14 +44,14 @@ def clean_transaction_event(event: dict) -> str:
         'dateOfCreation': event['dateOfCreation'],
         'lastUpdate': event['lastUpdate'],
         'asset': event['buy']['fields']['asset'],
-        'foced_closed': [event]['forced_closed'],
+        'foced_closed': event['forced_closed'],
         'buy': {
-            'quantity': [event]['buy']['fields']['quantity'],
-            'price': [event]['buy']['fields']['price']
+            'quantity': event['buy']['fields']['quantity'],
+            'price': event['buy']['fields']['price']
         },
         'sell': {
-            'quantity': [event]['sell']['fields']['quantity'],
-            'price': [event]['sell']['fields']['price']
+            'quantity': event['sell']['fields']['quantity'],
+            'price': event['sell']['fields']['price']
         }
     }
     return str(dto)
