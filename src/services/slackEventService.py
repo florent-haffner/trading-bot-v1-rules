@@ -33,9 +33,34 @@ def send_transaction_analysis_to_slack(event):
     send_message_via_slack(channel, event)
 
 
-def send_transaction_complete_to_slack(event):
+def clean_transaction_event(event: dict) -> str:
+    # TODO -> remove if there is no bug
+    # {'_id': '60af5f61fc6f8ab3a49418ab', 'dateOfCreation': '2021-05-27T10:59:13Z', 'lastUpdate': '2021-05-27T11:00:55Z', 'version': 1.0,
+    # 'buy': {'time': '2021-05-27 10:59:13.184528+00:00', 'measurement': 'tradeEvent', 'tags': {'typeOfTrade': 'buy', 'interval': 5}, 'fields': {'asset': 'LINK', 'quantity': 1.742664636405641, 'price': 27.09668}},
+    # 'sell': {'time': '2021-05-27 11:00:55.907287+00:00', 'measurement': 'tradeEvent', 'tags': {'typeOfTrade': 'sell', 'interval': 5}, 'fields': {'asset': 'LINK', 'quantity': 1.742664636405641, 'price': 27.2441, 'transactionId': '60af5f61fc6f8ab3a49418ab'}},
+    # 'forced_closed': False}
+    dto = {
+        'id': event['_id'],
+        'dateOfCreation': event['dateOfCreation'],
+        'lastUpdate': event['lastUpdate'],
+        'asset': event['buy']['fields']['asset'],
+        'foced_closed': [event]['forced_closed'],
+        'buy': {
+            'quantity': [event]['buy']['fields']['quantity'],
+            'price': [event]['buy']['fields']['price']
+        },
+        'sell': {
+            'quantity': [event]['sell']['fields']['quantity'],
+            'price': [event]['sell']['fields']['price']
+        }
+    }
+    return str(dto)
+
+
+def send_transaction_complete_to_slack(event: dict):
     channel = SlackChannelsEnum.TransactionComplete.value
-    send_message_via_slack(channel, event)
+    str_dto: str = clean_transaction_event(event)
+    send_message_via_slack(channel, str_dto)
 
 
 def create_trade_event_message(title, input_params, results):

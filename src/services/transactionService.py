@@ -33,7 +33,7 @@ def update_to_complete_transaction(_id: str, key: str, points: dict):
         transaction = get_transaction_by_id(_id)
         transaction['_id'] = str(transaction['_id'])
         print('Transaction closed', transaction)
-        send_transaction_complete_to_slack(str(transaction))
+        send_transaction_complete_to_slack(transaction)
         return True
 
 
