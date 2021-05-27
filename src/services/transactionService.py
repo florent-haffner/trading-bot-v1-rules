@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from src.data.transactionMongoUtils import get_transaction_by_id, update_transaction_by_id, \
-    get_complete_transaction_from_last_day_by_asset, __MODEL_VERSION, collection, insert_transaction
+    get_complete_transaction_from_last_day_by_asset, __MODEL_VERSION, insert_transaction
 from src.helpers.dateHelper import DATE_STR
 from src.services.slackEventService import send_transaction_complete_to_slack
 
@@ -33,7 +33,7 @@ def update_to_complete_transaction(_id: str, key: str, points: dict):
         transaction = get_transaction_by_id(_id)
         transaction['_id'] = str(transaction['_id'])
         print('Transaction closed', transaction)
-        send_transaction_complete_to_slack(transaction)
+        send_transaction_complete_to_slack(str(transaction))
         return True
 
 
