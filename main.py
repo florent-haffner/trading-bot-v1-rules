@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-from multiprocessing import Process
 from time import sleep
 
 import pymongo.errors
@@ -12,7 +11,6 @@ from src.helpers.params import __DEBUG, __OFFLINE, __ENVIRONMENT
 from src.data.missionMongoUtils import get_all_missions
 from src.services.krakenPublicDataService import get_formatted_data, get_stocks_indicators
 
-from src.services.krakenRealtimeMarketService import bot_realtime_child_process
 from src.services.slackEventService import send_exception_to_slack
 
 
@@ -24,6 +22,7 @@ class UnableToConnectMongoDBInstanceException(Exception):
 def get_last_n_percentage(df, nbr_percentage) -> DataFrame:
     calculated_length: int = (len(df) * nbr_percentage) / 100
     tmp_df: DataFrame = df[int(calculated_length):]
+    # TODO -> not sure it's still useful
     # print('DF last -', nbr_percentage, '% - first:', datetime.fromtimestamp(tmp_df.head(1)['timestamp'].iloc[0]),
     #       'last:', datetime.fromtimestamp(tmp_df.tail(1)['timestamp'].iloc[-1]))
     return tmp_df
@@ -49,6 +48,7 @@ def run_bot(asset: str, currency: str, interval: int, length_assets: int):
             df = df.append(last_market_event, ignore_index=True)
 
     df_with_indicators: DataFrame = get_stocks_indicators(df)
+    # TODO -> not sure it's still useful
     # print('DF FULL - first:', datetime.fromtimestamp(df_with_indicators.head(1)['timestamp'].iloc[0]),
     #       'last:', datetime.fromtimestamp(df_with_indicators.tail(1)['timestamp'].iloc[-1]))
 
@@ -104,6 +104,8 @@ def bot_main_process():
             sleep(10)
 
 
+# TODO -> remove if not used
+"""
 def start_multiprocess_bot():
     try:
         t1 = Process(target=bot_main_process)
@@ -114,13 +116,15 @@ def start_multiprocess_bot():
 
         t1.join()
         t2.join()
+"""
+
+
+if __name__ == "__main__":
+    try:
+        bot_main_process()
 
     except Exception as err:
         message: str = '[EXCEPTION] - CORE - ' + str(err)
         print(message)
         send_exception_to_slack(message)
         raise err
-
-
-if __name__ == "__main__":
-    start_multiprocess_bot()
