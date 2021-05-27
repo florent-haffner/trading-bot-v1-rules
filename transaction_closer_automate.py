@@ -1,4 +1,3 @@
-import json
 from datetime import datetime, timedelta
 
 from src.data.missionMongoUtils import get_all_missions
@@ -65,7 +64,7 @@ def lambda_handler(event, context):
             transaction = get_transaction_by_id(transactionId)
             transaction['_id'] = str(transaction['_id'])
             print('Transaction closed', transaction)
-            send_transaction_complete_to_slack(json.dumps(transaction, indent=2))
+            send_transaction_complete_to_slack(transaction)
 
 
 if __name__ == '__main__':

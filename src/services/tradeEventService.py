@@ -3,7 +3,8 @@ from datetime import datetime
 from src.data.tradeEventUtils import get_recent_event_by_type_and_asset, insert_trade_event
 from src.helpers.dateHelper import DATE_UTC_TZ_STR
 from src.services.krakenPrivateTradeService import create_new_order
-from src.services.slackEventService import send_trade_event_to_slack, create_trade_event_message
+from src.services.slackEventService import send_trade_event_to_slack, create_trade_event_message, \
+    send_exception_to_slack
 from src.services.transactionService import update_to_complete_transaction, insert_transaction_event
 
 
@@ -64,6 +65,9 @@ def handle_trade_data_and_logic(point: dict, asset: str, currency: str, type_of_
     order_params = asset + currency, type_of_trade, quantity
     order_response = create_new_order(pair=order_params[0], type=order_params[1], quantity=order_params[2])
     print('Kraken response', order_response)
+    if order_response['error']:
+        formatted_error: str = str(order_response) + '->' + str(order_response)
+        send_exception_to_slack(formatted_error)
 
     msg = create_trade_event_message(title='New trade event - ' + order_params[1],
                                      input_params=str(order_params),

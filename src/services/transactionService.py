@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 
 from src.data.transactionMongoUtils import get_transaction_by_id, update_transaction_by_id, \
@@ -33,7 +32,7 @@ def update_to_complete_transaction(_id: str, key: str, points: dict):
         update_transaction_by_id(_id=_id, key='lastUpdate', value=datetime.now().strftime(DATE_STR))
         transaction = get_transaction_by_id(_id)
         transaction['_id'] = str(transaction['_id'])
-        send_transaction_complete_to_slack(json.dumps(transaction, indent=2))
+        send_transaction_complete_to_slack(transaction)
         return True
 
 
