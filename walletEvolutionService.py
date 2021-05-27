@@ -1,6 +1,6 @@
 from src.data.walletEvolutionMongoUtils import get_all_wallet_evolution, generate_wallet_evolution_dto, \
     create_wallet_evolution
-from src.services.krakenPrivateTradeService import get_account_balance
+from src.services.krakenPrivateTradeService import get_trade_balance
 
 
 def get_wallet_evolution():
@@ -8,7 +8,7 @@ def get_wallet_evolution():
 
 
 def insert_wallet_evolution(event: dict):
-    account_balance: float = float(get_account_balance()['result']['ZEUR'])
+    account_balance: float = float(get_trade_balance('ZEUR')['result']['eb'])
     wallet_evolution = generate_wallet_evolution_dto(event, account_balance)
     return create_wallet_evolution(wallet_evolution)
 
