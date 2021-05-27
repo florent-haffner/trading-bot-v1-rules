@@ -113,7 +113,8 @@ def demo_buy_sell():
 def calculate_current_nbr_asset_possessed() -> int:
     """ Get the account balance then calculate the current number of asset possessed """
     balance = get_account_balance()
-    nbr_asset_possessed: int = 0
+    # Minus one because euro is not an asset
+    nbr_asset_possessed: int = -1
     for key in balance['result']:
         if float(balance['result'][key]) > 0:
             nbr_asset_possessed = nbr_asset_possessed + 1
