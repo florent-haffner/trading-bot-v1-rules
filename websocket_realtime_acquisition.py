@@ -48,6 +48,7 @@ def handle_market_event(ws_event: dict):
 
 
 def bot_realtime_child_process():
+    """ handle to general logic of this websocket process """
     pairs: list = []
     missions = get_all_missions()
     for mission in missions:
@@ -72,3 +73,7 @@ def bot_realtime_child_process():
             event_key = event.keys()
         except AttributeError:
             handle_market_event(event)
+
+
+if __name__ == '__main__':
+    bot_realtime_child_process()

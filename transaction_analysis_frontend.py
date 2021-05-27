@@ -112,7 +112,6 @@ def calculate_win_and_loss_per_mission(store_results: bool):
         <p>{ str(dumps(results, indent=2)) }</p>
         """
         send_transaction_analysis_to_slack(msg_to_send)
-        # send_message(msg_to_send) # TODO -> not sure to keep this
 
 
 def generate_dto(asset, beginning_amount, nbr_transactions, nbr_positive_transactions, result):

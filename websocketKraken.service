@@ -3,9 +3,9 @@ Description=Websocket data for trading bot service
 
 [Service]
 Type=simple
-ExecStart=$HOME/anaconda3/envs/trading-bot/bin/python $HOME/trading-bot-interval/websocket_realtime_acquisition.py
+ExecStart=/home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/websocket_realtime_acquisition.py
 Restart=always
-RestartSec=5s
+RestartSec=30s
 StartLimitBurst=20
 
 [Install]
