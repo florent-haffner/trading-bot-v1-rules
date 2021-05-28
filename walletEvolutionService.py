@@ -10,6 +10,7 @@ def get_wallet_evolution():
 def insert_wallet_evolution(event: dict):
     account_balance: float = float(get_trade_balance('ZEUR')['result']['eb'])
     wallet_evolution = generate_wallet_evolution_dto(event, account_balance)
+    print('Wallet evolution ->', wallet_evolution)
     return create_wallet_evolution(wallet_evolution)
 
 
