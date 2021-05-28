@@ -107,9 +107,9 @@ def calculate_win_and_loss_per_mission(store_results: bool):
         insert_analysis(data)
 
         msg_to_send = f"""
-        <p>[BOT ANALYSIS OF THE DAY]</p>
-        <p>{datetime.now().strftime(SIMPLE_DATE_STR)}</p>
-        <p>{ str(dumps(results, indent=2)) }</p>
+        [BOT ANALYSIS OF THE DAY]
+        {datetime.now().strftime(SIMPLE_DATE_STR)}
+        {str(dumps(results, indent=2))}
         """
         send_transaction_analysis_to_slack(msg_to_send)
 

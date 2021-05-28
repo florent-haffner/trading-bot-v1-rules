@@ -6,7 +6,7 @@ from src.data.transactionMongoUtils import update_transaction_by_id, get_all_tra
     get_transaction_by_id
 from src.helpers.dateHelper import DATE_STR, DATE_UTC_TZ_STR
 from src.services.krakenPrivateTradeService import get_last_price, create_new_order
-from src.services.slackEventService import send_transaction_complete_to_slack
+from src.services.slackEventService import send_transaction_complete_to_slack, send_exception_to_slack
 from src.services.tradeEventService import generate_trade_event_dto
 from src.services.transactionService import update_to_complete_transaction
 
@@ -34,12 +34,12 @@ def lambda_handler(event, context):
         print('No transactions to closed')
         return
 
-    tree_hours_before = datetime.now() - timedelta(hours=nbr_hours_before_closing_transaction)
+    nbr_hours_before_closing = datetime.now() - timedelta(hours=nbr_hours_before_closing_transaction)
     for transaction in transactions_to_closed:
         transactionId = transaction['_id']
         time = datetime.strptime(transaction['buy']['time'], DATE_UTC_TZ_STR)
 
-        if time < tree_hours_before:
+        if time < nbr_hours_before_closing:
             print('Closing', transactionId)
             last_price = get_last_price(transaction['buy']['fields']['asset'], 'EUR')
             quantity = transaction['buy']['fields']['quantity']
@@ -56,7 +56,13 @@ def lambda_handler(event, context):
             if transaction:
                 del point['time']
                 insert_trade_event([point])
-                create_new_order(transaction['buy']['fields']['asset'] + 'EUR', type_of_trade, quantity)
+                asset: str = transaction['buy']['fields']['asset']
+                currency: str = 'EUR'
+                order_params = asset + currency, type_of_trade, quantity
+                order_response = create_new_order(pair=order_params[0], type=order_params[1], quantity=order_params[2])
+                if order_response['error']:
+                    formatted_error: str = str(order_response) + '->' + str(order_response)
+                    send_exception_to_slack(formatted_error)
 
             # Finally update to make sure the transaction is closed
             update_transaction_by_id(transactionId, key='forced_closed', value=True)
@@ -68,5 +74,5 @@ def lambda_handler(event, context):
 
 
 if __name__ == '__main__':
-    event = {"nbr_hour": 2}
+    event = {"nbr_hour": 1}
     lambda_handler(event, {})
