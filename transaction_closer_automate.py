@@ -52,8 +52,8 @@ def lambda_handler(event, context):
                                              price=last_price)
 
             print('Updating', transactionId, 'to complete transaction')
-            transaction = update_to_complete_transaction(_id=transactionId, key=type_of_trade, points=point)
-            if transaction:
+            result = update_to_complete_transaction(_id=transactionId, key=type_of_trade, points=point)
+            if result:
                 del point['time']
                 insert_trade_event([point])
                 asset: str = transaction['buy']['fields']['asset']
