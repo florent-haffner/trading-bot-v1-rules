@@ -25,12 +25,19 @@ def build_dto(record: dict):
     :param record: raw results of InfluxDB
     :return: a properly formatted object to interact with
     """
+    # return {
+    #     'time': record['_time'],
+    #     'measurement': record['_measurement'],
+    #     'asset': record['asset'],
+    #     'price': record['price'],
+    #     'volume': record['volume']
+    # }
     return {
-        'time': record['_time'],
-        'measurement': record['_measurement'],
-        'asset': record['asset'],
-        'price': record['price'],
-        'volume': record['volume']
+        'time': record['_start'],
+        'measurement': record['_measurement_first'],
+        'asset': record['asset_first'],
+        'first': record['_value_first'],
+        'last': record['_value_last'],
     }
 
 
@@ -98,6 +105,43 @@ def get_last_minute_market_events(asset: str, length: int):
     return output_results
 
 
+def get_length_with_interval_market_events(asset: str, measurement: str, length: int):
+    """
+    # DEMO FUNCTION -> must return the first and last value of the window of time
+    :param measurement:
+    :param asset: the asset to query
+    :param length: the range of time needed
+    :return: a list of the last market events
+    """
+    print('[INFLUXDB], getLastMinuteEvents from the last', length, 'minutes.')
+    query = f"""
+       data = from (bucket:"{__CURRENT_BUCKET}")
+          |> range(start: -{length}m)
+          |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
+          |> filter(fn: (r) => r._field == "{measurement}")
+          |> filter(fn: (r) => r.asset == "{asset}")
+          |> window(every: 1m, createEmpty: false)
+       first =
+          data
+          |> first()
+       last =
+          data
+          |> last()
+        join(tables: {{first: first, last: last}}, on: ["_start"], method: "inner")
+    """
+    output_results: list = []
+    request_result: list = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
+    for table in request_result:
+        for record in table.records:
+            try:
+                dto = build_dto(record)
+                output_results.append(dto)
+            except KeyError:
+                return []
+    print('[INFLUXDB], getLastMinuteEvents response, items length:', len(output_results))
+    return output_results
+
+
 def insert_market_event(event: list):
     """
     :param event: the data to write
@@ -117,3 +161,10 @@ def clean_trade_events():
                       '_measurement=' + __MEASUREMENT_NAME,
                       bucket=__CURRENT_BUCKET, org=__INFLUXDB_CURRENT_ORG)
     print('Results', get_all_market_events())
+
+
+if __name__ == '__main__':
+    # DEMO FUNCTION
+    results = get_length_with_interval_market_events(asset='LINK', measurement='price', length=30)
+    for res in results:
+        print(res)
