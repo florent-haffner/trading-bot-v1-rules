@@ -105,58 +105,44 @@ def get_last_minute_market_events(asset: str, length: int):
     return output_results
 
 
-def get_length_with_interval_market_events(asset: str, measurement: str, length: int):
+def get_ohlc_data_from_market_events(asset: str, measurement: str, interval: int, length_in_minute: int):
     """
-    # DEMO FUNCTION -> must return the first and last value of the window of time
-    :param measurement:
+    # Get OHLC data from websockets
+    :param measurement: the price or the volume
     :param asset: the asset to query
-    :param length: the range of time needed
+    :param interval: the interval of time between two time windows
+    :param length_in_minute: the range of time needed
     :return: a list of the last market events
     """
-    print('[INFLUXDB], getLastMinuteEvents from the last', length, 'minutes.')
-    # query = f"""
-    #    data = from (bucket:"{__CURRENT_BUCKET}")
-    #       |> range(start: -{length}m)
-    #       |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
-    #       |> filter(fn: (r) => r._field == "{measurement}")
-    #       |> filter(fn: (r) => r.asset == "{asset}")
-    #       |> window(every: 1m, createEmpty: false)
-    #    first =
-    #       data
-    #       |> first()
-    #    last =
-    #       data
-    #       |> last()
-    #    join(tables: {{first: first, last: last}}, on: ["_start"], method: "inner")
-    # """
+    print('[INFLUXDB], get OHLC data from websockets on the last', length_in_minute, 'minutes.')
     query = f"""
         open = from (bucket:"{__CURRENT_BUCKET}")
-           |> range(start: -{length}m)
+           |> range(start: -{length_in_minute}m)
            |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
            |> filter(fn: (r) => r._field == "{measurement}")
            |> filter(fn: (r) => r.asset == "{asset}")
-           |> aggregateWindow(every: 1m, fn: first, createEmpty: false)
+           |> aggregateWindow(every: {interval}m, fn: first, createEmpty: false)
            |> yield(name: "open")
         close = from (bucket:"{__CURRENT_BUCKET}")
-           |> range(start: -{length}m)
+           |> range(start: -{length_in_minute}m)
            |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
            |> filter(fn: (r) => r._field == "{measurement}")
            |> filter(fn: (r) => r.asset == "{asset}")
-           |> aggregateWindow(every: 1m, fn: last, createEmpty: false)
+           |> aggregateWindow(every: {interval}m, fn: last, createEmpty: false)
            |> yield(name: "close")
         high = from (bucket:"{__CURRENT_BUCKET}")
-           |> range(start: -{length}m)
+           |> range(start: -{length_in_minute}m)
            |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
            |> filter(fn: (r) => r._field == "{measurement}")
            |> filter(fn: (r) => r.asset == "{asset}")
-           |> aggregateWindow(every: 1m, fn: max, createEmpty: false)
+           |> aggregateWindow(every: {interval}m, fn: max, createEmpty: false)
            |> yield(name: "high")
         low = from (bucket:"{__CURRENT_BUCKET}")
-           |> range(start: -{length}m)
+           |> range(start: -{length_in_minute}m)
            |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
            |> filter(fn: (r) => r._field == "{measurement}")
            |> filter(fn: (r) => r.asset == "{asset}")
-           |> aggregateWindow(every: 1m, fn: min, createEmpty: false)
+           |> aggregateWindow(every: {interval}m, fn: min, createEmpty: false)
            |> yield(name: "low")
     """
     output_results: list = []
@@ -195,6 +181,11 @@ def clean_trade_events():
 
 if __name__ == '__main__':
     # DEMO FUNCTION
-    results = get_length_with_interval_market_events(asset='LINK', measurement='price', length=30)
+    results = get_ohlc_data_from_market_events(
+        asset='LINK',
+        measurement='price',
+        interval=5,
+        length_in_minute=30
+    )
     for res in results:
         print(res)
