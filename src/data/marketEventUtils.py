@@ -114,20 +114,50 @@ def get_length_with_interval_market_events(asset: str, measurement: str, length:
     :return: a list of the last market events
     """
     print('[INFLUXDB], getLastMinuteEvents from the last', length, 'minutes.')
+    # query = f"""
+    #    data = from (bucket:"{__CURRENT_BUCKET}")
+    #       |> range(start: -{length}m)
+    #       |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
+    #       |> filter(fn: (r) => r._field == "{measurement}")
+    #       |> filter(fn: (r) => r.asset == "{asset}")
+    #       |> window(every: 1m, createEmpty: false)
+    #    first =
+    #       data
+    #       |> first()
+    #    last =
+    #       data
+    #       |> last()
+    #    join(tables: {{first: first, last: last}}, on: ["_start"], method: "inner")
+    # """
     query = f"""
-       data = from (bucket:"{__CURRENT_BUCKET}")
-          |> range(start: -{length}m)
-          |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
-          |> filter(fn: (r) => r._field == "{measurement}")
-          |> filter(fn: (r) => r.asset == "{asset}")
-          |> window(every: 1m, createEmpty: false)
-       first =
-          data
-          |> first()
-       last =
-          data
-          |> last()
-        join(tables: {{first: first, last: last}}, on: ["_start"], method: "inner")
+        open = from (bucket:"{__CURRENT_BUCKET}")
+           |> range(start: -{length}m)
+           |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
+           |> filter(fn: (r) => r._field == "{measurement}")
+           |> filter(fn: (r) => r.asset == "{asset}")
+           |> aggregateWindow(every: 1m, fn: first, createEmpty: false)
+           |> yield(name: "open")
+        close = from (bucket:"{__CURRENT_BUCKET}")
+           |> range(start: -{length}m)
+           |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
+           |> filter(fn: (r) => r._field == "{measurement}")
+           |> filter(fn: (r) => r.asset == "{asset}")
+           |> aggregateWindow(every: 1m, fn: last, createEmpty: false)
+           |> yield(name: "close")
+        high = from (bucket:"{__CURRENT_BUCKET}")
+           |> range(start: -{length}m)
+           |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
+           |> filter(fn: (r) => r._field == "{measurement}")
+           |> filter(fn: (r) => r.asset == "{asset}")
+           |> aggregateWindow(every: 1m, fn: max, createEmpty: false)
+           |> yield(name: "high")
+        low = from (bucket:"{__CURRENT_BUCKET}")
+           |> range(start: -{length}m)
+           |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
+           |> filter(fn: (r) => r._field == "{measurement}")
+           |> filter(fn: (r) => r.asset == "{asset}")
+           |> aggregateWindow(every: 1m, fn: min, createEmpty: false)
+           |> yield(name: "low")
     """
     output_results: list = []
     request_result: list = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)

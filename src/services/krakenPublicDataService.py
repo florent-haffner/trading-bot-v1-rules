@@ -84,9 +84,20 @@ def get_stocks_indicators(dataframe: pd.DataFrame) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    df = get_formatted_data('BTCEUR', '60')
+    import matplotlib as plt
+    from datetime import datetime
+    df = get_formatted_data('GRTEUR', '5')
+    tail = df.tail()
+    print('TIMESTAMP', datetime.fromtimestamp(tail['timestamp'][len(df) - 1]))
+
+    print(tail['open'])
+    print(tail['close'])
+    print(tail['high'])
+    print(tail['low'])
+
+    print(df.keys())
     df.plot('timestamp', 'volume')
-    # plt.show()
+    plt.show()
 
     """
     train, test = splitDataset(df, .85)
