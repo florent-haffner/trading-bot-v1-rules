@@ -25,19 +25,12 @@ def build_dto(record: dict):
     :param record: raw results of InfluxDB
     :return: a properly formatted object to interact with
     """
-    # return {
-    #     'time': record['_time'],
-    #     'measurement': record['_measurement'],
-    #     'asset': record['asset'],
-    #     'price': record['price'],
-    #     'volume': record['volume']
-    # }
     return {
-        'time': record['_start'],
-        'measurement': record['_measurement_first'],
-        'asset': record['asset_first'],
-        'first': record['_value_first'],
-        'last': record['_value_last'],
+        'time': record['_time'],
+        'measurement': record['_measurement'],
+        'asset': record['asset'],
+        'field': record['_field'],
+        'value': record['_value'],
     }
 
 
@@ -145,16 +138,24 @@ def get_ohlc_data_from_market_events(asset: str, measurement: str, interval: int
            |> aggregateWindow(every: {interval}m, fn: min, createEmpty: false)
            |> yield(name: "low")
     """
-    output_results: list = []
     request_result: list = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
+    output_results: dict = {}
+    items_length: int = 0
     for table in request_result:
+        key: str = ''
+        key_results: list = []
         for record in table.records:
             try:
+                if not key:
+                    key = record['result']
                 dto = build_dto(record)
-                output_results.append(dto)
+                key_results.append(dto)
             except KeyError:
                 return []
-    print('[INFLUXDB], getLastMinuteEvents response, items length:', len(output_results))
+        output_results[key] = key_results
+        if not items_length:
+            items_length = len(key_results)
+    print('[INFLUXDB], get OHLC data from marketEvent, ouptut length:', items_length)
     return output_results
 
 
@@ -166,7 +167,7 @@ def insert_market_event(event: list):
     __WRITE_API.write(__CURRENT_BUCKET, __INFLUXDB_CURRENT_ORG, event)
 
 
-def clean_trade_events():
+def clean_market_events():
     """
     Clean the current bucket
     :return: None
@@ -185,7 +186,7 @@ if __name__ == '__main__':
         asset='LINK',
         measurement='price',
         interval=5,
-        length_in_minute=30
+        length_in_minute=720
     )
     for res in results:
         print(res)
