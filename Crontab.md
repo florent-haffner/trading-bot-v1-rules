@@ -7,6 +7,8 @@
     0 4 * * * sudo journalctl --vacuum-time=1d -u tradingBot
     0 4 * * * sudo systemctl restart tradingBot
     0 16 * * * sudo systemctl restart tradingBot
+    0 4 * * * sudo systemctl restart websocketKraken
+    0 16 * * * sudo systemctl restart websocketKraken
     0 1 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/transaction_closer_automate.py
     0 3 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/transaction_closer_automate.py
     0 5 * * * /home/ubuntu/anaconda3/envs/trading-bot/bin/python /home/ubuntu/trading-bot-interval/transaction_closer_automate.py

@@ -19,6 +19,19 @@ __WRITE_API = __INFLUX_CLIENT.write_api(write_options=SYNCHRONOUS)
 __QUERY_API = __INFLUX_CLIENT.query_api()
 
 
+def build_array(record: dict):
+    """
+    Build Data Transfer object with whom I'll work /w Python
+    :param record: raw results of InfluxDB
+    :return: a properly formatted object to interact with
+    """
+    return [
+        record['_time'],
+        record['asset'],
+        record['_value'],
+    ]
+
+
 def build_dto(record: dict):
     """
     Build Data Transfer object with whom I'll work /w Python
@@ -98,7 +111,7 @@ def get_last_minute_market_events(asset: str, length: int):
     return output_results
 
 
-def get_ohlc_data_from_market_events(asset: str, measurement: str, interval: int, length_in_minute: int):
+def get_ohlc_data_from_market_events(asset: str, measurement: str, interval: int, length_in_minute: int) -> list:
     """
     # Get OHLC data from websockets
     :param measurement: the price or the volume
@@ -139,23 +152,21 @@ def get_ohlc_data_from_market_events(asset: str, measurement: str, interval: int
            |> yield(name: "low")
     """
     request_result: list = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
-    output_results: dict = {}
-    items_length: int = 0
+    output_results: list = []
     for table in request_result:
-        key: str = ''
-        key_results: list = []
+        # Using one loop to fulfil with the time data
         for record in table.records:
+            output_results.append({'time': record['_time']})
+        # Using another loop to fulfil with the OHLC data
+        records_list: list = list(table.records)
+        for index in range(len(records_list)):
             try:
-                if not key:
-                    key = record['result']
-                dto = build_dto(record)
-                key_results.append(dto)
+                key: str = records_list[index]['result']
+                value: float = records_list[index]['_value']
+                output_results[index].update({key: value})
             except KeyError:
                 return []
-        output_results[key] = key_results
-        if not items_length:
-            items_length = len(key_results)
-    print('[INFLUXDB], get OHLC data from marketEvent, ouptut length:', items_length)
+    print('[INFLUXDB], get OHLC data from marketEvent, ouptut length:', len(output_results))
     return output_results
 
 
@@ -188,5 +199,10 @@ if __name__ == '__main__':
         interval=5,
         length_in_minute=720
     )
-    for res in results:
-        print(res)
+
+    from pandas import DataFrame
+    import matplotlib.pyplot as plt
+
+    df = DataFrame(results)
+    print(df)
+    print(df.keys())
