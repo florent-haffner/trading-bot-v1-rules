@@ -154,11 +154,15 @@ def get_ohlc_data_from_market_events(asset: str, measurement: str, interval: int
     request_result: list = __QUERY_API.query(org=__INFLUXDB_CURRENT_ORG, query=query)
     output_results: list = []
     for table in request_result:
-        # Using one loop to fulfil with the time data
-        for record in table.records:
-            output_results.append({'time': record['_time']})
-        # Using another loop to fulfil with the OHLC data
         records_list: list = list(table.records)
+
+        # Using one loop to fulfil with the time data
+        for index in range(len(records_list)):
+            # Make sure we don't add unnecessary data
+            if len(output_results) < len(records_list):
+                output_results.append({'time': records_list[index]['_time']})
+
+        # Using another loop to fulfil with the OHLC data
         for index in range(len(records_list)):
             try:
                 key: str = records_list[index]['result']
@@ -194,7 +198,7 @@ def clean_market_events():
 if __name__ == '__main__':
     # DEMO FUNCTION
     results = get_ohlc_data_from_market_events(
-        asset='LINK',
+        asset='ALGO',
         measurement='price',
         interval=5,
         length_in_minute=720
@@ -205,4 +209,6 @@ if __name__ == '__main__':
 
     df = DataFrame(results)
     print(df)
-    print(df.keys())
+    print(df['close'])
+    # print(df.head(75))
+    # print(df.tail(75))
