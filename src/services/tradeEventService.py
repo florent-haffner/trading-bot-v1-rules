@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
+from src.data.marketEventUtils import get_ohlc_data_from_market_events
 from src.data.tradeEventUtils import get_recent_event_by_type_and_asset, insert_trade_event
-from src.helpers.dateHelper import DATE_UTC_TZ_STR
+from src.helpers.dateHelper import DATE_UTC_TZ_STR, set_timezone
 from src.services.krakenPrivateTradeService import create_new_order
 from src.services.slackEventService import send_trade_event_to_slack, create_trade_event_message, \
     send_exception_to_slack
@@ -110,3 +111,56 @@ def add_trade_event(type_of_trade: str, quantity: float, asset: str,
             success = handle_trade_data_and_logic(point=point, asset=asset, currency=currency,
                                                   type_of_trade=type_of_trade, quantity=quantity)
     return success
+
+
+def generate_graph_from_ohlc(data: list) -> list:
+    graph: list = []
+
+    class Node:
+        def __init__(self, item_data, previous_node):
+            self.previous_node = previous_node
+            # Time is on current timezone then calculated to follow Kraken's standard
+            self.time = set_timezone(item_data['time']) - timedelta(minutes=5)
+            self.open = item_data['open']
+            self.high = item_data['high']
+            self.low = item_data['low']
+            self.close = item_data['close']
+            self.index = 0
+
+            self.calculate_trade_index()
+
+        def get_previous(self):
+            return self.previous_node
+
+        def calculate_trade_index(self):
+            print('\nNEW NODE', self.time)
+            print('open', self.open)
+            # low_p = self.open * self.low / 100
+            print('low', self.low, 'delta', self.open * self.low / 100)
+            # high_p = self.open * self.high / 100
+            print('high', self.high, 'delta', self.open * self.high / 100)
+            # close_p = self.open * self.close / 100
+            print('close', self.close, 'delta', self.open * self.close / 100)
+
+    previous = {}
+    for time_window in data:
+        node = Node(time_window, previous)
+        graph.append(node)
+        previous = time_window
+
+    return graph
+
+
+if __name__ == '__main__':
+    length_in_minute: int = 5 * 12 * 8
+    results = get_ohlc_data_from_market_events(
+        asset='LINK',
+        measurement='price',
+        interval=5,
+        length_in_minute=length_in_minute
+    )
+    from pandas import DataFrame
+    import matplotlib.pyplot as plt
+    # df = DataFrame(results)
+
+    graph = generate_graph_from_ohlc(results)

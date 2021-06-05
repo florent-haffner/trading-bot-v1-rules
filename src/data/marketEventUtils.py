@@ -121,7 +121,7 @@ def get_ohlc_data_from_market_events(asset: str, measurement: str, interval: int
     :return: a list of the last market events
     """
     print('[INFLUXDB], get OHLC data from websockets on the last', length_in_minute, 'minutes.')
-    query = f"""
+    query: str = f"""
         open = from (bucket:"{__CURRENT_BUCKET}")
            |> range(start: -{length_in_minute}m)
            |> filter(fn: (r) => r._measurement == "{__MEASUREMENT_NAME}")
@@ -193,22 +193,3 @@ def clean_market_events():
                       '_measurement=' + __MEASUREMENT_NAME,
                       bucket=__CURRENT_BUCKET, org=__INFLUXDB_CURRENT_ORG)
     print('Results', get_all_market_events())
-
-
-if __name__ == '__main__':
-    # DEMO FUNCTION
-    results = get_ohlc_data_from_market_events(
-        asset='ALGO',
-        measurement='price',
-        interval=5,
-        length_in_minute=720
-    )
-
-    from pandas import DataFrame
-    import matplotlib.pyplot as plt
-
-    df = DataFrame(results)
-    print(df)
-    print(df['close'])
-    # print(df.head(75))
-    # print(df.tail(75))
