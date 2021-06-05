@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 
 from src.helpers.params import __ENVIRONMENT
-from src.secret.keys import __MONGO_HOST, __MONGO_USER, __MONGO_PASSWORD, __MONGO_URI, __MONGO_DB
+from src.secret.db_keys import __MONGO_HOST, __MONGO_USER, __MONGO_PASSWORD, __MONGO_URI, __MONGO_DB
 
 __MONGO_CLIENT = None
 

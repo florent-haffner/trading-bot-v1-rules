@@ -1,5 +1,5 @@
 from src.helpers.dateHelper import SIMPLE_DATE_STR
-from src.secret.keys import __EMAIL_USER, __EMAIL_PASSWORD
+from src.secret.db_keys import __EMAIL_USER, __EMAIL_PASSWORD
 
 import smtplib
 from datetime import datetime

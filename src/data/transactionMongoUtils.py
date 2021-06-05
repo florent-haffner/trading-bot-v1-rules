@@ -5,7 +5,7 @@ from pymongo import MongoClient
 
 from src.helpers.dateHelper import DATE_STR
 from src.helpers.params import __ENVIRONMENT
-from src.secret.keys import __MONGO_URI, __MONGO_DB
+from src.secret.db_keys import __MONGO_URI, __MONGO_DB
 
 __MONGO_CLIENT = MongoClient(__MONGO_URI)
 
