@@ -5,7 +5,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 
 from src.helpers.params import __ENVIRONMENT
 from src.helpers.dateHelper import DATE_STR
-from src.secret.SECRET_CONSTANT import __INFLUX_BUCKET_MARKET_EVENT, __INFLUX_URI, __INFLUX_TOKEN
+from src.secret.keys import __INFLUX_BUCKET_MARKET_EVENT, __INFLUX_URI, __INFLUX_TOKEN
 
 __INFLUX_CLIENT = InfluxDBClient(
     url=__INFLUX_URI,
