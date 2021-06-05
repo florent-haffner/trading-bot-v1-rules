@@ -3,7 +3,8 @@ nohup.out
 session.session
 
 #SECRET
-src/secret/*
+src/secret/SECRET_CONSTANT.py
+src/secret/kraken.key
 
 #IDE
 .idea/
