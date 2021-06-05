@@ -135,18 +135,15 @@ def generate_graph_from_ohlc(data: list) -> list:
         def calculate_trade_index(self):
             print('\nNEW NODE', self.time)
             print('open', self.open)
-            # low_p = self.open * self.low / 100
             print('low', self.low, 'delta', self.low * 100 / self.open)
-            # high_p = self.open * self.high / 100
-            print('high', self.high, 'delta', self.open * 100 / self.high)
-            # close_p = self.open * self.close / 100
-            print('close', self.close, 'delta', self.open * 100 / self.close)
+            print('high', self.high, 'delta', self.high * 100 / self.open)
+            print('close', self.close, 'delta', self.close * 100 / self.open)
 
-    previous = {}
+    previous_node = {}
     for time_window in data:
-        node = Node(time_window, previous)
-        graph.append(node)
-        previous = time_window
+        current_node = Node(time_window, previous_node)
+        graph.append(current_node)
+        previous_node = current_node
 
     return graph
 
