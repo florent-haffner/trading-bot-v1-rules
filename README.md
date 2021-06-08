@@ -1,5 +1,7 @@
 # Trading-bot
 
+Version : 0.7
+
 ## Infrastructure
 
 Use docker to launch MongoDB + InfluxDB instances.
