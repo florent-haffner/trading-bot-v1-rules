@@ -2,15 +2,7 @@
 
 Version : 0.7
 
-## Infrastructure
-
-Use docker to launch MongoDB + InfluxDB instances.
-
-Set user for Influx :
-
-    influx CREATE USER admin WITH PASSWORD '<password>' WITH ALL PRIVILEGES
-
-## Dependancy
+## Dependency
 
 Python management
 
@@ -28,15 +20,13 @@ Bot dependencies :
 
     systemctl start tradingBot && systemctl enable tradingBot
 
-Add automate closer to crontab.
-
-To check the logs of the process : `journalctl _PID=1077`
+To check the logs of the process : `journalctl -u {serviceName}`
 
 
-## Env - OBSOLETE CURRENTLY
+## OLD - Infrastructure
 
-GPU acceleration /w CUDA and cuDNN, here version used on Arch linux.
-```
-cuda-11.0 11.0.3-3
-cudnn8-cuda11.0 8.0.3.33-1
-```
+Use docker to launch MongoDB + InfluxDB instances.
+
+Set user for Influx :
+
+    influx CREATE USER admin WITH PASSWORD '<password>' WITH ALL PRIVILEGES
