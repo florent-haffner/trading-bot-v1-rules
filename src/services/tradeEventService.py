@@ -112,44 +112,88 @@ def add_trade_event(type_of_trade: str, quantity: float, asset: str,
                                                   type_of_trade=type_of_trade, quantity=quantity)
     return success
 
+class Node:
+    """ Object that represent the current last node and it's friend before it. """
+
+    def __init__(self, item_data: dict, previous_node: object):
+        """ ATTRIBUTES """
+        self.previous_node = previous_node
+        # Time is on current timezone then calculated to follow Kraken's standard
+        self.time = set_timezone(item_data['time']) - timedelta(minutes=5)
+        self.open = item_data['open']
+        self.high = item_data['high']
+        self.low = item_data['low']
+        self.close = item_data['close']
+        self.index = 0
+        # Current trend evolution attributes
+        self.nbr_previous_positive = 0
+        self.nbr_previous_negative = 0
+        self.trade_event = 'waiting'
+
+        """ METHOD """
+        # TODO -> only use during DEBUG
+        self.print_current_trend()
+
+        try:
+            self.calculate_trend_evolution()
+        except AttributeError:
+            # Probably the first ndoe
+            pass
+
+    def __repr__(self):
+        return '{ time: ' + str(self.time) + \
+               ', open: ' + str(self.open) + \
+               ', close: ' + str(self.close) + \
+               ', high: ' + str(self.high) + \
+               ', low: ' + str(self.low) + ' ' + \
+               '}'
+
+    def print_current_trend(self):
+        print('\nNEW NODE', self.time)
+        print('open', self.open)
+        print('low', self.low, 'delta', self.low * 100 / self.open)
+        print('high', self.high, 'delta', self.high * 100 / self.open)
+        print('close', self.close, 'delta', self.close * 100 / self.open)
+
+    def calculate_trend_evolution(self):
+        # Trade management
+        if self.high < self.close:
+            self.trade_event = 'sell'
+            self.nbr_previous_positive = 0
+            self.nbr_previous_negative = 0
+
+        elif self.nbr_previous_negative > 2 and self.close > self.open:
+            self.trade_event = 'buy'
+
+        # Trend management
+        elif self.close > self.previous_node.close:
+            self.nbr_previous_positive = self.previous_node.nbr_previous_positive + 1
+        elif self.close < self.previous_node.close:
+            self.nbr_previous_negative = self.previous_node.nbr_previous_negative + 1
+
 
 def generate_graph_from_ohlc(data: list) -> list:
     graph: list = []
-
-    class Node:
-        def __init__(self, item_data, previous_node):
-            self.previous_node = previous_node
-            # Time is on current timezone then calculated to follow Kraken's standard
-            self.time = set_timezone(item_data['time']) - timedelta(minutes=5)
-            self.open = item_data['open']
-            self.high = item_data['high']
-            self.low = item_data['low']
-            self.close = item_data['close']
-            self.index = 0
-
-            self.calculate_trade_index()
-
-        def get_previous(self):
-            return self.previous_node
-
-        def calculate_trade_index(self):
-            print('\nNEW NODE', self.time)
-            print('open', self.open)
-            print('low', self.low, 'delta', self.low * 100 / self.open)
-            print('high', self.high, 'delta', self.high * 100 / self.open)
-            print('close', self.close, 'delta', self.close * 100 / self.open)
-
-    previous_node = {}
+    previous_node: object = None
     for time_window in data:
         current_node = Node(time_window, previous_node)
         graph.append(current_node)
         previous_node = current_node
 
+    node_analysis(current_node)
+
     return graph
 
 
+def node_analysis(node: Node):
+    if node.trade_event is not 'waiting':
+        print(node)
+    node_analysis(node.previous_node)
+
+
 if __name__ == '__main__':
-    length_in_minute: int = 5 * 12 * 8
+    nbr_hour: int = 6
+    length_in_minute: int = 5 * 12 * nbr_hour
     results = get_ohlc_data_from_market_events(
         asset='LINK',
         measurement='price',
@@ -158,6 +202,8 @@ if __name__ == '__main__':
     )
     from pandas import DataFrame
     import matplotlib.pyplot as plt
-    # df = DataFrame(results)
+    df = DataFrame(results)
+    df.plot('time', 'close')
+    plt.show()
 
     graph = generate_graph_from_ohlc(results)
