@@ -134,11 +134,7 @@ class Node:
         # TODO -> only use during DEBUG
         # self.print_current_trend()
 
-        try:
-            self.calculate_trend_evolution()
-        except AttributeError:
-            # Probably the first ndoe
-            pass
+        self.calculate_trend_evolution()
 
     def __repr__(self):
         return '{ time: ' + str(self.time) + \
@@ -159,18 +155,23 @@ class Node:
         print('close', self.close, 'delta', self.close * 100 / self.open)
 
     def calculate_trend_evolution(self):
-        # Trend management
-        if self.close > self.previous_node.close:
-            self.nbr_previous_positive = self.previous_node.nbr_previous_positive + 1
-        if self.close < self.previous_node.close:
-            self.nbr_previous_negative = self.previous_node.nbr_previous_negative + 1
+        try:
+            # Trend management
+            if self.close > self.previous_node.close:
+                self.nbr_previous_positive = self.previous_node.nbr_previous_positive + 1
+            if self.close < self.previous_node.close:
+                self.nbr_previous_negative = self.previous_node.nbr_previous_negative + 1
 
-        # Trade management
-        if self.close < self.high:
-            self.trade_event = 'sell'
+            # Trade management
+            if self.close < self.high:
+                self.trade_event = 'sell'
+            if self.nbr_previous_negative > 2:
+                self.trade_event = 'buy'
 
-        if self.nbr_previous_negative > 2:
-            self.trade_event = 'buy'
+        except AttributeError:
+            # Probably the first node
+            pass
+
 
 def generate_graph_from_ohlc(data: list) -> list:
     graph: list = []
@@ -181,14 +182,16 @@ def generate_graph_from_ohlc(data: list) -> list:
         previous_node = current_node
 
     node_analysis(current_node)
-
     return graph
 
 
 def node_analysis(node: Node):
-    if node.trade_event is not 'waiting':
-        print(node)
-    node_analysis(node.previous_node)
+    try:
+        if node.trade_event is not 'waiting':
+            print(node)
+        node_analysis(node.previous_node)
+    except AttributeError:
+        print('End of the analysis')
 
 
 if __name__ == '__main__':
