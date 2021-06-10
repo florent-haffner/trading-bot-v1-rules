@@ -174,11 +174,13 @@ class Node:
                 self.trade_event = 'buy'
                 return self
 
-            if self.previous_node.trade_event == 'buy':
+            if self.previous_node.trade_event == 'buy' or self.previous_node.trade_event == 'waiting':
+                """ Handle transaction analysis, maybe the OR is enough but has to be tested in multiple env """
                 if self.close < self.high:
                     self.trade_event = 'sell'
                     return self
 
+                # TODO : must be solidify -> too much window for forgotten transaction...
                 self.trade_event = 'waiting'
                 return self
 
