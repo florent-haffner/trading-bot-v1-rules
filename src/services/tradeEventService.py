@@ -112,9 +112,9 @@ def add_trade_event(type_of_trade: str, quantity: float, asset: str,
                                                   type_of_trade=type_of_trade, quantity=quantity)
     return success
 
+
 class Node:
     """ Object that represent the current last node and it's friend before it. """
-
     def __init__(self, item_data: dict, previous_node: object):
         """ ATTRIBUTES """
         self.previous_node = previous_node
@@ -132,7 +132,7 @@ class Node:
 
         """ METHOD """
         # TODO -> only use during DEBUG
-        self.print_current_trend()
+        # self.print_current_trend()
 
         try:
             self.calculate_trend_evolution()
@@ -146,6 +146,9 @@ class Node:
                ', close: ' + str(self.close) + \
                ', high: ' + str(self.high) + \
                ', low: ' + str(self.low) + ' ' + \
+               ', nbr_positive: ' + str(self.nbr_previous_positive) + ' ' + \
+               ', nbr_negative: ' + str(self.nbr_previous_negative) + ' ' + \
+               ', trade_Event: ' + self.trade_event + ' ' + \
                '}'
 
     def print_current_trend(self):
@@ -156,21 +159,18 @@ class Node:
         print('close', self.close, 'delta', self.close * 100 / self.open)
 
     def calculate_trend_evolution(self):
-        # Trade management
-        if self.high < self.close:
-            self.trade_event = 'sell'
-            self.nbr_previous_positive = 0
-            self.nbr_previous_negative = 0
-
-        elif self.nbr_previous_negative > 2 and self.close > self.open:
-            self.trade_event = 'buy'
-
         # Trend management
-        elif self.close > self.previous_node.close:
+        if self.close > self.previous_node.close:
             self.nbr_previous_positive = self.previous_node.nbr_previous_positive + 1
-        elif self.close < self.previous_node.close:
+        if self.close < self.previous_node.close:
             self.nbr_previous_negative = self.previous_node.nbr_previous_negative + 1
 
+        # Trade management
+        if self.close < self.high:
+            self.trade_event = 'sell'
+
+        if self.nbr_previous_negative > 2:
+            self.trade_event = 'buy'
 
 def generate_graph_from_ohlc(data: list) -> list:
     graph: list = []
