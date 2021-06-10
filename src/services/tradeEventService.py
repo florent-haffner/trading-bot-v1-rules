@@ -126,15 +126,20 @@ class Node:
         self.close = item_data['close']
         self.index = 0
         # Current trend evolution attributes
+        self.nbr_iteration = 0
         self.nbr_previous_positive = 0
         self.nbr_previous_negative = 0
-        self.trade_event = 'waiting'
+        self.trade_event = 'nothing'
 
         """ METHOD """
         # TODO -> only use during DEBUG
         # self.print_current_trend()
 
-        self.calculate_trend_evolution()
+        self.delta_low = self.low * 100 / self.open
+        self.delta_high = self.high * 100 / self.open
+        self.delta_close = self.close * 100 / self.open
+
+        self.algorithm_interval()
 
     def __repr__(self):
         return '{ time: ' + str(self.time) + \
@@ -148,35 +153,57 @@ class Node:
                '}'
 
     def print_current_trend(self):
+        """ Printing the current OHLC attributes of the node """
         print('\nNEW NODE', self.time)
         print('open', self.open)
-        print('low', self.low, 'delta', self.low * 100 / self.open)
-        print('high', self.high, 'delta', self.high * 100 / self.open)
-        print('close', self.close, 'delta', self.close * 100 / self.open)
+        print('low', self.low, 'delta', self.delta_low)
+        print('high', self.high, 'delta', self.delta_high)
+        print('close', self.close, 'delta', self.delta_close)
 
-    def calculate_trend_evolution(self):
+    def algorithm_interval(self):
+        """ This is where house all the domain knowledge """
         try:
-            # Trend management
-            if self.close > self.previous_node.close:
-                self.nbr_previous_positive = self.previous_node.nbr_previous_positive + 1
-            if self.close < self.previous_node.close:
-                self.nbr_previous_negative = self.previous_node.nbr_previous_negative + 1
+            if self.previous_node == 'waiting':
+                self.nbr_iteration = self.previous_node.nbr_iteration + 1
+                if self.nbr_iteration > 2:
+                    self.trade_event = 'sell'
+                    return self
 
-            # Trade management
-            if self.close < self.high:
-                self.trade_event = 'sell'
-            if self.nbr_previous_negative > 2:
+            if self.previous_node.delta_close <= 99:
+                """ Handle the small buy/sell wave """
                 self.trade_event = 'buy'
+                return self
+
+            if self.previous_node.trade_event == 'buy':
+                if self.close < self.high:
+                    self.trade_event = 'sell'
+                    return self
+
+                self.trade_event = 'waiting'
+                return self
+
+            # TODO -> to remove : first version
+            # # Trend management
+            # if self.close > self.previous_node.close:
+            #     self.nbr_previous_positive = self.previous_node.nbr_previous_positive + 1
+            # if self.close < self.previous_node.close:
+            #     self.nbr_previous_negative = self.previous_node.nbr_previous_negative + 1
+            #
+            # # Trade management
+            # if self.close < self.high:
+            #     self.trade_event = 'sell'
+            # if self.nbr_previous_negative > 2:
+            #     self.trade_event = 'buy'
 
         except AttributeError:
             # Probably the first node
             pass
 
 
-def generate_graph_from_ohlc(data: list) -> list:
+def generate_graph_from_ohlc(raw_data: list) -> list:
     graph: list = []
     previous_node: object = None
-    for time_window in data:
+    for time_window in raw_data:
         current_node = Node(time_window, previous_node)
         graph.append(current_node)
         previous_node = current_node
@@ -187,7 +214,7 @@ def generate_graph_from_ohlc(data: list) -> list:
 
 def node_analysis(node: Node):
     try:
-        if node.trade_event is not 'waiting':
+        if node.trade_event is not 'nothing':
             print(node)
         node_analysis(node.previous_node)
     except AttributeError:
