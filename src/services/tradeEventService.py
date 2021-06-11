@@ -125,6 +125,7 @@ class Node:
         self.low = item_data['low']
         self.close = item_data['close']
         self.index = 0
+        self.type = ''
         # Current trend evolution attributes
         self.nbr_iteration = 0
         self.nbr_previous_positive = 0
@@ -163,6 +164,9 @@ class Node:
     def algorithm_interval(self):
         """ This is where house all the domain knowledge """
         try:
+            """
+            Security
+            """
             if self.previous_node == 'waiting':
                 """
                 Make sure transaction are not lost and automatically buy after 2 actions of wait
@@ -171,15 +175,12 @@ class Node:
                 self.nbr_iteration = self.previous_node.nbr_iteration + 1
                 if self.nbr_iteration > 2:
                     self.trade_event = 'sell'
+                    self.type = 'short_analysis'
                     return self
 
-            if self.previous_node.delta_close <= 99.5:
-                """
-                Handle the short buy/sell wave -> 99.5 means := 100 - 0.5
-                This 0.5% is important because it trigger an action of buying asset
-                """
-                self.trade_event = 'buy'
-                return self
+            """
+            SHORT TERM ANALYSIS -> unique node
+            """
 
             if self.previous_node.trade_event == 'buy' or self.previous_node.trade_event == 'waiting':
                 """ Handle transaction analysis, maybe the OR is enough but has to be tested in multiple env """
@@ -189,6 +190,30 @@ class Node:
 
                 self.trade_event = 'waiting'
                 return self
+
+            if self.previous_node.delta_close <= 99.5:
+                """
+                Handle the short buy/sell wave -> 99.5 means := 100 - 0.5
+                This 0.5% is important because it trigger an action of buying asset
+                """
+                self.trade_event = 'buy'
+                self.type = 'short_analysis'
+                return self
+
+            """
+            MID TERM ANALYSIS -> multiple node following
+            """
+            # TODO - HEAVY WIP
+            if self.previous_node.type == 'negative' and self.close > self.previous_node.close:
+                """ Must buy after multiple negative value passed and the asset has good chances to going up """
+                # self.trade_event = 'buy'
+                return self
+
+            # TODO - HEAVY WIP
+            if self.close < self.previous_node.close:
+                """ Must understand while it's going down """
+                self.type = 'negative'
+
 
             # TODO -> do not keep this first version
             # # Trend management
