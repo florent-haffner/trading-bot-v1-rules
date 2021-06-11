@@ -164,13 +164,20 @@ class Node:
         """ This is where house all the domain knowledge """
         try:
             if self.previous_node == 'waiting':
+                """
+                Make sure transaction are not lost and automatically buy after 2 actions of wait
+                On negative trend, it works well but we'll have to check if this is fine with positive trend
+                """
                 self.nbr_iteration = self.previous_node.nbr_iteration + 1
                 if self.nbr_iteration > 2:
                     self.trade_event = 'sell'
                     return self
 
-            if self.previous_node.delta_close <= 99:
-                """ Handle the small buy/sell wave """
+            if self.previous_node.delta_close <= 99.5:
+                """
+                Handle the short buy/sell wave -> 99.5 means := 100 - 0.5
+                This 0.5% is important because it trigger an action of buying asset
+                """
                 self.trade_event = 'buy'
                 return self
 
@@ -180,11 +187,10 @@ class Node:
                     self.trade_event = 'sell'
                     return self
 
-                # TODO : must be solidify -> too much window for forgotten transaction...
                 self.trade_event = 'waiting'
                 return self
 
-            # TODO -> to remove : first version
+            # TODO -> do not keep this first version
             # # Trend management
             # if self.close > self.previous_node.close:
             #     self.nbr_previous_positive = self.previous_node.nbr_previous_positive + 1
