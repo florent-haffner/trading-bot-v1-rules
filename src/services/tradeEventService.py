@@ -117,28 +117,29 @@ class Node:
     """ Object that represent the current last node and it's friend before it. """
     def __init__(self, item_data: dict, previous_node: object):
         """ ATTRIBUTES """
-        self.previous_node = previous_node
+        self.previous_node: Node = previous_node
         # Time is on current timezone then calculated to follow Kraken's standard
-        self.time = set_timezone(item_data['time']) - timedelta(minutes=5)
-        self.open = item_data['open']
-        self.high = item_data['high']
-        self.low = item_data['low']
-        self.close = item_data['close']
-        self.index = 0
-        self.type = ''
+        self.time: datetime = set_timezone(item_data['time']) - timedelta(minutes=5)
+        self.open: float = item_data['open']
+        self.high: float = item_data['high']
+        self.low: float = item_data['low']
+        self.close: float = item_data['close']
+        self.index: int = 0
+        self.type: str = ''
         # Current trend evolution attributes
-        self.nbr_iteration = 0
-        self.nbr_previous_positive = 0
-        self.nbr_previous_negative = 0
-        self.trade_event = 'nothing'
+        self.nbr_iteration: int = 0
+        # self.nbr_previous_positive: int = 0 # TODO -> make sure it's still useful
+        # self.nbr_previous_negative: int = 0
+        self.trade_event: str = 'nothing'
 
         """ METHOD """
         # TODO -> only use during DEBUG
         # self.print_current_trend()
 
-        self.delta_low = self.low * 100 / self.open
-        self.delta_high = self.high * 100 / self.open
-        self.delta_close = self.close * 100 / self.open
+        self.delta_low: float = round(self.low * 100 / self.open, 3)
+        self.delta_high: float = round(self.high * 100 / self.open, 3)
+        self.delta_close: float = round(self.close * 100 / self.open, 3)
+        self.delta_in_out: float = round(self.close - self.open, 3)
 
         self.algorithm_interval()
 
@@ -146,12 +147,14 @@ class Node:
         return '{ time: ' + str(self.time) + \
                ', open: ' + str(self.open) + \
                ', close: ' + str(self.close) + \
-               ', high: ' + str(self.high) + \
-               ', low: ' + str(self.low) + ' ' + \
-               ', nbr_positive: ' + str(self.nbr_previous_positive) + ' ' + \
-               ', nbr_negative: ' + str(self.nbr_previous_negative) + ' ' + \
+               ', delta_previous_close: ' + str(self.previous_node.delta_close) + \
+               ', delta_in_out: ' + str(self.delta_in_out) + \
+               ', delta_high: ' + str(self.delta_high) + \
+               ', delta_low: ' + str(self.delta_low) + ' ' + \
                ', trade_Event: ' + self.trade_event + ' ' + \
                '}'
+        # ', nbr_positive: ' + str(self.nbr_previous_positive) + ' ' + \
+        # ', nbr_negative: ' + str(self.nbr_previous_negative) + ' ' + \
 
     def print_current_trend(self):
         """ Printing the current OHLC attributes of the node """
@@ -162,16 +165,14 @@ class Node:
         print('close', self.close, 'delta', self.delta_close)
 
     def algorithm_interval(self):
-        """ This is where house all the domain knowledge """
+        """ This is what house all the domain knowledge """
         try:
             """
             Security
-            """
-            if self.previous_node == 'waiting':
-                """
                 Make sure transaction are not lost and automatically buy after 2 actions of wait
                 On negative trend, it works well but we'll have to check if this is fine with positive trend
-                """
+            """
+            if self.previous_node == 'waiting':
                 self.nbr_iteration = self.previous_node.nbr_iteration + 1
                 if self.nbr_iteration > 2:
                     self.trade_event = 'sell'
@@ -181,7 +182,6 @@ class Node:
             """
             SHORT TERM ANALYSIS -> unique node
             """
-
             if self.previous_node.trade_event == 'buy' or self.previous_node.trade_event == 'waiting':
                 """ Handle transaction analysis, maybe the OR is enough but has to be tested in multiple env """
                 if self.close < self.high:
@@ -191,19 +191,19 @@ class Node:
                 self.trade_event = 'waiting'
                 return self
 
-            if self.previous_node.delta_close <= 99.5:
-                """
-                Handle the short buy/sell wave -> 99.5 means := 100 - 0.5
-                This 0.5% is important because it trigger an action of buying asset
-                """
+            """
+            Handle the short buy/sell wave -> 99.5 means := 100 - 0.5
+            This 0.5% is important because it trigger an action of buying asset
+            """
+            if self.previous_node.delta_close <= 99:
                 self.trade_event = 'buy'
                 self.type = 'short_analysis'
                 return self
 
+            # TODO - HEAVY WIP
             """
             MID TERM ANALYSIS -> multiple node following
             """
-            # TODO - HEAVY WIP
             if self.previous_node.type == 'negative' and self.close > self.previous_node.close:
                 """ Must buy after multiple negative value passed and the asset has good chances to going up """
                 # self.trade_event = 'buy'
@@ -213,7 +213,6 @@ class Node:
             if self.close < self.previous_node.close:
                 """ Must understand while it's going down """
                 self.type = 'negative'
-
 
             # TODO -> do not keep this first version
             # # Trend management
@@ -247,7 +246,7 @@ def generate_graph_from_ohlc(raw_data: list) -> list:
 
 def node_analysis(node: Node):
     try:
-        if node.trade_event is not 'nothing':
+        if node.trade_event != 'nothing':
             print(node)
         node_analysis(node.previous_node)
     except AttributeError:
