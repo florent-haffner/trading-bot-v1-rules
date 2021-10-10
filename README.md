@@ -1,6 +1,6 @@
 # Trading-bot
 
-Version : 0.7
+Version : 1.0
 
 ## Dependency
 
